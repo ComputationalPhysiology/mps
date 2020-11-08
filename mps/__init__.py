@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# c) 2001-2019 Simula Research Laboratory ALL RIGHTS RESERVED
+# c) 2001-2020 Simula Research Laboratory ALL RIGHTS RESERVED
 #
 # END-USER LICENSE AGREEMENT
 # PLEASE READ THIS DOCUMENT CAREFULLY. By installing or using this
@@ -26,11 +26,11 @@
 # WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
 # NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 __author__ = "Henrik Finsberg (henriknf@simula.no), 2017--2019"
-__version__ = "0.8.1"
+__version__ = "0.1.0"
 __maintainer__ = "Henrik Finsberg"
 __email__ = "henriknf@simula.no"
 __license__ = """
-c) 2001-2019 Simula Research Laboratory ALL RIGHTS RESERVED
+c) 2001-2020 Simula Research Laboratory ALL RIGHTS RESERVED
 
 END-USER LICENSE AGREEMENT
 PLEASE READ THIS DOCUMENT CAREFULLY. By installing or using this
@@ -66,11 +66,6 @@ _warnings.filterwarnings("ignore", category=UserWarning)
 from . import load
 from .load import MPS
 
-from . import modatfile
-from .modatfile import MED64
-
-from . import med64_utils
-
 from . import analysis
 
 from . import utils
@@ -89,7 +84,7 @@ log_level = INFO
 
 def set_log_level(level):
 
-    for l in [
+    for logger in [
         utils.logger,
         load.logger,
         analysis.logger,
@@ -97,8 +92,8 @@ def set_log_level(level):
         plotter.logger,
     ]:
 
-        l.setLevel(level)
-        for h in l.handlers:
+        logger.setLevel(level)
+        for h in logger.handlers:
             h.setLevel(level)
     global log_level
     log_level = level

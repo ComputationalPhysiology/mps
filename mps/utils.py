@@ -36,12 +36,7 @@ import scipy.io as sio
 from collections import namedtuple
 from pathlib import Path
 
-try:
-    import pint
-except ImportError:
-    has_pint = False
-else:
-    has_pint = True
+
 import logging
 from logging import INFO, DEBUG
 
@@ -174,63 +169,6 @@ def namedtuple2dict(x):
         if not attr.startswith("_") and attr not in ["index", "count"]
     ]
     return {k: getattr(x, k) for k in keys}
-
-
-def dose_sorting(lst, argsort=True):
-    """
-    Given a list of doses (beeing strings), sort the list
-    based on increasing dose with lowest dose first.
-
-    Arguments
-    ---------
-    lst : list
-        List of does in strings
-    argsort : bool
-        Return the indices of the sorted array in stead of the
-        array itself.
-
-    Returns
-    -------
-    sorted_lst : list
-        A sorted list base on dose with smallest dose first
-
-    Example
-    -------
-    >>>dose_sorting(['100uM', '10 uM', '100 nM', '1uM'], argsort=False)
-    ['100 nM', '1 uM', '10 uM', '100 uM']
-    """
-    if not has_pint:
-        raise ImportError("Please install pint - pip install pint")
-    sorted_units = ["pM", "nM", "uM", "mM", "cM", "dM"]
-    ureg = pint.UnitRegistry()
-
-    mapping = {
-        "pM": ureg.pm,
-        "nM": ureg.nm,
-        "uM": ureg.um,
-        "mM": ureg.mm,
-        "cM": ureg.cm,
-        "dM": ureg.dm,
-    }
-
-    inverse_mapping = {v: k for k, v in mapping.items()}
-
-    new_lst = []
-    for l in lst:
-        idx = next(i for i, t in enumerate([s in l for s in sorted_units]) if t)
-        unit = sorted_units[idx]
-        v = float(l.replace(unit, "")) * mapping[unit]
-        new_lst.append(v)
-
-    sorted_lst = []
-    for l in sorted(new_lst):
-        unit = inverse_mapping[l.u]
-        sorted_lst.append("{} {}".format(l.m, unit))
-
-    if argsort:
-        return [x for x, y in sorted(enumerate(new_lst), key=lambda x: x[1])]
-    else:
-        return sorted_lst
 
 
 def get_data_from_dict(set_data, set_key, get_data, get_key, get_name):
