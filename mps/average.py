@@ -31,8 +31,10 @@ __email__ = "henriknf@simula.no"
 
 import functools as ft
 import itertools as it
+
 import numpy as np
 from scipy.interpolate import UnivariateSpline
+
 from . import utils
 
 logger = utils.get_logger(__name__)
@@ -119,8 +121,7 @@ def get_subsignal_average_interpolate(ys, xs=None, N=200, return_list=False):
 
     # Check args
     msg = (
-        "Expected Xs and Ys has to be of same lenght. "
-        "Got len(xs) = {}, len(ys) = {}"
+        "Expected Xs and Ys has to be of same lenght. " "Got len(xs) = {}, len(ys) = {}"
     ).format(len(xs), len(ys))
     assert len(xs) == len(ys), msg
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# c) 2001-2019 Simula Research Laboratory ALL RIGHTS RESERVED
+# c) 2001-2012 Simula Research Laboratory ALL RIGHTS RESERVED
 #
 # END-USER LICENSE AGREEMENT
 # PLEASE READ THIS DOCUMENT CAREFULLY. By installing or using this
@@ -25,11 +25,11 @@
 # SIMULA RESEARCH LABORATORY MAKES NO REPRESENTATIONS AND EXTENDS NO
 # WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
 # NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
-__author__ = "Henrik Finsberg (henriknf@simula.no), 2017--2019"
+__author__ = "Henrik Finsberg (henriknf@simula.no), 2017--2012"
 __maintainer__ = "Henrik Finsberg"
 __email__ = "henriknf@simula.no"
-import os
-import numpy as np
+
+
 from . import utils
 
 logger = utils.get_logger(__name__)
@@ -43,17 +43,9 @@ try:
         mpl.use("TkAgg")
         import matplotlib.pyplot as plt
 
-    try:
-        from matplotlib import cm
-        from matplotlib import animation
-    except ImportError:
-        pass
-
     has_mpl = True
 except ImportError:
-    logger.warning(
-        ("Unable to import matplotlib. " "Plotting will not be possible")
-    )
+    logger.warning(("Unable to import matplotlib. " "Plotting will not be possible"))
     has_mpl = False
     plt = None
 

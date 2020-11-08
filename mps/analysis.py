@@ -28,21 +28,18 @@
 __author__ = "Henrik Finsberg (henriknf@simula.no), 2017--2019"
 __maintainer__ = "Henrik Finsberg"
 __email__ = "henriknf@simula.no"
-from collections import namedtuple, OrderedDict
-import os
-import json
-import itertools as it
 import concurrent.futures
-from typing import List, Optional, Dict, Tuple
+import itertools as it
+import json
+import os
+from collections import OrderedDict, namedtuple
+from typing import Dict, List, Optional, Tuple
+
 import numpy as np
 from scipy.interpolate import UnivariateSpline
 from scipy.ndimage import gaussian_filter1d
 
-
-from . import average
-from . import utils
-from . import bin_utils
-from . import plotter
+from . import average, bin_utils, plotter, utils
 
 logger = utils.get_logger(__name__)
 
@@ -1400,8 +1397,7 @@ def filter_start_ends_in_chopping(
 
 
 def locate_chop_points(time, data, threshold_factor, chop_pars, winlen=50, eps=0.1):
-    """FIXME
-    """
+    """FIXME"""
     # Some perturbation away from the zeros
     # eps = 0.1  # ms
 
@@ -2641,29 +2637,8 @@ def prevalence(
         boolean array who's true values are classied
         as regions with tissue
 
-    Notes
-    -----
-    Outline of algorithm:
-
-    1.	Divide video into smaller areas
-    2.	For each area calculate the fluorescence intensity traces
-    3.	Perform beat detection on each trace
-    4.	Classify beating vs non-beating
-        a.	If at least 1 beat can be detected -> tag this area as “isTissue = 1” and “isBeating = 1”
-        b.	If no beats can be detected -> tag this area as “isBeating = 0”
-    5.	For all areas classified as “isBeating = 1” calculate the baseline intensity (those values should already be available anyways for the baseline subtraction step)
-    6.	Calculate the range of baselines that were found (min to max)
-    7.	For all areas tagged as “isBeating = 0” calculate if their intensity is within the range of beating baselines.
-        a.	If Yes tag as “isTissue = 1”
-        b.	If no tag as “isTissue = 0”
-    8.	Create a false color map showing
-        a.	“isTissue == 0” in black;
-        b.	“isTissue == 1”&& “isBeating == 0” in grey
-        c.	“isTissue == 1”&& “isBeating == 1” in red.
-    9.	Calculate final results:
-        a.	Tissue covered area = count(isTissue == 1)/(count(isTissue == 1)+ count(isTissue == 0))
-        b.	Prevalence = count(isBeating == 1)/count(isTissue == 1)
     """
+
     # Get the local traces
     loc = local_averages(
         frames=mps_data.frames, times=mps_data.time_stamps, N=N, **kwargs

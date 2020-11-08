@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+# flake8: noqa
 # Copyright (c) 2013-2016 Christian C. Sachs.
 # All rights reserved.
 #
@@ -31,14 +31,14 @@ for 64-bit Python (otherwise the file size is limited to 2 GiB).
 There are some heuristics for parsing files, so that even broken files (i.e. due to a crashed NIS instance)
 have a possibility to open.
 """
-from __future__ import division, unicode_literals, print_function
+from __future__ import division, print_function, unicode_literals
 
 import mmap
-from xml.etree import ElementTree
+import warnings
 from functools import partial
+from xml.etree import ElementTree
 
 import numpy as np
-import warnings
 
 
 class ND2File(object):
@@ -134,9 +134,7 @@ class ND2File(object):
                 )
                 readahead, readback = 25, 25
                 self.opportunistic = True
-                mini_chunk_map = self.opportunistic_chunk_scanner(
-                    count=readahead
-                )
+                mini_chunk_map = self.opportunistic_chunk_scanner(count=readahead)
                 prefix = b"ImageDataSeq|"
 
                 def parse_images(inner_mini_chunk_map):
@@ -155,9 +153,7 @@ class ND2File(object):
                     )
 
                 images = parse_images(mini_chunk_map)
-                slope = int(
-                    (np.diff(images[:, 3]) / np.diff(images[:, 0])).mean()
-                )
+                slope = int((np.diff(images[:, 3]) / np.diff(images[:, 0])).mean())
                 intercept = images[0, 3]
 
                 self.opp_slope = slope
@@ -172,8 +168,7 @@ class ND2File(object):
                     return self.opp_intercept + num * self.opp_slope
 
                 mini_chunk_map += self.opportunistic_chunk_scanner(
-                    opportunistic_image_position(max_images - readback),
-                    2 * readback,
+                    opportunistic_image_position(max_images - readback), 2 * readback
                 )
 
                 images = parse_images(mini_chunk_map)
@@ -181,21 +176,14 @@ class ND2File(object):
                 for i in range(images[:, 0].min(), images[:, 0].max()):
                     self.images[i] = opportunistic_image_position(i)
 
-                for (
-                    name,
-                    chunk_begin,
-                    chunk_end,
-                    chunk_position,
-                ) in mini_chunk_map:
+                for (name, chunk_begin, chunk_end, chunk_position) in mini_chunk_map:
                     if name.startswith(prefix):
                         continue
                     name = name.decode("ascii")
 
                     self.chunkmap[name] = chunk_position
                     if name in process_map:
-                        self.metadata[name] = process_map[name](
-                            chunk_begin, chunk_end
-                        )
+                        self.metadata[name] = process_map[name](chunk_begin, chunk_end)
 
         if not self.opportunistic:
 
@@ -229,9 +217,7 @@ class ND2File(object):
         if "ImageAttributes" in self.metadata:
             attributes = self.metadata["ImageAttributes"]
         elif "ImageAttributesLV" in self.metadata:
-            attributes = self.metadata["ImageAttributesLV"][
-                "SLxImageAttributes"
-            ]
+            attributes = self.metadata["ImageAttributesLV"]["SLxImageAttributes"]
         else:
             raise RuntimeError("No ImageAttributes")
 
@@ -272,9 +258,7 @@ class ND2File(object):
         while position < self.size:
             new_pos = self.mem.find(self.CHUNK_MAGIC_BYTES, position)
             chunk_begin, chunk_end = self.chunk_position(new_pos)
-            result.append(
-                (self.chunk_name(new_pos), chunk_begin, chunk_end, new_pos)
-            )
+            result.append((self.chunk_name(new_pos), chunk_begin, chunk_end, new_pos))
             position = chunk_end
             count -= 1
             if count == 0:
@@ -290,9 +274,7 @@ class ND2File(object):
     def _dfp(self, position, dtype, count=1):
         if position < 0:
             position += self.size
-        return np.ndarray(
-            shape=(count,), dtype=dtype, buffer=self.mem, offset=position
-        )
+        return np.ndarray(shape=(count,), dtype=dtype, buffer=self.mem, offset=position)
 
     def _sdfp(self, position, dtype, count=1):
         return map(np.asscalar, self._dfp(position, dtype, count))
@@ -324,15 +306,7 @@ class ND2File(object):
 
     # refactor this beast!
     def lv(self, pos, epos, num=1):
-        tmap = [
-            None,
-            np.uint8,
-            np.uint32,
-            np.uint32,
-            None,
-            np.uint64,
-            np.double,
-        ]
+        tmap = [None, np.uint8, np.uint32, np.uint32, None, np.uint64, np.double]
         result = {}
         while pos < epos and num > 0:
             thetype, thecount = self._sdfp(pos, np.uint8, count=2)
@@ -472,9 +446,7 @@ class ND2MultiFile(ND2File):
                         for k, v in sorted(item.items()):
                             if k == needle:
                                 raise FoundIt(v)
-                            if isinstance(item, dict) or isinstance(
-                                item, list
-                            ):
+                            if isinstance(item, dict) or isinstance(item, list):
                                 _recurse(v)
                     elif isinstance(item, list):
                         for v in item:
@@ -543,9 +515,7 @@ class ND2MultiFile(ND2File):
         except KeyError:
             self.multipoints_of_experiment = [{"valid": True}]
 
-        self.multipoints = [
-            p for p in self.multipoints_of_experiment if p["valid"]
-        ]
+        self.multipoints = [p for p in self.multipoints_of_experiment if p["valid"]]
         self.multipointcount = len(self.multipoints)
 
         self.timepointcount = self.imagecount // self.multipointcount
@@ -565,26 +535,17 @@ class ND2MultiFile(ND2File):
         tmp = [c["uiColor"] for c in tmp]
 
         self.channelcolors = [
-            [(c & 0xFF0000) >> 16, (c & 0xFF00) >> 8, (c & 0xFF)][::-1]
-            for c in tmp
+            [(c & 0xFF0000) >> 16, (c & 0xFF00) >> 8, (c & 0xFF)][::-1] for c in tmp
         ]
 
         # probably easier to associate with certain channel parameters
 
         self.heuristic_pcm = (
-            [
-                n
-                for n, c in enumerate(self.channelcolors)
-                if c == [255, 255, 255]
-            ]
+            [n for n, c in enumerate(self.channelcolors) if c == [255, 255, 255]]
             or [None]
         )[0]
         self.heuristic_fluorescence = (
-            [
-                n
-                for n, c in enumerate(self.channelcolors)
-                if c != [255, 255, 255]
-            ]
+            [n for n, c in enumerate(self.channelcolors) if c != [255, 255, 255]]
             or [None]
         )[0]
         self.heuristic_fluorescences = [
@@ -600,6 +561,4 @@ class ND2MultiFile(ND2File):
         )
 
     def image_singlechannel(self, multipoint=0, timepoint=0, channel=0):
-        return self.image(multipoint=multipoint, timepoint=timepoint)[
-            :, :, channel
-        ]
+        return self.image(multipoint=multipoint, timepoint=timepoint)[:, :, channel]
