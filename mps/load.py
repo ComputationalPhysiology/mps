@@ -28,11 +28,19 @@
 __author__ = "Henrik Finsberg (henriknf@simula.no), 2017--2019"
 __maintainer__ = "Henrik Finsberg"
 __email__ = "henriknf@simula.no"
-import os
 import io
-from collections import namedtuple
-import numpy as np
+import multiprocessing
+import os
 import time
+import zipfile
+from collections import namedtuple
+from concurrent.futures import ThreadPoolExecutor
+from copy import deepcopy
+
+import numpy as np
+
+from . import analysis, czifile, utils
+from .nd2file import ND2File
 
 try:
     import tifffile
@@ -41,16 +49,6 @@ except ImportError:
 else:
     has_tifffile = True
 
-from . import utils
-from . import analysis
-
-from .czifile import CziFile, elem2dict  # type:ignore
-
-from .nd2file import ND2File
-import multiprocessing
-from concurrent.futures import ThreadPoolExecutor
-from copy import deepcopy
-import zipfile
 
 logger = utils.get_logger(__name__)
 
@@ -89,7 +87,7 @@ def get_single_frame(path, index=0):
             frame = frames.image(index).squeeze()
 
     elif ext == ".czi":
-        with CziFile(path) as f:
+        with czifile.CziFile(path) as f:
             frames = f.asarray().squeeze()
         frame = frames[:, :, index]
 
@@ -201,17 +199,22 @@ def load_nd2(fname):
 
 def load_czi(fname):
 
-    with CziFile(fname) as f:
+    with czifile.CziFile(fname) as f:
         images = f.asarray().squeeze()
-        metadata = elem2dict(f.metadata)
+        metadata = czifile.elem2dict(f.metadata)
 
+        time_stamps = None
+        pacing_triggers = []
         for a in f.attachment_directory:
-            try:
-                time_stamps = np.array(a.data_segment().data().time_stamps)
-            except AttributeError:
-                continue
-            else:
-                break
+
+            d = a.data_segment().data()
+
+            if isinstance(d, czifile.TimeStamps):
+                time_stamps = np.array(d.time_stamps)
+
+            if isinstance(d, czifile.EventList):
+                for event in d.events:
+                    pacing_triggers.append(event.time)
 
     time_stamps -= time_stamps[0]
 
