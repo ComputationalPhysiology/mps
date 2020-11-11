@@ -29,20 +29,17 @@ __author__ = "Henrik Finsberg (henriknf@simula.no), 2017--2019"
 __maintainer__ = "Henrik Finsberg"
 __email__ = "henriknf@simula.no"
 
+import logging
 import os
 import sys
-import numpy as np
-import scipy.io as sio
-from collections import namedtuple
-from pathlib import Path
-
-
-import logging
-from logging import INFO, DEBUG
-
 
 # Suppress scipy warning
 import warnings
+from collections import namedtuple
+from pathlib import Path
+
+import numpy as np
+import scipy.io as sio
 
 warnings.filterwarnings(action="ignore", module="scipy", message="^internal gelsd")
 
@@ -106,7 +103,7 @@ def merge_pdfs(lst, fname, cleanup=True):
         Default: True
     """
 
-    from PyPDF2 import PdfFileWriter, PdfFileReader
+    from PyPDF2 import PdfFileReader, PdfFileWriter
 
     pdf_writer = PdfFileWriter()
 
