@@ -300,32 +300,6 @@ def load_zip(fname):
         )
 
 
-# def load_tiff(fname):
-
-#     with tifffile.TiffFile(fname) as f:
-#         metadata = f.metaseries_metadata
-#         frames = f.asarray().T
-
-# info = info_dictionary(time_stamps)
-# info.update(
-#         **dict(
-#             size_x=size_x,
-#             size_y=size_y,
-#             um_per_pixel=float(
-#                 metadata["OME"]["Image"]["Pixels"]["@PhysicalSizeY"]
-#             ),
-#         )
-#     )
-
-# return mps_data(
-#         frames=frames,
-#         time_stamps=time_stamps,
-#         pacing=np.zeros(len(time_stamps)),
-#         info=info,
-#         metadata=metadata,
-#     )
-
-
 def load_stk(fname):
 
     if not has_tifffile:
@@ -376,10 +350,11 @@ def load_file(fname, ext):
     elif ext == ".zip":
         data = load_zip(fname)
 
-    # elif ext == ".tiff":
-    #     data = load_tiff(fname)
     elif ext == ".stk":
         data = load_stk(fname)
+
+    elif ext == ".npy":
+        data = np.load(fname, allow_pickle=True).item()
 
     else:
         raise IOError("Unknown file extension {}".format(ext))
@@ -419,19 +394,13 @@ class MPS(object):
             # Check extension
             _, ext = os.path.splitext(fname)
 
-            if ext != "":
-                msg = "Wrong extension for MPS data file {}".format(ext)
-                assert ext in [".czi", ".nd2", ".zip", ".stk"], msg
-
-            else:
-                # The folder
-                folder = os.path.abspath(os.path.dirname(fname))
-                # Find the coorect extension
-                for f in os.listdir(folder):
-                    if os.path.isfile(os.path.join(folder, f)):
-                        name_, ext_ = os.path.splitext(f)
-                        if name_ == fname:
-                            ext = ext_
+            folder = os.path.abspath(os.path.dirname(fname))
+            # Find the correct extension
+            for f in os.listdir(folder):
+                if os.path.isfile(os.path.join(folder, f)):
+                    name_, ext_ = os.path.splitext(f)
+                    if name_ == fname:
+                        ext = ext_
 
             self._fname = os.path.abspath(fname)
             self._ext = ext
