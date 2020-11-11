@@ -7,9 +7,17 @@ from setuptools import find_packages, setup
 with open("README.md") as readme_file:
     readme = readme_file.read()
 
-requirements = ["numpy", "scipy", "matplotlib", "imageio"]
+requirements = ["numpy", "scipy", "imageio"]
 
-extra_requires = ["xmltodict"]
+extras_require = {
+    "zip": ["xmltodict"],
+    "mp4": ["imageio-ffmpeg"],
+    "plot": ["matplotlib"],
+}
+extras_require.update(
+    {"all": [val for values in extras_require.values() for val in values]}
+)
+
 
 setup(
     author="Henrik Finsberg",
@@ -32,6 +40,7 @@ setup(
     include_package_data=True,
     keywords="mps",
     name="mps",
+    extras_require=extras_require,
     packages=find_packages(include=["mps", "mps.*"]),
     url="https://github.com/ComputationalPhysiology/mps",
     version="0.1.0",
