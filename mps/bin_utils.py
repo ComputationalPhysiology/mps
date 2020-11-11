@@ -28,19 +28,20 @@
 __author__ = "Henrik Finsberg (henriknf@simula.no), 2017--2019"
 __maintainer__ = "Henrik Finsberg"
 __email__ = "henriknf@simula.no"
-from collections import OrderedDict
+import argparse
+import datetime
 import json
+import logging
+import os.path
+import shutil
+import sys
+from collections import OrderedDict
+from pathlib import Path
+from textwrap import dedent
 from timeit import default_timer as timer
 from typing import List
-import datetime
-from textwrap import dedent
-import os.path
-import argparse
-import sys
-import logging
-import shutil
+
 import numpy as np
-import scipy.io
 
 import mps
 
@@ -60,7 +61,7 @@ brightfield_patterns = ["BF", "bf", "brightfield", "Brightfield"]
 
 class Script:
 
-    valid_extensions = [".nd2", ".czi", ".stk"]
+    valid_extensions = [".nd2", ".czi", ".stk", ".npy"]
     skip_startswith = ["."]
     skip_endswith = ["~", "#"]
     exclude_patterns: List[str] = []
@@ -78,7 +79,7 @@ class Script:
 
         _, ext = os.path.splitext(fname)
         if self.valid_extensions and ext not in self.valid_extensions:
-            logging.debug(
+            self.logger.debug(
                 f"Invalid file extension {ext}, expected on of {self.valid_extensions}"
             )
             return False
@@ -89,12 +90,12 @@ class Script:
 
         for sw in self.skip_startswith:
             if os.path.basename(fname).startswith(sw):
-                logging.debug(f"Skip {fname}")
+                self.logger.debug(f"Skip {fname}")
                 return False
 
         for ew in self.skip_endswith:
             if os.path.basename(fname).endswith(ew):
-                logging.debug(f"Skip {fname}")
+                self.logger.debug(f"Skip {fname}")
                 return False
 
         assert os.path.isfile(fname), f"File {fname} does not exist"
@@ -131,7 +132,7 @@ class Script:
                         except Exception as ex:
                             self.logger.warning(ex, exc_info=True)
         else:
-            print(f"Invalid input self.args['file']")
+            self.logger.warning(f"Invalid input {self.args['file']}")
 
     @staticmethod
     def get_parser():
@@ -281,7 +282,9 @@ class analyze_mps(Script):
             args["outdir"] = outdir
             args["file"] = path
             mps_data = mps.MPS(path, averaging_parameters)
-            mps.analysis.analyze_mps_func(mps_data, plot=True, **args)
+            mps.analysis.analyze_mps_func(
+                mps_data, plot=not self.args["no_plot"], **args
+            )
             dump_settings(outdir, args)
             end = timer()
             self.logger.info(
@@ -402,6 +405,14 @@ def _analyze_mps_args(parser):
             "then you can simple do ./analyze_mps my_file.czi -d 100 120 -d 110 120. "
             "This will remove the points 100 to 120 (i.e 20 points) and 130 (=110+20) to 140."
         ),
+    )
+
+    parser.add_argument(
+        "--no-plot",
+        action="store_true",
+        dest="no_plot",
+        default=False,
+        help=("Flip this flag if you dont want to plot anything"),
     )
 
     parser.add_argument(
@@ -705,6 +716,18 @@ class mps_summary(Script):
             ),
         )
 
+        parser.add_argument(
+            "--include-npy",
+            dest="include_npy",
+            action="store_true",
+            default=False,
+            help=(
+                "If true then try to also open .npy files. The default behavious is "
+                "not to include these, because the data that is analyzed is also dumped "
+                "to a .npy files, and we do not want to open those."
+            ),
+        )
+
         return parser
 
     @classmethod
@@ -765,7 +788,7 @@ class mps_summary(Script):
             )
 
         except Exception as ex:
-            logging.warning(ex, exc_info=True)
+            cls.logger.warning(ex, exc_info=True)
             return None
 
     def main_func(self):
@@ -773,13 +796,29 @@ class mps_summary(Script):
         level = logging.WARNING if self.args["silent"] else logging.INFO
         self.logger.setLevel(level)
 
+        extensions = self.valid_extensions.copy()
+        if not self.args["include_npy"]:
+            extensions.remove(".npy")
         files = [
             f
             for f in os.listdir(self.args["folder"])
-            if ((f.endswith("nd2") or f.endswith("czi")) and ("BF" not in f))
+            if (
+                Path(f).suffix in extensions
+                and not any(p in f for p in self.exclude_patterns)
+            )
         ]
+        if len(files) == 0:
+            self.logger.warning(
+                f"Could not find any files with in folder {self.args['folder']}"
+            )
+            self.logger.info(f"Valid extensions {extensions}")
+            self.logger.info(f"Exclude patterns {self.exclude_patterns}")
+            return
 
         fig, ax = plt.subplots(len(files), 2)
+        if len(files) == 1:
+            ax = np.expand_dims(ax, axis=0)
+
         xl_datas = []
 
         for i, f in enumerate(files):
@@ -1043,7 +1082,7 @@ class collect_mps(Script):
 
         if self.args["output_format"] == "yml":
             try:
-                import yaml
+                import yaml  # noqa: F401
             except ImportError:
                 msg = "Cannot save to yml format. yaml is not installed"
                 self.logger.error(msg)
@@ -1253,8 +1292,7 @@ class mps_phase_plot(Script):
         voltage_data = mps.analysis.analyze_mps_func(voltage, plot=False)
         calcium_data = mps.analysis.analyze_mps_func(calcium, plot=False)
 
-        from . import plotter
-        from . import analysis
+        from . import analysis, plotter
 
         voltage_trace = voltage_data["chopped_data"]["trace_1std"]
         calcium_trace = calcium_data["chopped_data"]["trace_1std"]
