@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# c) 2001-2019 Simula Research Laboratory ALL RIGHTS RESERVED
+# c) 2001-2020 Simula Research Laboratory ALL RIGHTS RESERVED
 #
 # END-USER LICENSE AGREEMENT
 # PLEASE READ THIS DOCUMENT CAREFULLY. By installing or using this
@@ -25,7 +25,7 @@
 # SIMULA RESEARCH LABORATORY MAKES NO REPRESENTATIONS AND EXTENDS NO
 # WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
 # NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
-__author__ = "Henrik Finsberg (henriknf@simula.no), 2017--2019"
+__author__ = "Henrik Finsberg (henriknf@simula.no), 2017--2020"
 __maintainer__ = "Henrik Finsberg"
 __email__ = "henriknf@simula.no"
 __doc__ = """MPS package for analyzing microphyisological systems
@@ -35,18 +35,22 @@ Available arguments
 All these arguments can be called with '-h' or '--help' to see the
 additional options
 
-    analyze_mps
+    analyze
         Analyze mps data (.nd2 or .czi)
 
-    mps_summary
+    summary
         Create a summary figure and csv file of all files in a folder
 
-    mps_phase_plot
+    phase_plot
         Make a phase plot with voltage on the x-axis and calcium on the y-axis.
 
-    mps_prevalence
+    prevalence
         Estimate the percentage of tissue in the chips,
         and the percentage of beating tissue vs non-beating
+
+    collect
+        Gather Voltage and Calcium data into one file that can be
+        used as input to the inversion algorithm.
 
     mps2mp4
         Create movie of data file
@@ -88,22 +92,19 @@ def main():
 
         print(__version__)
 
-    elif sys.argv[1] == "analyze_mps":
+    elif sys.argv[1] == "analyze":
         bin_utils.analyze_mps.run(sys.argv[2:])
 
-    elif sys.argv[1] == "analyze_med64":
-        bin_utils.analyze_med64.run(sys.argv[2:])
-
-    elif sys.argv[1] == "mps_summary":
+    elif sys.argv[1] == "summary":
         bin_utils.mps_summary.run(sys.argv[2:])
 
-    elif sys.argv[1] == "mps_phase_plot":
+    elif sys.argv[1] == "phase_plot":
         bin_utils.mps_phase_plot.run(sys.argv[2:])
 
-    elif sys.argv[1] == "mps_prevalence":
+    elif sys.argv[1] == "prevalence":
         bin_utils.mps_prevalence.run(sys.argv[2:])
 
-    elif sys.argv[1] == "collect_mps":
+    elif sys.argv[1] == "collect":
         bin_utils.collect_mps.run(sys.argv[2:])
 
     elif sys.argv[1] == "mps2mp4":
