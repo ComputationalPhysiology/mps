@@ -31,9 +31,11 @@ __email__ = "henriknf@simula.no"
 import concurrent.futures
 import itertools as it
 import json
-import os
-from collections import OrderedDict, namedtuple
-from typing import Dict, List, Optional, Tuple
+import logging
+from collections import namedtuple
+from copy import deepcopy
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 from scipy.interpolate import UnivariateSpline
@@ -1730,7 +1732,7 @@ def analyze_mps_func(mps_data, mask=None, **kwargs):
     info = mps_data.info
     metadata = mps_data.metadata
 
-    return analyze_mps_func_avg(
+    analyzer = AnalyzeMPS(
         avg=avg,
         time_stamps=time_stamps,
         pacing=pacing,
@@ -1738,6 +1740,8 @@ def analyze_mps_func(mps_data, mask=None, **kwargs):
         metadata=metadata,
         **kwargs,
     )
+    analyzer.analyze_all()
+    return analyzer.data
 
 
 def analyze_frequencies(
@@ -1976,363 +1980,519 @@ def poincare_plot(
     return apds_points
 
 
-def analyze_mps_func_avg(
-    avg: List[float],
-    time_stamps: List[float],
-    pacing: Optional[List[float]] = None,
-    spike_duration: int = 0,
-    filter: bool = True,
-    ignore_pacing: bool = False,
-    remove_points_list: tuple = (),
-    chopping_threshold_factor: float = 0.3,
-    chopping_extend_front: Optional[float] = None,
-    chopping_extend_end: Optional[float] = None,
-    chopping_min_window: float = 200,
-    chopping_max_window: float = 2000,
-    std_ex: float = 1.0,
-    use_spline: bool = True,
-    normalize: bool = False,
-    outdir: str = "",
-    plot: bool = False,
-    bar=None,
-    info=None,
-    metadata=None,
-    background_correction=True,
-    max_allowed_apd_change=None,
-    ead_sigma: float = 3,
-    ead_prominence_threshold: float = 0.04,
-    **kwargs,
-):
-    if info is None:
-        info = {}
-
-    if metadata is None:
-        metadata = {}
-
-    def update_bar(i):
-        if bar is not None:
-            bar.update(i)
-
-    if outdir == "" and plot:
-        msg = "Plotting is set to True, please provide an output directory"
-        raise ValueError(msg)
-
-    all_unchopped_data = OrderedDict()
-    all_chopped_data = OrderedDict()
-
-    # Compute average intensity
-    logger.info("Start analyzing....")
-    update_bar(0)
-
-    if plot:
-        plotter.plot_single_trace(
-            time_stamps, avg, os.path.join(outdir, "original_trace")
-        )
-    all_unchopped_data["original_trace"] = np.copy(avg)
-    all_unchopped_data["original_times"] = np.copy(time_stamps)
-    all_unchopped_data["original_pacing"] = np.copy(pacing)
-
-    if outdir != "":
-        # Dump this data, in case it fails later
-        utils.dump_data(
-            {"unchopped_data": all_unchopped_data}, os.path.join(outdir, "data"), "npy"
-        )
-
-    # Remove spikes
-    if spike_duration > 0:
-
-        avg = remove_spikes(avg, pacing, spike_duration)
-        time_stamps = remove_spikes(time_stamps, pacing, spike_duration)
-        pacing = remove_spikes(pacing, pacing, spike_duration)
-
-        all_unchopped_data["original_trace_no_spikes"] = np.copy(avg)
-        all_unchopped_data["original_times_no_spikes"] = np.copy(time_stamps)
-        all_unchopped_data["original_pacing_no_spikes"] = np.copy(pacing)
-
-    update_bar(1)
-    if filter:
-        avg = filt(avg)
-    update_bar(2)
-
-    if plot:
-        plotter.plot_twin_trace(
-            time_stamps, time_stamps, avg, pacing, os.path.join(outdir, "pacing")
-        )
-
-    if ignore_pacing:
-        pacing = np.multiply(pacing, 0.0)
-
-    for p in remove_points_list:
-        t_ = np.copy(time_stamps)
-        time_stamps, avg = remove_points(time_stamps, avg, *p)
-        _, pacing = remove_points(t_, pacing, *p)
-    logger.debug("Apply background correction")
-
-    if background_correction:
-        background_ = background(time_stamps, avg)
-        bkgplot_y = np.transpose([np.copy(avg), background_])
-        bkgplot_x = np.transpose([time_stamps, time_stamps])
-        avg = correct_background(time_stamps, avg)
-
-        logger.debug("Plot corrected trace trace")
-        if plot:
-            plotter.plot_multiple_traces(
-                [bkgplot_x, time_stamps],
-                [bkgplot_y, avg],
-                os.path.join(outdir, "corrected_trace"),
-                ylabels=["Pixel intensity", r"$\Delta F / F$"],
-                titles=["background", "corrected"],
-            )
-    else:
-        background_ = np.zeros_like(avg)
-    all_unchopped_data["trace"] = np.copy(avg)
-    all_unchopped_data["time"] = np.copy(time_stamps)
-    all_unchopped_data["pacing"] = np.copy(pacing)
-    all_unchopped_data["background"] = background_
-
-    update_bar(3)
-
-    chopping_parameters = dict(
-        threshold_factor=chopping_threshold_factor,
-        extend_front=chopping_extend_front,
-        extend_end=chopping_extend_end,
-        min_window=chopping_min_window,
-        max_window=chopping_max_window,
-    )
-
-    logger.debug("Chop data")
-    chopped_data = chop_data(avg, time_stamps, pacing=pacing, **chopping_parameters)
-
-    apd_analysis = analyze_apds(
-        chopped_data.data,
-        chopped_data.times,
-        plot=plot,
-        max_allowed_apd_change=max_allowed_apd_change,
-        fname=os.path.join(outdir, "apd_analysis"),
-    )
-
-    analyze_frequencies(
-        chopped_data.data,
-        chopped_data.times,
-        plot=plot,
-        time_unit=info.get("time_unit", "ms"),
-        fname=os.path.join(outdir, "frequency_analysis"),
-    )
-
-    num_eads = analyze_eads(
-        chopped_data.data,
-        chopped_data.times,
-        sigma=ead_sigma,
-        prominence_threshold=ead_prominence_threshold,
-        fname=os.path.join(outdir, "EAD_analysis") if outdir != "" else "",
-    )
-
-    if plot:
-
-        poincare_plot(
-            chopped_data.data,
-            chopped_data.times,
-            apds=[30, 50, 70, 80, 90],
-            fname=os.path.join(outdir, "poincare_plot"),
-        )
-
-    if len(chopped_data.data) == 0:
-        chopped_data.data.append(avg)
-        chopped_data.times.append(time_stamps)
-        chopped_data.pacing.append(pacing)
-
-    features = compute_features(
-        chopped_data, use_spline=use_spline, normalize=normalize
-    )
-
-    excluded = exclude_x_std(features, std_ex, skips=["upstroke80"])
-
-    for i, (t, d, p) in enumerate(
-        zip(chopped_data.times, chopped_data.data, chopped_data.pacing)
+class AnalyzeMPS:
+    def __init__(
+        self,
+        avg: List[float],
+        time_stamps: List[float],
+        pacing: Optional[List[float]] = None,
+        **kwargs,
     ):
-        all_chopped_data["time_{}".format(i)] = t
-        all_chopped_data["trace_{}".format(i)] = d
-        all_chopped_data["pacing_{}".format(i)] = p
 
-    logger.debug("Plot chopped data")
-    titles = ["apd30", "apd50", "apd80", "dFdt_max", "int30", "tau75"]
-    xs = []
-    ys = []
-    for k in titles:
-        logger.debug(k)
-        x = [
-            np.subtract(xi, xi[0])
-            for xi in np.array(chopped_data.times)[excluded.included_indices[k]]
-        ]
-        y = np.array(chopped_data.data)[excluded.included_indices[k]]
+        self.avg = avg
+        self.time_stamps = time_stamps
+        self.pacing = pacing
+        self._handle_arguments(kwargs)
 
-        xs.append(x)
-        ys.append(y)
+        self.unchopped_data: Dict[str, Any] = {}
+        self.chopped_data: Dict[str, Any] = {}
+        self.features: Dict[str, Any] = {}
 
-    update_bar(4)
-    if plot:
-        plotter.plot_multiple_traces(
-            xs,
-            ys,
-            os.path.join(outdir, "chopped_data_features"),
-            titles,
-            ylabels=[r"$\Delta F / F$" for _ in xs],
-            deep=True,
+        self.unchopped_data["original_trace"] = np.copy(avg)
+        self.unchopped_data["original_times"] = np.copy(time_stamps)
+        self.unchopped_data["original_pacing"] = np.copy(pacing)
+
+    @property
+    def chopping_parameters(self):
+        return dict(
+            threshold_factor=self.parameters["chopping_threshold_factor"],
+            extend_front=self.parameters["chopping_extend_front"],
+            extend_end=self.parameters["chopping_extend_end"],
+            min_window=self.parameters["chopping_min_window"],
+            max_window=self.parameters["chopping_max_window"],
         )
 
-    logger.debug("Done plotting chopped features")
-    xs_all = [np.subtract(xi, xi[0]) for xi in chopped_data.times]
-    ys_all = np.array(chopped_data.data)
+    @property
+    def data(self):
+        return {
+            "chopped_data": self.chopped_data,
+            "unchopped_data": self.unchopped_data,
+            "features": self.features,
+            "chopping_parameters": self.chopping_parameters,
+            "attributes": self.info,
+        }
 
-    update_bar(5)
-    N = 200
+    def dump_data(self, dump_all=False):
+        if self.outdir is None:
+            return
 
-    logger.debug("Get average of everything")
-    # Average of everything
-    if spike_duration > 0:
-        all_chopped_data["trace_all"] = average.get_subsignal_average(chopped_data.data)
-        idx = np.argmax([len(xi) for xi in xs_all])
-        all_chopped_data["time_all"] = xs_all[idx]
-        pacing_avg = chopped_data.pacing[idx]
+        utils.dump_data(self.data, self.outdir.joinpath("data"), "npy")
+        if dump_all:
+            chopped_data_padded = bin_utils.padding(self.chopped_data)
+            unchopped_data_padded = bin_utils.padding(self.unchopped_data)
+            utils.to_csv(chopped_data_padded, self.outdir.joinpath("chopped_data"))
+            utils.to_csv(unchopped_data_padded, self.outdir.joinpath("unchopped_data"))
 
-    else:
-        (
-            all_chopped_data["trace_all"],
-            all_chopped_data["time_all"],
-        ) = average.get_subsignal_average_interpolate(chopped_data.data, xs_all, N)
-        # Get average pacing
-        pacing_avg = np.interp(
-            np.linspace(
-                np.min(chopped_data.times[0]), np.max(chopped_data.times[0]), N
-            ),
-            chopped_data.times[0],
-            chopped_data.pacing[0],
+            with open(self.outdir.joinpath("data.txt"), "w") as f:
+                f.write(self.info_txt)
+
+            # utils.dump_data(data, self.outdir.joinpath("data"), "mat")
+            with open(self.outdir.joinpath("metadata.json"), "w") as f:
+                json.dump(self.metadata, f, indent=4, default=bin_utils.json_serial)
+
+            about_str = bin_utils.about()
+            with open(self.outdir.joinpath("ABOUT.md"), "w") as f:
+                f.write(about_str)
+
+    def analyze_all(self):
+        self.analyze_unchopped_data()
+        self.analyze_chopped_data()
+        self.dump_data(dump_all=True)
+
+    def analyze_unchopped_data(self):
+
+        self.dump_data()
+
+        if self.parameters["plot"]:
+            plotter.plot_single_trace(
+                self.time_stamps, self.avg, self.outdir.joinpath("original_trace")
+            )
+
+        self.remove_spikes()
+        self.filter()
+
+        if self.parameters["plot"]:
+            plotter.plot_twin_trace(
+                self.time_stamps,
+                self.time_stamps,
+                self.avg,
+                self.pacing,
+                self.outdir.joinpath("pacing"),
+            )
+
+        self.ignore_pacing()
+        self.remove_points()
+        self.background_correction()
+        self.dump_data()
+
+    def _set_choopped_data(self):
+        self._chopped_data = chop_data(
+            self.avg, self.time_stamps, pacing=self.pacing, **self.chopping_parameters
         )
-    pacing_avg[pacing_avg <= 2.5] = 0.0
-    pacing_avg[pacing_avg > 2.5] = 5.0
-    all_chopped_data["pacing_all"] = pacing_avg
+        if len(self._chopped_data.data) == 0:
+            self._chopped_data.data.append(self.avg)
+            self._chopped_data.times.append(self.time_stamps)
+            self._chopped_data.pacing.append(self.pacing)
 
-    # Average of everyting within 1 std
-    logger.debug("Get average of everything within 1 std")
+        for i, (t, d, p) in enumerate(
+            zip(
+                self._chopped_data.times,
+                self._chopped_data.data,
+                self._chopped_data.pacing,
+            )
+        ):
+            self.chopped_data["time_{}".format(i)] = t
+            self.chopped_data["trace_{}".format(i)] = d
+            self.chopped_data["pacing_{}".format(i)] = p
 
-    if len(excluded.all_included_indices) == 0:
-        xs_1std, ys_1std = xs_all, ys_all
-    else:
-        xs_1std_ = np.array(chopped_data.times)[excluded.all_included_indices]
-        xs_1std = [np.subtract(xi, xi[0]) for xi in xs_1std_]
-        ys_1std = np.array(chopped_data.data)[excluded.all_included_indices]
+    def analyze_chopped_data(self):
+        self._set_choopped_data()
+        self.filter_chopped_data()
 
-    if spike_duration > 0:
-        all_chopped_data["trace_1std"] = average.get_subsignal_average(ys_1std)
-        all_chopped_data["time_1std"] = xs_1std[np.argmax([len(xi) for xi in xs_1std])]
-    else:
-        (
-            all_chopped_data["trace_1std"],
-            all_chopped_data["time_1std"],
-        ) = average.get_subsignal_average_interpolate(ys_1std, xs_1std, N)
+        if self.parameters["plot"]:
+            poincare_plot(
+                self._chopped_data.data,
+                self._chopped_data.times,
+                apds=[30, 50, 70, 80, 90],
+                fname=self.outdir.joinpath("poincare_plot"),
+            )
 
-    all_chopped_data["pacing_1std"] = pacing_avg
+        self.run_ead_and_apd_analysis()
+        self.filter_chopped_data()
+        self.get_pacing_avg()
+        self.get_average_all()
+        self.get_average_1std()
+        self.plot_chopped_averages()
+        self.dump_data()
 
-    logger.debug("Plot global chopped average")
-    if plot:
-        plotter.plot_multiple_traces(
-            [xs_all, xs_1std],
-            [ys_all, ys_1std],
-            os.path.join(outdir, "chopped_data"),
-            ["all", "1 std"],
-            ylabels=[r"$\Delta F / F$" for _ in xs],
-            deep=True,
+    def run_ead_and_apd_analysis(self):
+        if not hasattr(self, "_chopped_data"):
+            self._set_choopped_data()
+
+        apd_analysis = analyze_apds(
+            self._chopped_data.data,
+            self._chopped_data.times,
+            plot=self.parameters["plot"],
+            max_allowed_apd_change=self.parameters["max_allowed_apd_change"],
+            fname="" if self.outdir is None else self.outdir.joinpath("apd_analysis"),
+        )
+        self.features["slope_APD80"] = apd_analysis.slope_APD80
+        self.features["slope_cAPD80"] = apd_analysis.slope_cAPD80
+
+        freqs = beating_frequency_modified(
+            self._chopped_data.data,
+            self._chopped_data.times,
+            self.info.get("time_unit", "ms"),
+        )
+        self.features["beating_frequency"] = "{:.2f} +/- {:.2f} Hz".format(
+            np.mean(freqs), np.std(freqs)
         )
 
-    update_bar(6)
-    if plot:
-        plotter.plot_multiple_traces(
-            [all_chopped_data["time_all"], all_chopped_data["time_1std"]],
-            [all_chopped_data["trace_all"], all_chopped_data["trace_1std"]],
-            os.path.join(outdir, "average"),
-            ["all", "1 std"],
-            ylabels=[r"$\Delta F / F$" for _ in xs],
-        )
-    update_bar(7)
-    if plot:
-        plotter.plot_twin_trace(
-            all_chopped_data["time_1std"],
-            all_chopped_data["time_1std"],
-            all_chopped_data["trace_1std"],
-            all_chopped_data["pacing_1std"],
-            os.path.join(outdir, "average_pacing"),
+        analyze_frequencies(
+            self._chopped_data.data,
+            self._chopped_data.times,
+            plot=self.parameters["plot"],
+            time_unit=self.info.get("time_unit", "ms"),
+            fname=""
+            if self.outdir is None
+            else self.outdir.joinpath("frequency_analysis"),
         )
 
-    all_chopped_data_padded = bin_utils.padding(all_chopped_data)
-    all_unchopped_data_padded = bin_utils.padding(all_unchopped_data)
+        self.features["num_eads"] = analyze_eads(
+            self._chopped_data.data,
+            self._chopped_data.times,
+            sigma=self.parameters["ead_sigma"],
+            prominence_threshold=self.parameters["ead_prominence_threshold"],
+            fname="" if self.outdir is None else self.outdir.joinpath("EAD_analysis"),
+        )
 
-    update_bar(8)
+    @property
+    def info_txt(self):
+        if not hasattr(self, "_features_all"):
+            self.filter_chopped_data()
 
-    mean_features = {}
-    features_1std = []
-    features_all = []
-    template = "{0:20}\t{1:10.1f}  +/-  {2:10.3f}"
-    for k in features.keys():
+        info_txt = ["{0:20}\t{1:>20}".format(k, v) for k, v in self.info.items()]
 
-        v = excluded.new_data[k]
-        features_1std.append(template.format(k, np.mean(v), np.std(v)))
-        mean_features[k] = np.mean(v)
-
-        v = features[k]
-        features_all.append(template.format(k, np.mean(v), np.std(v)))
-
-    info["num_beats"] = len(xs_all)
-    freqs = beating_frequency_modified(
-        chopped_data.data, chopped_data.times, info.get("time_unit", "ms")
-    )
-    info["beating_frequency"] = "{:.2f} +/- {:.2f} Hz".format(
-        np.mean(freqs), np.std(freqs)
-    )
-    info["num_eads"] = num_eads
-    info["slope_APD80"] = apd_analysis.slope_APD80
-    info["slope_cAPD80"] = apd_analysis.slope_cAPD80
-    info_txt = ["{0:20}\t{1:>20}".format(k, v) for k, v in info.items()]
-
-    data_txt = "\n".join(
-        np.concatenate(
-            (
-                ["All features"],
-                features_all,
-                ["\n"],
-                ["Features within 1std"],
-                features_1std,
-                ["\n"],
-                ["Info"],
-                info_txt,
+        return "\n".join(
+            np.concatenate(
+                (
+                    ["All features"],
+                    self._features_all,
+                    ["\n"],
+                    ["Features within 1std"],
+                    self._features_1std,
+                    ["\n"],
+                    ["Info"],
+                    info_txt,
+                )
             )
         )
-    )
 
-    data = {
-        "chopped_data": all_chopped_data,
-        "unchopped_data": all_unchopped_data,
-        "features": mean_features,
-        "chopping_parameters": chopped_data.parameters,
-        "attributes": info,
-    }
-    if outdir != "":
-        utils.to_csv(all_chopped_data_padded, os.path.join(outdir, "chopped_data"))
-        utils.to_csv(all_unchopped_data_padded, os.path.join(outdir, "unchopped_data"))
+    def filter_chopped_data(self):
+        if not hasattr(self, "_chopped_data"):
+            self._set_choopped_data()
 
-        with open(os.path.join(outdir, "data.txt"), "w") as f:
-            f.write(data_txt)
+        features = compute_features(
+            self._chopped_data,
+            use_spline=self.parameters["use_spline"],
+            normalize=self.parameters["normalize"],
+        )
+        self._excluded = exclude_x_std(
+            features, self.parameters["std_ex"], skips=["upstroke80"]
+        )
 
-        utils.dump_data(data, os.path.join(outdir, "data"), "npy")
-        utils.dump_data(data, os.path.join(outdir, "data"), "mat")
+        mean_features = {}
+        self._features_1std = []
+        self._features_all = []
+        template = "{0:20}\t{1:10.1f}  +/-  {2:10.3f}"
+        for k in features.keys():
 
-        with open(os.path.join(outdir, "metadata.json"), "w") as f:
-            json.dump(metadata, f, indent=4, default=bin_utils.json_serial)
+            v = self._excluded.new_data[k]
+            self._features_1std.append(template.format(k, np.mean(v), np.std(v)))
+            mean_features[k] = np.mean(v)
 
-        about_str = bin_utils.about()
-        with open(os.path.join(outdir, "ABOUT.md"), "w") as f:
-            f.write(about_str)
+            v = features[k]
+            self._features_all.append(template.format(k, np.mean(v), np.std(v)))
+        self.features.update(mean_features)
 
-    return data
+        logger.debug("Plot chopped data")
+        titles = ["apd30", "apd50", "apd80", "dFdt_max", "int30", "tau75"]
+        xs = []
+        ys = []
+        for k in titles:
+            logger.debug(k)
+            x = [
+                np.subtract(xi, xi[0])
+                for xi in [
+                    t
+                    for j, t in enumerate(self._chopped_data.times)
+                    if j in self._excluded.included_indices[k]
+                ]
+            ]
+            y = [
+                d
+                for j, d in enumerate(self._chopped_data.data)
+                if j in self._excluded.included_indices[k]
+            ]
+
+            xs.append(x)
+            ys.append(y)
+
+        if self.parameters["plot"]:
+            plotter.plot_multiple_traces(
+                xs,
+                ys,
+                self.outdir.joinpath("chopped_data_features"),
+                titles,
+                ylabels=[r"$\Delta F / F$" for _ in xs],
+                deep=True,
+            )
+
+        self._xs_all = [np.subtract(xi, xi[0]) for xi in self._chopped_data.times]
+        self._ys_all = deepcopy(self._chopped_data.data)
+        self.features["num_beats"] = len(self._xs_all)
+
+    def get_average_all(self):
+        if not hasattr(self, "_xs_all"):
+            self.filter_chopped_data()
+
+        N = self.parameters["N"]
+        logger.debug("Get average of everything")
+        # Average of everything
+        if self.parameters["spike_duration"] > 0:
+            self.chopped_data["trace_all"] = average.get_subsignal_average(
+                self._chopped_data.data
+            )
+            idx = np.argmax([len(xi) for xi in self._xs_all])
+            self.chopped_data["time_all"] = self._xs_all[idx]
+        else:
+            (
+                self.chopped_data["trace_all"],
+                self.chopped_data["time_all"],
+            ) = average.get_subsignal_average_interpolate(
+                self._chopped_data.data, self._xs_all, N
+            )
+
+    def get_pacing_avg(self):
+        if not hasattr(self, "_xs_all"):
+            self.filter_chopped_data()
+
+        N = self.parameters["N"]
+
+        if self.parameters["spike_duration"] > 0:
+            idx = np.argmax([len(xi) for xi in self._xs_all])
+            pacing_avg = self._chopped_data.pacing[idx]
+
+        else:
+            pacing_avg = np.interp(
+                np.linspace(
+                    np.min(self._chopped_data.times[0]),
+                    np.max(self._chopped_data.times[0]),
+                    N,
+                ),
+                self._chopped_data.times[0],
+                self._chopped_data.pacing[0],
+            )
+        pacing_avg[pacing_avg <= 2.5] = 0.0
+        pacing_avg[pacing_avg > 2.5] = 5.0
+        self.chopped_data["pacing_all"] = pacing_avg
+        self.chopped_data["pacing_1std"] = pacing_avg
+
+    def get_average_1std(self):
+        if not hasattr(self, "_xs_all"):
+            self.filter_chopped_data()
+
+        N = self.parameters["N"]
+        # Average of everyting within 1 std
+        logger.debug("Get average of everything within 1 std")
+
+        if len(self._excluded.all_included_indices) == 0:
+            self._xs_1std, self._ys_1std = self._xs_all, self._ys_all
+        else:
+            xs_1std_ = [
+                t
+                for i, t in enumerate(chopped_data.times)
+                if i in self._excluded.all_included_indices
+            ]
+            self._xs_1std = [np.subtract(xi, xi[0]) for xi in xs_1std_]
+            self._ys_1std = [
+                d
+                for i, d in enumerate(chopped_data.data)
+                if i in self._excluded.all_included_indices
+            ]
+
+        if self.parameters["spike_duration"] > 0:
+            self.chopped_data["trace_1std"] = average.get_subsignal_average(
+                self._ys_1std
+            )
+            self.chopped_data["time_1std"] = self._xs_1std[
+                np.argmax([len(xi) for xi in self._xs_1std])
+            ]
+        else:
+            (
+                self.chopped_data["trace_1std"],
+                self.chopped_data["time_1std"],
+            ) = average.get_subsignal_average_interpolate(
+                self._ys_1std, self._xs_1std, N
+            )
+
+    def plot_chopped_averages(self):
+
+        if not self.parameters["plot"]:
+            return
+        if not hasattr(self, "_xs_1st"):
+            self.get_average_1std()
+
+        logger.debug("Plot global chopped average")
+
+        plotter.plot_multiple_traces(
+            [self._xs_all, self._xs_1std],
+            [self._ys_all, self._ys_1std],
+            self.outdir.joinpath("chopped_data"),
+            ["all", "1 std"],
+            ylabels=[r"$\Delta F / F$" for _ in range(len(self._xs_all))],
+            deep=True,
+        )
+
+        plotter.plot_multiple_traces(
+            [self.chopped_data["time_all"], self.chopped_data["time_1std"]],
+            [self.chopped_data["trace_all"], self.chopped_data["trace_1std"]],
+            self.outdir.joinpath("average"),
+            ["all", "1 std"],
+            ylabels=[r"$\Delta F / F$" for _ in range(len(self._xs_all))],
+        )
+
+        plotter.plot_twin_trace(
+            self.chopped_data["time_1std"],
+            self.chopped_data["time_1std"],
+            self.chopped_data["trace_1std"],
+            self.chopped_data["pacing_1std"],
+            self.outdir.joinpath("average_pacing"),
+        )
+
+    def background_correction(self):
+        if self.parameters["background_correction"]:
+
+            logger.debug("Apply background correction")
+
+            background_ = background(self.time_stamps, self.avg)
+            bkgplot_y = np.transpose([np.copy(self.avg), background_])
+            bkgplot_x = np.transpose([self.time_stamps, self.time_stamps])
+            self.avg = correct_background(self.time_stamps, self.avg)
+
+            logger.debug("Plot corrected trace trace")
+            if self.parameters["plot"]:
+                plotter.plot_multiple_traces(
+                    [bkgplot_x, self.time_stamps],
+                    [bkgplot_y, self.avg],
+                    self.outdir.joinpath("corrected_trace"),
+                    ylabels=["Pixel intensity", r"$\Delta F / F$"],
+                    titles=["background", "corrected"],
+                )
+        else:
+            background_ = np.zeros_like(self.avg)
+
+        self.unchopped_data["trace"] = np.copy(self.avg)
+        self.unchopped_data["time"] = np.copy(self.time_stamps)
+        self.unchopped_data["pacing"] = np.copy(self.pacing)
+        self.unchopped_data["background"] = background_
+
+    def remove_points(self):
+
+        for p in self.parameters["remove_points_list"]:
+            logger.debug(f"Remove points: '{p}'")
+            t_ = np.copy(self.time_stamps)
+            self.time_stamps, self.avg = remove_points(self.time_stamps, self.avg, *p)
+            _, self.pacing = remove_points(t_, self.pacing, *p)
+
+    def ignore_pacing(self):
+        if self.parameters["ignore_pacing"]:
+            logger.debug("Ignore pacing")
+            self.pacing = np.multiply(self.pacing, 0.0)
+
+    def filter(self):
+        if self.parameters["filter"]:
+            logger.debug("Filter signal")
+            self.avg = filt(self.avg)
+
+    def remove_spikes(self):
+        if self.parameters["spike_duration"] == 0:
+            return
+
+        sd = self.parameters["spike_duration"]
+        logger.debug(f"Remove spikes with spike duration {sd}")
+        self.avg = remove_spikes(self.avg, self.pacing, sd)
+        self.time_stamps = remove_spikes(self.time_stamps, self.pacing, sd)
+        self.pacing = remove_spikes(self.pacing, self.pacing, sd)
+
+        self.unchopped_data["original_trace_no_spikes"] = np.copy(self.avg)
+        self.unchopped_data["original_times_no_spikes"] = np.copy(self.time_stamps)
+        self.unchopped_data["original_pacing_no_spikes"] = np.copy(self.pacing)
+
+    def _handle_arguments(self, kwargs):
+
+        parameters = AnalyzeMPS.default_parameters()
+        parameters.update(kwargs)
+        self.info = parameters.pop("info")
+        self.metadata = parameters.pop("metadata")
+        self.outdir = parameters["outdir"]
+        if self.outdir is not None:
+            self.outdir = Path(self.outdir)
+            self.outdir.mkdir(exist_ok=True, parents=True)
+        else:
+            parameters["plot"] = False
+        self.parameters = parameters
+
+    @staticmethod
+    def default_parameters():
+        """Default parametert for the analysis script.
+        Current default values are (with types)
+
+        .. code::
+
+            spike_duration: int = 0
+            filter: bool = True
+            ignore_pacing: bool = False
+            remove_points_list: tuple = ()
+            chopping_threshold_factor: float = 0.3
+            chopping_extend_front: Optional[float] = None
+            chopping_extend_end: Optional[float] = None
+            chopping_min_window: float = 200
+            chopping_max_window: float = 2000
+            std_ex: float = 1.0
+            use_spline: bool = True
+            normalize: bool = False
+            outdir: str = ""
+            plot: bool = False
+            bar=None
+            info=None
+            metadata=None
+            background_correction=True
+            max_allowed_apd_change=None
+            ead_sigma: float = 3
+            ead_prominence_threshold: float = 0.04
+            N=200
+
+        Returns
+        -------
+        dict
+            Dictionary with default parameters
+        """
+
+        return dict(
+            spike_duration=0,
+            filter=True,
+            ignore_pacing=False,
+            remove_points_list=(),
+            chopping_threshold_factor=0.3,
+            chopping_extend_front=None,
+            chopping_extend_end=None,
+            chopping_min_window=200,
+            chopping_max_window=2000,
+            std_ex=1.0,
+            use_spline=True,
+            normalize=False,
+            outdir=None,
+            plot=False,
+            bar=None,
+            info={},
+            metadata={},
+            background_correction=True,
+            max_allowed_apd_change=None,
+            ead_sigma=3,
+            ead_prominence_threshold=0.04,
+            N=200,
+        )
 
 
 def frame2average(frame, times, normalize=True, background_correction=True):
@@ -2384,7 +2544,7 @@ def local_averages(
     y_end=None,
     background_correction=True,
     normalize=False,
-    loglevel=utils.INFO,
+    loglevel=logging.INFO,
     **kwargs,
 ):
     """
@@ -2526,7 +2686,7 @@ def baseline_intensity(
     x_end=None,
     y_end=None,
     normalize=False,
-    loglevel=utils.INFO,
+    loglevel=logging.INFO,
     **kwargs,
 ):
     """

@@ -210,6 +210,15 @@ def test_analyze_frequencies(chopped_data):
     assert np.all(np.abs(freq_analysis - 1.0) < 0.01)
 
 
+def test_AnalyzeMPS(mps_data):
+    avg = mps.average.get_average_all(mps_data.frames)
+    analyzer = mps.analysis.AnalyzeMPS(
+        avg, mps_data.time_stamps, mps_data.pacing, outdir="test_outdir", plot=True
+    )
+
+    analyzer.analyze_all()
+
+
 # def test_bumpy_signals():
 #     data = np.load("bumpy_data.npy", allow_pickle=True).item()
 
@@ -228,19 +237,3 @@ def test_analyze_frequencies(chopped_data):
 
 # def test_poincare_plot(chopped_data):
 #     mps.analysis.poincare_plot(chopped_data[0].data, chopped_data[0].times, apds=[0.8])
-
-
-if __name__ == "__main__":
-    # pass
-    # test_bumpy_signals()
-    # test_angle2neighhbor()
-    # test_condction_velocity()
-    # test_griddata()
-    # test_local_averages()
-
-    # test_filter_start_ends_in_chopping()
-    # r = lambda: None
-    # r.param = "without_pacing"
-    # c = chopped_data(r)
-    # test_analyze_apds(next(c))
-    test_filt()
