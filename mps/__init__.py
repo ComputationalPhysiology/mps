@@ -58,28 +58,13 @@ WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
 NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 """
 
-import warnings as _warnings
 
-# Ignore anoying warnings from czifile.py and tiffile.py
-_warnings.filterwarnings("ignore", category=UserWarning)
+import logging as _logging
 
-from . import load
+from . import analysis, average, bin_utils, load, plotter, utils
 from .load import MPS
 
-from . import analysis
-
-from . import utils
-from .utils import *
-
-from . import plotter
-
-from . import average
-
-from . import bin_utils
-
-from logging import INFO
-
-log_level = INFO
+log_level = _logging.INFO
 
 
 def set_log_level(level):
@@ -97,3 +82,15 @@ def set_log_level(level):
             h.setLevel(level)
     global log_level
     log_level = level
+
+
+__all__ = [
+    "load",
+    "MPS",
+    "utils",
+    "analysis",
+    "plotter",
+    "average",
+    "bin_utils",
+    "log_level",
+]

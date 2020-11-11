@@ -115,15 +115,14 @@ array([10, 10, 10], dtype=uint8)
 
 from __future__ import division, print_function
 
-import os
-import sys
-import re
-import uuid
-import time
-import struct
-import warnings
 import multiprocessing
-
+import os
+import re
+import struct
+import sys
+import time
+import uuid
+import warnings
 from concurrent.futures import ThreadPoolExecutor
 
 try:
@@ -136,15 +135,15 @@ from scipy.ndimage.interpolation import zoom
 
 from .tifffile import (
     FileHandle,
-    memmap,
-    decode_lzw,
-    lazyattr,
-    repeat_nd,
-    product,
-    stripnull,
-    format_size,
-    squeeze_axes,
     create_output,
+    decode_lzw,
+    format_size,
+    lazyattr,
+    memmap,
+    product,
+    repeat_nd,
+    squeeze_axes,
+    stripnull,
 )
 
 try:
@@ -159,6 +158,11 @@ except ImportError:
         "Czifile.pyx can be obtained at http://www.lfd.uci.edu/~gohlke/"
     )
     _czifile = None
+
+import warnings as _warnings
+
+# Ignore anoying warnings from czifile.py and tiffile.py
+_warnings.filterwarnings("ignore", category=UserWarning)
 
 __version__ = "2017.09.12"
 __docformat__ = "restructuredtext en"
