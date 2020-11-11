@@ -1,31 +1,74 @@
-import os
+import shutil
 import subprocess as sp
 from distutils.spawn import find_executable
+from pathlib import Path
+
+import pytest
 
 python = find_executable("python")
-current_dir = os.path.abspath(os.path.dirname(__file__))
-voltage_name = os.path.join(current_dir, "data/voltage.nd2")
-calcium_name = os.path.join(current_dir, "data/calcium.nd2")
-voltage_dir = os.path.join(current_dir, "data/voltage")
-calcium_dir = os.path.join(current_dir, "data/calcium")
-brightfield_name = os.path.join(current_dir, "data/brightfield.nd2")
 
 
-def test_analyze_mps():
+def test_mps_analyze(mps_data_path):
 
-    ret = sp.call([python, "-m", "mps", "analyze_mps", voltage_name, "-o", voltage_dir])
+    ret = sp.call([python, "-m", "mps", "analyze", mps_data_path])
+    assert ret == 0
+    shutil.rmtree(Path(mps_data_path).with_suffix(""))
+
+
+def test_mps_phase_plot(mps_data_path):
+
+    out = Path(mps_data_path).parent.joinpath("phase_plot.png")
+    ret = sp.call(
+        [
+            python,
+            "-m",
+            "mps",
+            "phase_plot",
+            mps_data_path,
+            mps_data_path,
+            "-o",
+            out.as_posix(),
+        ]
+    )
+    assert ret == 0
+    out.unlink()
+
+
+def test_mps2mp4(mps_data_path):
+
+    out = Path(mps_data_path).parent.joinpath("movie.mp4")
+    ret = sp.call([python, "-m", "mps", "mps2mp4", mps_data_path, "-o", out.as_posix()])
+    assert ret == 0
+    out.unlink()
+
+
+def test_mps_summary(mps_data_path):
+
+    path = Path(mps_data_path)
+    new_path = path.parent.joinpath("data").joinpath(path.name)
+    another_path = path.parent.joinpath("data").joinpath(f"another_{path.name}")
+    new_path.parent.mkdir(exist_ok=True)
+    shutil.copy(path, new_path)
+    shutil.copy(path, another_path)
+
+    ret = sp.call(
+        [
+            python,
+            "-m",
+            "mps",
+            "summary",
+            "--include-npy",
+            new_path.parent.absolute().as_posix(),
+        ]
+    )
+
     assert ret == 0
 
+    shutil.rmtree(new_path.parent)
 
-def test_collect_mps():
 
-    sp.call([python, "-m", "mps", "analyze_mps", voltage_name, "-o", voltage_dir])
-    sp.call([python, "-m", "mps", "analyze_mps", calcium_name, "-o", calcium_dir])
+@pytest.mark.xfail(reason="Not yet implemented properly")
+def test_mps_prevalence(mps_data_path):
 
-    ret = sp.call([python, "-m", "mps", "collect_mps", voltage_dir, calcium_dir])
+    ret = sp.call([python, "-m", "mps", "prevalence", mps_data_path])
     assert ret == 0
-
-
-if __name__ == "__main__":
-    test_analyze_mps()
-    test_collect_mps()

@@ -194,35 +194,6 @@ def test_local_averages():
     assert np.linalg.norm(avg - y) / np.linalg.norm(y) < 0.05
 
 
-def _test_prevalence():
-    # from test_load import nd2_name
-    path = "/Users/henriknf/Dropbox/Aslak/mps_conduction_velocity/report/notebooks/example_file.nd2"
-    mps_data = mps.MPS(path)
-    mps.analysis.prevalence(mps_data)
-
-
-def test_angle2neighhbor():
-    eps = 0.001
-    tol = 1e-8
-    angles = np.arange(-np.pi, np.pi, np.pi / 4)
-
-    for a, a_p, a_m in zip(angles, angles + eps, angles - eps):
-        n = mps.med64_utils.angle2neighbor(a)
-        n_p = mps.med64_utils.angle2neighbor(a_p)
-        n_m = mps.med64_utils.angle2neighbor(a_m)
-
-        assert n == n_p == n_m
-        ai = np.arctan2(n[1], n[0])
-        msg = f"a = {a} != ai = {ai}"
-
-        if abs(abs(a) - np.pi) < tol:
-            # Could be both -pi and pi
-            assert abs(a - np.pi) < tol or abs(a + np.pi) < tol, msg
-        else:
-            assert a == ai, msg
-        print(f"{a:.2f}, {n}, {ai:.2f}")
-
-
 def test_analyze_apds(chopped_data):
     apd_analysis = mps.analysis.analyze_apds(
         chopped_data[0].data, chopped_data[0].times, plot=False
@@ -239,16 +210,20 @@ def test_analyze_frequencies(chopped_data):
     assert np.all(np.abs(freq_analysis - 1.0) < 0.01)
 
 
-def test_bumpy_signals():
-    data = np.load("bumpy_data.npy", allow_pickle=True).item()
+# def test_bumpy_signals():
+#     data = np.load("bumpy_data.npy", allow_pickle=True).item()
 
-    time = data["x"]
-    trace = data["y"]
-    pacing = data["p"]
+#     time = data["x"]
+#     trace = data["y"]
+#     pacing = data["p"]
 
-    q = mps.analysis.analyze_mps_func_avg(trace, time, pacing)
+#     import matplotlib.pyplot as plt
 
-    assert q["features"]["apd90"] > q["features"]["apd80"]
+#     plt.plot(time, trace)
+#     plt.show()
+#     q = mps.analysis.analyze_mps_func_avg(trace, time, pacing)
+
+#     assert q["features"]["apd90"] > q["features"]["apd80"]
 
 
 # def test_poincare_plot(chopped_data):
@@ -257,7 +232,7 @@ def test_bumpy_signals():
 
 if __name__ == "__main__":
     # pass
-    test_bumpy_signals()
+    # test_bumpy_signals()
     # test_angle2neighhbor()
     # test_condction_velocity()
     # test_griddata()
@@ -268,3 +243,4 @@ if __name__ == "__main__":
     # r.param = "without_pacing"
     # c = chopped_data(r)
     # test_analyze_apds(next(c))
+    test_filt()

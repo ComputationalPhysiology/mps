@@ -5,24 +5,24 @@ import numpy as np
 import mps
 
 here = Path(__file__).absolute().parent
-czi_name = here.joinpath("data/demo.czi").as_posix()
-nd2_name = here.joinpath("data/voltage.nd2").as_posix()
-mps_data = mps.MPS(nd2_name)
+# czi_name = here.joinpath("data/demo.czi").as_posix()
+# nd2_name = here.joinpath("data/voltage.nd2").as_posix()
+# mps_data = mps.MPS(nd2_name)
 
 
-def test_save_load():
-    fname = "test_save.npy"
-    np.save(fname, mps_data)
-    loaded_data = np.load(fname, allow_pickle=True).item()
+# def test_save_load():
+#     fname = "test_save.npy"
+#     np.save(fname, mps_data)
+#     loaded_data = np.load(fname, allow_pickle=True).item()
 
-    for k, v in mps_data.__dict__.items():
-        assert k in loaded_data.__dict__.keys()
-        if k == "data":
-            continue
-        if isinstance(v, np.ndarray):
-            assert np.all(v == loaded_data.__dict__.get(k))
-        else:
-            assert v == loaded_data.__dict__.get(k)
+#     for k, v in mps_data.__dict__.items():
+#         assert k in loaded_data.__dict__.keys()
+#         if k == "data":
+#             continue
+#         if isinstance(v, np.ndarray):
+#             assert np.all(v == loaded_data.__dict__.get(k))
+#         else:
+#             assert v == loaded_data.__dict__.get(k)
 
 
 def create_dummy_data():
@@ -72,20 +72,7 @@ def test_from_dict():
     mps.MPS.from_dict(**dummy_data)
 
 
-def _test_load_MED64():
-    path = "../sandbox/med64/20190620_16h19m08s_raw.modat"
-    with mps.MED64(path) as med64:
-        med64.electrode_positions()
-
-        # fig, ax = plt.subplots(
-        #     8, 8, figsize=(150, 150), sharex=True, sharey=True
-        # )
-        # for ch, axi in enumerate(ax.flatten()):
-        #     axi.plot(med64.times, med64.data[:, ch])
-        # fig.savefig("data.pdf")
-
-
 if __name__ == "__main__":
+    pass
     # test_save_load()
     # test_from_dict()
-    _test_load_MED64()
