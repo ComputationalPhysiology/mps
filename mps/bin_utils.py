@@ -45,7 +45,7 @@ import numpy as np
 
 import mps
 
-from .plotter import plt
+from .plotter import has_mpl, plt
 
 
 def version_parser(parser):
@@ -796,6 +796,12 @@ class mps_summary(Script):
         level = logging.WARNING if self.args["silent"] else logging.INFO
         self.logger.setLevel(level)
 
+        if not has_mpl:
+            self.logger.error(
+                "Cannot run script without matplotlib. Please install that first - 'pip install matplotlib'"
+            )
+            return
+
         extensions = self.valid_extensions.copy()
         if not self.args["include_npy"]:
             extensions.remove(".npy")
@@ -1133,17 +1139,17 @@ class collect_mps(Script):
 
         data = mps.utils.collect_data(voltage_data, calcium_data)
 
-        # Plot the data
-        fig, ax = plt.subplots(1, 2)
-        ax[0].plot(data["t_V"][: len(data["V"])], data["V"])
-        ax[0].set_title("Voltage")
-        ax[0].set_ylabel("Pixel intensity")
-        ax[1].plot(data["t_Ca"][: len(data["Ca"])], data["Ca"])
-        ax[1].set_title("Calcium")
-        fig.savefig(os.path.join(self.args["outdir"], "input_data.pdf"))
-        plt.close()
+        if has_mpl:
+            # Plot the data
+            fig, ax = plt.subplots(1, 2)
+            ax[0].plot(data["t_V"][: len(data["V"])], data["V"])
+            ax[0].set_title("Voltage")
+            ax[0].set_ylabel("Pixel intensity")
+            ax[1].plot(data["t_Ca"][: len(data["Ca"])], data["Ca"])
+            ax[1].set_title("Calcium")
+            fig.savefig(os.path.join(self.args["outdir"], "input_data.pdf"))
+            plt.close()
 
-        fig, ax = plt.subplots(2, 1, sharex=True)
         try:
             v = voltage_data["unchopped_data"]["trace"]
             c = calcium_data["unchopped_data"]["trace"]
@@ -1154,22 +1160,26 @@ class collect_mps(Script):
         p_v = voltage_data["unchopped_data"]["pacing"]
         p_c = calcium_data["unchopped_data"]["pacing"]
 
-        ax[0].plot(voltage_data["unchopped_data"]["time"][: len(v)], v, "b-")
+        if has_mpl:
+            fig, ax = plt.subplots(2, 1, sharex=True)
+            ax[0].plot(voltage_data["unchopped_data"]["time"][: len(v)], v, "b-")
 
-        ax[0].set_title("Voltage")
-        ax[0].set_ylabel("Pixel intensity")
-        ax0 = ax[0].twinx()
-        ax0.plot(voltage_data["unchopped_data"]["time"][: len(p_v)], p_v, "r-")
-        ax0.set_ylabel("Pacing")
-        ax[1].plot(calcium_data["unchopped_data"]["time"][: len(c)], c, "b-")
-        ax[1].set_title("Calcium")
-        ax[1].set_ylabel("Pixel intensity")
-        ax[1].set_xlabel("Time ({})".format(voltage_data["attributes"]["time_unit"]))
-        ax1 = ax[1].twinx()
-        ax1.plot(calcium_data["unchopped_data"]["time"][: len(p_c)], p_c, "r-")
-        ax1.set_ylabel("Pacing")
-        fig.savefig(os.path.join(self.args["outdir"], "full_traces.pdf"))
-        plt.close()
+            ax[0].set_title("Voltage")
+            ax[0].set_ylabel("Pixel intensity")
+            ax0 = ax[0].twinx()
+            ax0.plot(voltage_data["unchopped_data"]["time"][: len(p_v)], p_v, "r-")
+            ax0.set_ylabel("Pacing")
+            ax[1].plot(calcium_data["unchopped_data"]["time"][: len(c)], c, "b-")
+            ax[1].set_title("Calcium")
+            ax[1].set_ylabel("Pixel intensity")
+            ax[1].set_xlabel(
+                "Time ({})".format(voltage_data["attributes"]["time_unit"])
+            )
+            ax1 = ax[1].twinx()
+            ax1.plot(calcium_data["unchopped_data"]["time"][: len(p_c)], p_c, "r-")
+            ax1.set_ylabel("Pacing")
+            fig.savefig(os.path.join(self.args["outdir"], "full_traces.pdf"))
+            plt.close()
 
         # Path to output file (without extension)
         out = os.path.join(self.args["outdir"], self.args["output_name"])
@@ -1284,6 +1294,11 @@ class mps_phase_plot(Script):
             os.makedirs(outdir)
 
     def main_func(self):
+        if not has_mpl:
+            self.logger.error(
+                "Cannot run script without matplotlib. Please install that first - 'pip install matplotlib'"
+            )
+            return
 
         self.logger.info("Plot phase plot of voltage and calcium")
         voltage = mps.MPS(self.args["voltage"])

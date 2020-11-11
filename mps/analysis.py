@@ -66,6 +66,9 @@ APDAnalysis = namedtuple(
         "triangulation",
         "slope_APD80",
         "slope_cAPD80",
+        "const_APD80",
+        "const_cAPD80",
+        "apd_dt",
     ],
 )
 
@@ -979,69 +982,7 @@ def analyze_apds(
     msg += "\n".join([f"APD{k}: {sum(v)}" for k, v in is_significant.items()])
     logger.info(msg)
 
-    if plot:
-
-        width = 1 / (len(apds) + 1)
-        n = len(next(iter(apds.values())))
-
-        import matplotlib.pyplot as plt
-
-        fig, ax = plt.subplots(3, 1, figsize=(15, 10))
-        for i, (label, y) in enumerate(apds.items()):
-            x = np.arange(n) + i * width - 0.5
-            ax[0].bar(x, y, width=width, label=f"{label:.0f}")
-            ax[1].plot(np.arange(n) - 0.5, y, marker="o", label=f"{label:.0f}")
-        ax[1].plot(
-            np.arange(n) - 0.5,
-            const_APD80 + (slope_APD80 / (60 * 1000)) * np.array(apd_dt[80]),
-            "k--",
-            label=f"{slope_APD80:.2f} x + C (APD80)",
-        )
-        ax[1].plot(
-            np.arange(n) - 0.5,
-            const_cAPD80 + (slope_cAPD80 / (60 * 1000)) * np.array(apd_dt[80]),
-            "k:",
-            label=f"{slope_cAPD80:.2f} x + C (cAPD80)",
-        )
-        # Mark significatn patches
-        for sig, patch in zip(
-            np.array(list(is_significant.values())).flatten(), ax[0].patches
-        ):
-            if not sig:
-                continue
-            ax[0].text(
-                patch.get_x() + patch.get_width() / 2.0,
-                patch.get_height(),
-                "*",
-                ha="center",
-            )
-
-        for i, axi in enumerate(ax[:2]):
-            if i == 1:
-                axi.set_xlabel("Beat numbers")
-            axi.set_ylabel("APD [ms]")
-            axi.set_xticks(np.arange(n) - 0.5)
-            axi.set_xticklabels(np.arange(n))
-            axi.legend()
-            axi.grid()
-
-        for c, t in zip(chopped_data, chopped_times):
-            ax[2].plot(t, c, color="k")
-        for label, vals in apd_points.items():
-            x = [v[0][0] for v in vals] + [v[0][1] for v in vals]
-            y = [v[1][0] for v in vals] * 2
-            ax[2].plot(x, y, linestyle="", marker="o", label=label)
-
-        ax[2].legend()
-        ax[2].grid()
-        ax[2].set_xlabel("Time [ms]")
-        ax[2].set_ylabel(r"$\Delta F / F$")
-
-        if fname != "":
-            fig.savefig(fname)
-        plt.close()
-
-    return APDAnalysis(
+    res = APDAnalysis(
         apds=apds,
         capds=capds,
         apd_points=apd_points,
@@ -1049,7 +990,82 @@ def analyze_apds(
         triangulation=triangulation,
         slope_APD80=slope_APD80,
         slope_cAPD80=slope_cAPD80,
+        const_APD80=const_APD80,
+        const_cAPD80=const_cAPD80,
+        apd_dt=apd_dt,
     )
+
+    if plot:
+        plot_apd_analysis(
+            chopped_data=chopped_data, chopped_times=chopped_times, res=res, fname=fname
+        )
+
+    return res
+
+
+def plot_apd_analysis(chopped_data, chopped_times, res: APDAnalysis, fname=""):
+    try:
+        import matplotlib.pyplot as plt
+    except ImportError:
+        return
+
+    width = 1 / (len(res.apds) + 1)
+    n = len(next(iter(res.apds.values())))
+
+    fig, ax = plt.subplots(3, 1, figsize=(15, 10))
+    for i, (label, y) in enumerate(res.apds.items()):
+        x = np.arange(n) + i * width - 0.5
+        ax[0].bar(x, y, width=width, label=f"{label:.0f}")
+        ax[1].plot(np.arange(n) - 0.5, y, marker="o", label=f"{label:.0f}")
+    ax[1].plot(
+        np.arange(n) - 0.5,
+        res.const_APD80 + (res.slope_APD80 / (60 * 1000)) * np.array(res.apd_dt[80]),
+        "k--",
+        label=f"{res.slope_APD80:.2f} x + C (APD80)",
+    )
+    ax[1].plot(
+        np.arange(n) - 0.5,
+        res.const_cAPD80 + (res.slope_cAPD80 / (60 * 1000)) * np.array(res.apd_dt[80]),
+        "k:",
+        label=f"{res.slope_cAPD80:.2f} x + C (cAPD80)",
+    )
+    # Mark significatn patches
+    for sig, patch in zip(
+        np.array(list(res.is_significant.values())).flatten(), ax[0].patches
+    ):
+        if not sig:
+            continue
+        ax[0].text(
+            patch.get_x() + patch.get_width() / 2.0,
+            patch.get_height(),
+            "*",
+            ha="center",
+        )
+
+    for i, axi in enumerate(ax[:2]):
+        if i == 1:
+            axi.set_xlabel("Beat numbers")
+        axi.set_ylabel("APD [ms]")
+        axi.set_xticks(np.arange(n) - 0.5)
+        axi.set_xticklabels(np.arange(n))
+        axi.legend()
+        axi.grid()
+
+    for c, t in zip(chopped_data, chopped_times):
+        ax[2].plot(t, c, color="k")
+    for label, vals in res.apd_points.items():
+        x = [v[0][0] for v in vals] + [v[0][1] for v in vals]
+        y = [v[1][0] for v in vals] * 2
+        ax[2].plot(x, y, linestyle="", marker="o", label=label)
+
+    ax[2].legend()
+    ax[2].grid()
+    ax[2].set_xlabel("Time [ms]")
+    ax[2].set_ylabel(r"$\Delta F / F$")
+
+    if fname != "":
+        fig.savefig(fname)
+    plt.close()
 
 
 def background(x, y, order=2, s=0.01, fct="atq"):
@@ -1764,7 +1780,10 @@ def analyze_frequencies(
 
     if plot:
 
-        import matplotlib.pyplot as plt
+        try:
+            import matplotlib.pyplot as plt
+        except ImportError:
+            return freqs
 
         fig, ax = plt.subplots(2, 1, figsize=(15, 10))
         x = np.arange(len(freqs)) + 1
@@ -1906,7 +1925,10 @@ def analyze_eads(
             peak_inds[i] = peak_index
 
     if plot:
-        import matplotlib.pyplot as plt
+        try:
+            import matplotlib.pyplot as plt
+        except ImportError:
+            return num_eads
 
         fig, ax = plt.subplots()
         num_eads = 0
@@ -1963,7 +1985,10 @@ def poincare_plot(
         # No possible to plot poincare plot with 1 or zero elements
         return apds_points
 
-    import matplotlib.pyplot as plt
+    try:
+        import matplotlib.pyplot as plt
+    except ImportError:
+        return apds_points
 
     fig, ax = plt.subplots()
     for k, v in apds_points.items():

@@ -3,6 +3,21 @@ import subprocess as sp
 from distutils.spawn import find_executable
 from pathlib import Path
 
+try:
+    import matplotlib  # noqa: F401
+except ImportError:
+    missing_mpl = True
+else:
+    missing_mpl = False
+
+try:
+    import imageio_ffmpeg  # noqa: F401
+except ImportError:
+    missing_ffmpeg = True
+else:
+    missing_ffmpeg = False
+
+
 import pytest
 
 python = find_executable("python")
@@ -15,6 +30,7 @@ def test_mps_analyze(mps_data_path):
     shutil.rmtree(Path(mps_data_path).with_suffix(""))
 
 
+@pytest.mark.skipif(missing_mpl, reason="Requires matplotlib")
 def test_mps_phase_plot(mps_data_path):
 
     out = Path(mps_data_path).parent.joinpath("phase_plot.png")
@@ -34,6 +50,7 @@ def test_mps_phase_plot(mps_data_path):
     out.unlink()
 
 
+@pytest.mark.skipif(missing_ffmpeg, reason="Requires imageio-ffmpeg")
 def test_mps2mp4(mps_data_path):
 
     out = Path(mps_data_path).parent.joinpath("movie.mp4")
@@ -42,6 +59,7 @@ def test_mps2mp4(mps_data_path):
     out.unlink()
 
 
+@pytest.mark.skipif(missing_mpl, reason="Requires matplotlib")
 def test_mps_summary(mps_data_path):
 
     path = Path(mps_data_path)
