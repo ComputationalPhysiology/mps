@@ -29,6 +29,7 @@ __author__ = "Henrik Finsberg (henriknf@simula.no), 2017--2019"
 __maintainer__ = "Henrik Finsberg"
 __email__ = "henriknf@simula.no"
 import io
+import logging
 import multiprocessing
 import os
 import time
@@ -454,7 +455,7 @@ class MPS(object):
         """
         return dict(
             background_polynomial_order=2,
-            log_level=utils.INFO,
+            log_level=logging.INFO,
             alpha=1.0,
             averaging_type="temporal",
             local=[],
