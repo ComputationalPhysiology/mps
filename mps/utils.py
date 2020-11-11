@@ -303,7 +303,7 @@ def to_csv(data, path, header=None):
     else:
         kwargs = dict(delimiter=";")
 
-    with open(path + ".csv", "w", newline="") as f:
+    with open(Path(path).with_suffix(".csv"), "w", newline="") as f:
         w = csv.writer(f, dialect="excel", **kwargs)
         if header is not None:
             w.writerow(header)
