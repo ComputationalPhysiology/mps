@@ -1,6 +1,6 @@
 matplotlib<=3.0.3
 numpy
-scipy
+scipy<=1.4.1
 imageio
 xmltodict
 imageio-ffmpeg
