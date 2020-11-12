@@ -1,0 +1,6 @@
+matplotlib<=3.0.3
+numpy
+scipy
+imageio
+xmltodict
+imageio-ffmpeg
