@@ -3,15 +3,14 @@ name: PyInstaller
 on: [push]
 
 jobs:
-  build:
+  build-unix:
 
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
         python-version: [3.8]
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -20,15 +19,34 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: pyinstaller
       run: |
-        if [ "$RUNNER_OS" == "Windows" ]; then
-          make installer-windows
-        else
-          make installer
-        fi
+        make installer
     - name: Upload installer files
       uses: actions/upload-artifact@v2
       with:
         name: mps-binary-${{ matrix.python-version }}-${{ matrix.os }}
+        path: dist/*
+      # Use always() to always run this step to publish test results when there are test failures
+      if: ${{ always() }}
+
+  build-windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.8]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: pyinstaller
+      run: |
+        make installer-windows
+    - name: Upload installer files
+      uses: actions/upload-artifact@v2
+      with:
+        name: mps-binary-${{ matrix.python-version }}-windows-latest
         path: dist/*
       # Use always() to always run this step to publish test results when there are test failures
       if: ${{ always() }}
