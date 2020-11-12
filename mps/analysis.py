@@ -2324,16 +2324,12 @@ class AnalyzeMPS:
         if len(self._excluded.all_included_indices) == 0:
             self._xs_1std, self._ys_1std = self._xs_all, self._ys_all
         else:
-            xs_1std_ = [
-                t
-                for i, t in enumerate(chopped_data.times)
-                if i in self._excluded.all_included_indices
+            xs_1std_ = np.array(self._chopped_data.times, dtype=object)[
+                self._excluded.all_included_indices
             ]
             self._xs_1std = [np.subtract(xi, xi[0]) for xi in xs_1std_]
-            self._ys_1std = [
-                d
-                for i, d in enumerate(chopped_data.data)
-                if i in self._excluded.all_included_indices
+            self._ys_1std = np.array(self._chopped_data.data, dtype=object)[
+                self._excluded.all_included_indices
             ]
 
         if self.parameters["spike_duration"] > 0:
