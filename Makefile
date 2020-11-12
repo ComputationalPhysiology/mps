@@ -83,3 +83,8 @@ dev: clean ## Just need to make sure that libfiles remains
 	python3 -m pip install -r requirements_dev.txt
 	python3 -m pip install -e ".[all]"
 	pre-commit install
+
+installer: clean
+	python3 -m pip install -e ".[all]"
+	python -m pip install "matplotlib==3.0.3"
+	pyinstaller -F mps/__main__.py -n mps
