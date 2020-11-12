@@ -71,7 +71,7 @@ Henrik Finsberg (henriknf@simula.no)
 
 import sys
 
-from . import bin_utils
+from mps import bin_utils
 
 
 def main():
@@ -88,7 +88,7 @@ def main():
         print(__doc__)
 
     elif sys.argv[1] == "-v" or sys.argv[1] == "--version":
-        from . import __version__
+        from mps import __version__
 
         print(__version__)
 
