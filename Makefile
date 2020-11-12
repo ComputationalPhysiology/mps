@@ -89,3 +89,10 @@ installer: clean
 	python -m pip install -e ".[all]"
 	python -m pip install pyinstaller
 	pyinstaller -F mps/__main__.py -n mps
+
+installer-windows: clean
+	python -m pip install pipwin
+	pipwin install "matplotlib==3.0.3"
+	pipwin install -e ".[all]"
+	pipwin install pyinstaller
+	pyinstaller -F mps/__main__.py -n mps
