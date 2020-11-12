@@ -48,16 +48,16 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .pytest_cache
 
 lint: ## check style with flake8
-	python3 -m flake8 mps tests
+	python -m flake8 mps tests
 
 type: ## Run mypy
-	python3 -m mypy mps tests
+	python -m mypy mps tests
 
 black: ## Run mypy
-	python3 -m black mps tests
+	python -m black mps tests
 
 test: ## run tests quickly with the default Python
-	python3 -m pytest --cov=mps tests
+	python -m pytest --cov=mps tests
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/mps.rst
@@ -80,8 +80,16 @@ install: clean ## install the package to the active Python's site-packages
 
 dev: clean ## Just need to make sure that libfiles remains
 	python -m pip install --upgrade pip
-	python3 -m pip install -r requirements_dev.txt
-	python3 -m pip install -e ".[all]"
+	python -m pip install -r requirements_dev.txt
+	python -m pip install -e ".[all]"
+	pre-commit install
+
+dev-windows: clean ## Just need to make sure that libfiles remains
+	python -m pip install --upgrade pip
+	python -m pip install pipwin
+	pipwin install -r requirements_dev.txt
+	pipwin install -r requirements.txt
+	python -m pip install "."
 	pre-commit install
 
 installer: clean
