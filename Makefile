@@ -95,10 +95,10 @@ dev-windows: clean ## Just need to make sure that libfiles remains
 installer: clean
 	python -m pip install -r requirements.txt
 	python -m pip install pyinstaller
-	pyinstaller -F mps/__main__.py -n mps --hidden-import=scipy.special.cython_special --exclude-module=IPython --exclude-module=FixTk --exclude-module=tcl --exclude-module=tk --exclude-module=_tkinter --exclude-module=tkinter --exclude-module=Tkinter
+	pyinstaller -F mps/__main__.py -n mps --hidden-import=imageio_ffmpeg --hidden-import=matplotlib --hidden-import=scipy.special.cython_special --exclude-module=IPython --exclude-module=FixTk --exclude-module=tcl --exclude-module=tk --exclude-module=_tkinter --exclude-module=tkinter --exclude-module=Tkinter
 
 installer-windows: clean
 	python -m pip install pipwin
 	pipwin install -r requirements.txt
 	pipwin install pyinstaller
-	pyinstaller -F mps/__main__.py -n mps --hidden-import=scipy.special.cython_special --exclude-module=IPython --exclude-module=FixTk --exclude-module=tcl --exclude-module=tk --exclude-module=_tkinter --exclude-module=tkinter --exclude-module=Tkinter
+	pyinstaller -F mps/__main__.py -n mps --hidden-import=imageio_ffmpeg --hidden-import=matplotlib --hidden-import=scipy.special.cython_special --exclude-module=IPython --exclude-module=FixTk --exclude-module=tcl --exclude-module=tk --exclude-module=_tkinter --exclude-module=tkinter --exclude-module=Tkinter
