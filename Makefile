@@ -86,13 +86,13 @@ dev: clean ## Just need to make sure that libfiles remains
 
 installer: clean
 	python -m pip install "matplotlib<=3.0.3"
-	python -m pip install -e ".[all]"
+	python -m pip install ".[all]"
 	python -m pip install pyinstaller
 	pyinstaller -F mps/__main__.py -n mps
 
 installer-windows: clean
 	python -m pip install pipwin
 	pipwin install "matplotlib<=3.0.3"
-	pipwin install -e ".[all]"
+	pipwin install ".[all]"
 	pipwin install pyinstaller
 	pyinstaller -F mps/__main__.py -n mps
