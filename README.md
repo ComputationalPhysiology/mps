@@ -1,3 +1,5 @@
+![CI](https://github.com/finsberg/mps/workflows/CI/badge.svg)
+
 # MPS data
 
 This repository contains the software for reading and analyzing MPS data.
@@ -110,12 +112,37 @@ to see all the available options.
 
 ## Instructions for developers
 
-TBW
-
 ### Installations instructions
 
-TBW
+To install a development version of the code you need to first clone the repo, change directory to the root directory and type
+```
+python -m pip install "."
+```
+This will install only the minimal version of the code. To install the full version (recommended) execute the command
+```
+python -m pip install ".[all]"
+```
+You can also use the `Makefile` to install the software. Here you can also find dedicated commands for windows which uses `pipwin` instead of `pip` to install dependencies.
+The following commands can be used to install the software
 
+```
+make install              install on unix
+make install-windows      install on windows usig pipwin
+make dev                  Developement install
+make dev-windows          Developement install - windows
+```
+
+### Usage
+
+Once installed you can use package from anywhere by typing
+```
+python -m mps [script]
+```
+where `[script]` is one of the scripts. Typing `python -m mps` will display the same message as above.
+For example to analyze a file called `file.nd2`, you type
+```
+python -m mps analyze file.nd2
+```
 
 ## Documentation
 
@@ -126,6 +153,7 @@ make docs
 ```
 
 you will generate documentation that can be viewed in the browser.
+Here you should be able to read about how the program is working.
 
 ## If you find a bug?
 

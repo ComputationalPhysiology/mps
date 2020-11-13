@@ -76,16 +76,22 @@ dist: clean ## builds source and wheel package
 	python setup.py bdist_wheel
 	ls -l dist
 
-install: clean ## install the package to the active Python's site-packages
-	python -m pip install .
+install: clean ## install on unix
+	python -m pip install ".[all]"
 
-dev: clean ## Just need to make sure that libfiles remains
+install-windows: clean ## install on windows usig pipwin
+	python -m pip install --upgrade pip
+	python -m pip install pipwin
+	pipwin install -r requirements.txt
+	python -m pip install "."
+
+dev: clean ## Developement install
 	python -m pip install --upgrade pip
 	python -m pip install -r requirements_dev.txt
 	python -m pip install -e ".[all]"
 	pre-commit install
 
-dev-windows: clean ## Just need to make sure that libfiles remains
+dev-windows: clean ## Developement install - windows
 	python -m pip install --upgrade pip
 	python -m pip install pipwin
 	pipwin install -r requirements_dev.txt
@@ -93,12 +99,12 @@ dev-windows: clean ## Just need to make sure that libfiles remains
 	python -m pip install "."
 	pre-commit install
 
-installer: clean
+installer: clean  ## make installer for unix
 	python -m pip install -r requirements.txt
 	python -m pip install pyinstaller
 	pyinstaller -F mps/__main__.py -n mps --hidden-import=imageio_ffmpeg --hidden-import=matplotlib --hidden-import=scipy.special.cython_special
 
-installer-windows: clean
+installer-windows: clean  ## make installer for windows
 	python -m pip install pipwin
 	pipwin install -r requirements.txt
 	pipwin install pyinstaller
