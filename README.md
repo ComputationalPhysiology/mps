@@ -2,23 +2,28 @@
 
 This repository contains the software for reading and analyzing MPS data.
 
-
-
 ## Instructions for regular users
 
 ### Installation
 
 If you only want to use this software (and not develop it) then you can download the binaries
 
-- [Windows binaries](#)
-- [MacOSX binaries](#)
-- [Linux binaries](#)
+- [Windows binaries](https://github.com/finsberg/mps/suites/1493516025/artifacts/25997813)
+- [MacOSX binaries](https://github.com/finsberg/mps/suites/1493516025/artifacts/25997811)
+- [Linux binaries](https://github.com/finsberg/mps/suites/1493516025/artifacts/25997812)
 
+The binary is called `mps` (with a `.exe` extension if you are running on Windows)
 Note that the binaries ships with python, so to don't even need to install python to run the binaries.
 Note, however that the size of the binaries are large.
-In order to run the binaries you just need to download the zip file, and extract the executable to a location that your operating system can find it (i.e in a bin directory).
+In order to run the binaries you just need to download the zip file, and extract the executable to a location that your operating system can find it.
+For example, if you are on windows you can copy this file to `C:\Windows\System32` directory, and if on linux you could copy it to `usr/bin`.
+This will, however require admin access. If you don't have admin access you can put it in a new folder and add that folder to your `PATH` environment variable.
+On unix you also need to make the file executable:
+```
+chmod +x mps
+```
 You can also run the file from its current location.
-The binary is called `mps` (with a `.exe` extension if you are running on Windows)
+
 ### Usage
 
 If you execute the binary without any arguments, i.e
@@ -88,7 +93,19 @@ For example if yoo have an mps data file called `file.nd2` then running
 .\mps.exe analyze file.nd2
 ```
 
-will analyze that file.
+will analyze that file. You can also type
+
+```
+.\mps.exe analyze --help
+```
+to see all the available options.
+
+
+### Known issues
+
+1. The `prevalence` script is not yet working
+
+2. To use the `mps2mp4` script you also need to install `ffmpeg` separatly
 
 
 ## Instructions for developers
@@ -98,3 +115,14 @@ TBW
 ### Installations instructions
 
 TBW
+
+
+## Documentation
+
+If you run
+
+```
+make docs
+```
+
+you will generate documentation that can be viewed in the browser.
