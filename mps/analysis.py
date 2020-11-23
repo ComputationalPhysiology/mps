@@ -2161,9 +2161,7 @@ class AnalyzeMPS:
             self._chopped_data.times,
             self.info.get("time_unit", "ms"),
         )
-        self.features["beating_frequency"] = "{:.2f} +/- {:.2f} Hz".format(
-            np.mean(freqs), np.std(freqs)
-        )
+        self.features["beating_frequency"] = np.mean(freqs)
 
         analyze_frequencies(
             self._chopped_data.data,
