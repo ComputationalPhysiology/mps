@@ -57,7 +57,10 @@ else:
 logger = utils.get_logger(__name__)
 
 
-mps_data = namedtuple("mps_data", "frames, time_stamps, info, metadata, pacing")
+mps_data_fields = ["frames", "time_stamps", "info", "metadata", "pacing"]
+mps_data = namedtuple(  # type: ignore
+    "mps_data", mps_data_fields, defaults=(None,) * len(mps_data_fields)  # type: ignore
+)
 
 
 def info_dictionary(time_stamps):
@@ -358,7 +361,7 @@ def load_file(fname, ext):
         data = load_stk(fname)
 
     elif ext == ".npy":
-        data = np.load(fname, allow_pickle=True).item()
+        data = mps_data(**np.load(fname, allow_pickle=True).item())
 
     else:
         raise IOError("Unknown file extension {}".format(ext))
