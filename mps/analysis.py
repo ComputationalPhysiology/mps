@@ -37,7 +37,7 @@ import logging
 from collections import namedtuple
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 from scipy.interpolate import UnivariateSpline
@@ -465,7 +465,7 @@ def find_upstroke_values(
     f = UnivariateSpline(t, y - y_mid, s=0, k=3)
     zeros = f.roots()
     if len(zeros) == 0:
-        return []
+        return np.array([])
     idx_mid = next(i for i, ti in enumerate(t) if ti > zeros[0])
 
     # Upstroke should not be more than 50 ms
@@ -599,7 +599,7 @@ def max_relative_upstroke_velocity(
 
         else:
             # Find max upstroke
-            index = np.argmax(np.diff(upstroke))
+            index = np.argmax(np.diff(upstroke))  # type:ignore
             value = np.max(np.diff(upstroke))
             x0 = None
             s = None
@@ -971,10 +971,10 @@ def analyze_apds(
 
     median_apds = {k: np.median(v) for k, v in apds.items()}
 
-    if max_allowed_apd_change:
-        max_diff = {k: max_allowed_apd_change for k in apds.keys()}
+    if max_allowed_apd_change is not None:
+        max_diff = {k: float(max_allowed_apd_change) for k in apds.keys()}
     else:
-        max_diff = {k: np.std(v) for k, v in apds.items()}
+        max_diff = {k: float(np.std(v)) for k, v in apds.items()}
 
     is_significant = {
         k: np.abs(np.array(v) - median_apds[k]) > max_diff[k] for k, v in apds.items()
@@ -1369,8 +1369,8 @@ def chop_data_without_pacing(
 
 
 def filter_start_ends_in_chopping(
-    starts: List[float],
-    ends: List[float],
+    starts: Union[List[float], np.ndarray],
+    ends: Union[List[float], np.ndarray],
     extend_front: float = 0,
     extend_end: float = 0,
 ):
@@ -1804,7 +1804,7 @@ def analyze_frequencies(
         ax[0].set_ylabel("Frequency [Hz]")
         ax[0].set_xlabel("Beat number")
 
-        points_x = [t[np.argmax(c)] for c, t in zip(chopped_data, chopped_times)]
+        points_x = [t[int(np.argmax(c))] for c, t in zip(chopped_data, chopped_times)]
         points_y = [np.max(c) for c in chopped_data]
 
         for c, t in zip(chopped_data, chopped_times):
@@ -1821,7 +1821,7 @@ def analyze_frequencies(
 
 
 def detect_ead(
-    y: List[float], sigma: float = 3, prominence_level: float = 0.04
+    y: Union[List[float], np.ndarray], sigma: float = 3, prominence_level: float = 0.04
 ) -> Tuple[bool, Optional[int]]:
     """Detect (Early afterdepolarizations) EADs
     based on peak prominence.
@@ -1868,8 +1868,9 @@ def detect_ead(
     from scipy.ndimage import gaussian_filter1d
     from scipy.signal import find_peaks
 
-    idx_max = np.argmax(y)
-    idx_min = idx_max + np.argmin(y[idx_max:])
+    y = np.array(y)
+    idx_max = int(np.argmax(y))
+    idx_min = idx_max + int(np.argmin(y[idx_max:]))
 
     y_tmp = y[idx_max:idx_min] - y[idx_min]
     if len(y_tmp) == 0:
@@ -2024,6 +2025,8 @@ class AnalyzeMPS:
         self.unchopped_data: Dict[str, Any] = {}
         self.chopped_data: Dict[str, Any] = {}
         self.features: Dict[str, Any] = {}
+        self._all_features: Dict[str, Any] = {}
+        self.features_computed = False
 
         self.unchopped_data["original_trace"] = np.copy(avg)
         self.unchopped_data["original_times"] = np.copy(time_stamps)
@@ -2124,7 +2127,6 @@ class AnalyzeMPS:
 
     def analyze_chopped_data(self):
         self._set_choopped_data()
-        self.filter_chopped_data()
 
         if self.parameters["plot"]:
             poincare_plot(
@@ -2134,6 +2136,7 @@ class AnalyzeMPS:
                 fname=self.outdir.joinpath("poincare_plot"),
             )
 
+        self.compute_features()
         self.run_ead_and_apd_analysis()
         self.filter_chopped_data()
         self.get_pacing_avg()
@@ -2155,13 +2158,7 @@ class AnalyzeMPS:
         )
         self.features["slope_APD80"] = apd_analysis.slope_APD80
         self.features["slope_cAPD80"] = apd_analysis.slope_cAPD80
-
-        freqs = beating_frequency_modified(
-            self._chopped_data.data,
-            self._chopped_data.times,
-            self.info.get("time_unit", "ms"),
-        )
-        self.features["beating_frequency"] = np.mean(freqs)
+        self._all_features["triangulation"] = apd_analysis.triangulation
 
         analyze_frequencies(
             self._chopped_data.data,
@@ -2203,32 +2200,56 @@ class AnalyzeMPS:
             )
         )
 
-    def filter_chopped_data(self):
+    def compute_features(self):
         if not hasattr(self, "_chopped_data"):
             self._set_choopped_data()
 
-        features = compute_features(
-            self._chopped_data,
-            use_spline=self.parameters["use_spline"],
-            normalize=self.parameters["normalize"],
+        freqs = beating_frequency_modified(
+            self._chopped_data.data,
+            self._chopped_data.times,
+            self.info.get("time_unit", "ms"),
         )
+        self.features["beating_frequency"] = np.mean(freqs)
+
+        self._all_features.update(
+            compute_features(
+                self._chopped_data,
+                use_spline=self.parameters["use_spline"],
+                normalize=self.parameters["normalize"],
+            )
+        )
+        for k in [30, 50, 80, 90]:
+            self._all_features[f"capd{k}"] = corrected_apd(
+                self._all_features[f"apd{k}"], 60 / self.features["beating_frequency"]
+            )
+
+    def compute_mean_features(self):
+        if not hasattr(self, "_all_features"):
+            self.compute_features()
+
         self._excluded = exclude_x_std(
-            features, self.parameters["std_ex"], skips=["upstroke80"]
+            self._all_features, self.parameters["std_ex"], skips=["upstroke80"]
         )
 
         mean_features = {}
         self._features_1std = []
         self._features_all = []
         template = "{0:20}\t{1:10.1f}  +/-  {2:10.3f}"
-        for k in features.keys():
+        for k in self._all_features.keys():
 
             v = self._excluded.new_data[k]
             self._features_1std.append(template.format(k, np.mean(v), np.std(v)))
             mean_features[k] = np.mean(v)
 
-            v = features[k]
+            v = self._all_features[k]
             self._features_all.append(template.format(k, np.mean(v), np.std(v)))
         self.features.update(mean_features)
+
+        self.features_computed = True
+
+    def filter_chopped_data(self):
+        if not self.features_computed:
+            self.compute_mean_features()
 
         logger.debug("Plot chopped data")
         titles = ["apd30", "apd50", "apd80", "dFdt_max", "int30", "tau75"]
