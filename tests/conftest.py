@@ -62,7 +62,12 @@ def mps_data_path():
         size_y=size_y,
     )
 
-    data = mps.MPS.from_dict(frames=frames, time_stamps=time_stamps, info=info)
+    data = dict(
+        frames=frames,
+        time_stamps=time_stamps,
+        info=info,
+        pacing=np.zeros_like(time_stamps),
+    )
     path = Path(__file__).parent.joinpath("test_data.npy").absolute()
     np.save(path, data)
     yield path.as_posix()
