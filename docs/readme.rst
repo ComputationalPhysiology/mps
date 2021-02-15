@@ -1,3 +1,8 @@
+.. figure:: https://github.com/finsberg/mps/workflows/CI/badge.svg
+   :alt: CI
+
+   CI
+
 MPS data
 ========
 
@@ -132,12 +137,105 @@ Known issues
 Instructions for developers
 ---------------------------
 
-TBW
-
 Installations instructions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TBW
+To install a development version of the code you need to first clone the
+repo, change directory to the root directory and type
+
+::
+
+   python -m pip install "."
+
+This will install only the minimal version of the code. To install the
+full version (recommended) execute the command
+
+::
+
+   python -m pip install ".[all]"
+
+You can also use the ``Makefile`` to install the software. Here you can
+also find dedicated commands for windows which uses ``pipwin`` instead
+of ``pip`` to install dependencies. The following commands can be used
+to install the software
+
+::
+
+   make install              install on unix
+   make install-windows      install on windows usig pipwin
+   make dev                  Developement install
+   make dev-windows          Developement install - windows
+
+.. _usage-1:
+
+Usage
+~~~~~
+
+Once installed you can use package from anywhere by typing
+
+::
+
+   python -m mps [script]
+
+where ``[script]`` is one of the scripts. Typing ``python -m mps`` will
+display the same message as above. For example to analyze a file called
+``file.nd2``, you type
+
+::
+
+   python -m mps analyze file.nd2
 
 Documentation
 -------------
+
+If you run
+
+::
+
+   make docs
+
+you will generate documentation that can be viewed in the browser. Here
+you should be able to read about how the program is working.
+
+If you find a bug?
+------------------
+
+If the scripts behave in an unexpected manner, or you encounter any
+bugs, please submit this as an issue. Click on the issue tab (on the top
+of this page). Write a descriptive title and paste in the output from
+your console.
+
+Contact
+-------
+
+This software is developed by Henrik Finsberg at Simula Research
+Laboratory. If you need to get in contact, please send me an email at
+henriknf@simula.no.
+
+License
+-------
+
+c) 2001-2020 Simula Research Laboratory ALL RIGHTS RESERVED
+
+END-USER LICENSE AGREEMENT PLEASE READ THIS DOCUMENT CAREFULLY. By
+installing or using this software you agree with the terms and
+conditions of this license agreement. If you do not accept the terms of
+this license agreement you may not install or use this software.
+
+Permission to use, copy, modify and distribute any part of this software
+for non-profit educational and research purposes, without fee, and
+without a written agreement is hereby granted, provided that the above
+copyright notice, and this license agreement in its entirety appear in
+all copies. Those desiring to use this software for commercial purposes
+should contact Simula Research Laboratory AS: post@simula.no
+
+IN NO EVENT SHALL SIMULA RESEARCH LABORATORY BE LIABLE TO ANY PARTY FOR
+DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES,
+INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE “MPS”
+EVEN IF SIMULA RESEARCH LABORATORY HAS BEEN ADVISED OF THE POSSIBILITY
+OF SUCH DAMAGE. THE SOFTWARE PROVIDED HEREIN IS ON AN “AS IS” BASIS, AND
+SIMULA RESEARCH LABORATORY HAS NO OBLIGATION TO PROVIDE MAINTENANCE,
+SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS. SIMULA RESEARCH
+LABORATORY MAKES NO REPRESENTATIONS AND EXTENDS NO WARRANTIES OF ANY
+KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
