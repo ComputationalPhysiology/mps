@@ -58,6 +58,14 @@ additional options
     mps2mp4
         Create movie of data file
 
+    motion
+        Run motion tracking algorithm. Note: this require the
+        motion tracking package to be installed.
+
+    automate
+        Run automated workflow script. Note: this require the
+        automation scripts to be installed.
+
 
 Available options
 -----------------
@@ -116,6 +124,29 @@ def main():
 
     elif sys.argv[1] == "mps2mp4":
         bin_utils.mps2mp4.run(sys.argv[2:])
+
+    elif sys.argv[1] == "motion":
+        try:
+            import typer
+            from mps_motion_tracking import cli
+        except ImportError:
+            print("Motion tracking software not installed.")
+            print("Please ask Henrik (henriknf@simula.no)")
+            sys.exit()
+
+        # Run motion tracking
+        sys.argv[1:] = sys.argv[2:]
+        typer.run(cli.main)
+    elif sys.argv[1] == "automate":
+        try:
+            import typer
+            from mps_automation import cli
+        except ImportError:
+            print("Automation scripts are not installed.")
+            print("Please ask Henrik (henriknf@simula.no)")
+            sys.exit()
+        sys.argv[1:] = sys.argv[2:]
+        typer.run(cli.main)
 
     else:
         print("Argument {} not recongnized".format(sys.argv[1]))
