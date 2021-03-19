@@ -63,7 +63,7 @@ brightfield_patterns = ["BF", "bf", "brightfield", "Brightfield"]
 
 class Script:
 
-    valid_extensions = [".nd2", ".czi", ".stk", ".npy"]
+    valid_extensions = [".nd2", ".czi", ".stk", ".npy", ".tiff", ".tif"]
     skip_startswith = ["."]
     skip_endswith = ["~", "#"]
     exclude_patterns: List[str] = []
@@ -81,7 +81,7 @@ class Script:
 
         _, ext = os.path.splitext(fname)
         if self.valid_extensions and ext not in self.valid_extensions:
-            self.logger.debug(
+            self.logger.warning(
                 f"Invalid file extension {ext}, expected on of {self.valid_extensions}"
             )
             return False

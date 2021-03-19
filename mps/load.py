@@ -346,6 +346,69 @@ def load_stk(fname):
     )
 
 
+def time2isoformat(s):
+    import datetime
+
+    date, time = s.split(" ")
+    return datetime.datetime.fromisoformat(f"{date[:4]}-{date[4:6]}-{date[6:]}T{time}")
+
+
+def load_tiff_timestamps(f):
+    import tifffile
+
+    num_pages = len(f.pages.pages)
+    get_page_timstamp = lambda i: time2isoformat(
+        tifffile.tifffile.metaseries_description_metadata(f.pages.get(i).description)[
+            "PlaneInfo"
+        ]["acquisition-time-local"]
+    )
+    return list(
+        map(
+            lambda x: (x - get_page_timstamp(0)).total_seconds(),
+            map(get_page_timstamp, range(num_pages)),
+        )
+    )
+
+
+def load_tiff(fname):
+
+    if not has_tifffile:
+        raise ImportError(
+            (
+                "tifffile is not installed. Please install "
+                "that if you want to load stk files. python -m"
+                " pip install tiffile"
+            )
+        )
+
+    with tifffile.TiffFile(fname) as f:
+        metadata = f.metaseries_metadata
+        frames = f.asarray()
+        time_stamps = np.multiply(load_tiff_timestamps(f), 1000)
+
+    info = info_dictionary(time_stamps)
+
+    info.update(
+        **dict(
+            size_x=metadata["PlaneInfo"]["pixel-size-x"],
+            size_y=metadata["PlaneInfo"]["pixel-size-y"],
+            um_per_pixel=float(
+                metadata["PlaneInfo"][
+                    "spatial-calibration-y"
+                ]  # Different in x- and y direction
+            ),
+        )
+    )
+
+    return mps_data(
+        frames=np.swapaxes(frames, 0, -1),
+        time_stamps=time_stamps,
+        pacing=np.zeros(len(time_stamps)),
+        info=info,
+        metadata=metadata,
+    )
+
+
 def load_file(fname, ext):
 
     if ext == ".czi":
@@ -359,6 +422,9 @@ def load_file(fname, ext):
 
     elif ext == ".stk":
         data = load_stk(fname)
+
+    elif ext in [".tiff", ".tif"]:
+        data = load_tiff(fname)
 
     elif ext == ".npy":
         data = mps_data(**np.load(fname, allow_pickle=True).item())
