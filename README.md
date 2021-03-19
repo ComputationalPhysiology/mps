@@ -10,9 +10,9 @@ This repository contains the software for reading and analyzing MPS data.
 
 If you only want to use this software (and not develop it) then you can download the binaries
 
-- [Windows binaries](https://github.com/finsberg/mps/suites/1493516025/artifacts/25997813)
-- [MacOSX binaries](https://github.com/finsberg/mps/suites/1493516025/artifacts/25997811)
-- [Linux binaries](https://github.com/finsberg/mps/suites/1493516025/artifacts/25997812)
+- [Windows binaries](https://github.com/finsberg/mps/suites/2300060904/artifacts/48226688)
+- [MacOSX binaries](https://github.com/finsberg/mps/suites/2300060904/artifacts/48226686)
+- [Linux binaries](https://github.com/finsberg/mps/suites/2300060904/artifacts/48226687)
 
 The binary is called `mps` (with a `.exe` extension if you are running on Windows)
 Note that the binaries ships with python, so to don't even need to install python to run the binaries.
