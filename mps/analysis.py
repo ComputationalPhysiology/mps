@@ -2537,7 +2537,7 @@ class AnalyzeMPS:
         )
 
 
-def frame2average(frame, times, normalize=True, background_correction=True):
+def frame2average(frame, times=None, normalize=True, background_correction=True):
     """
     Compute average pixel intensity of the frames
 
@@ -2564,6 +2564,9 @@ def frame2average(frame, times, normalize=True, background_correction=True):
 
     avg_ = average.get_average_all(frame)
     if background_correction:
+        assert (
+            times is not None
+        ), "Please provide time stamps for background correection"
         avg = correct_background(times, avg_)
     else:
         avg = avg_
@@ -2578,7 +2581,7 @@ def frame2average(frame, times, normalize=True, background_correction=True):
 
 def local_averages(
     frames,
-    times,
+    times=None,
     N=10,
     x_start=0,
     y_start=0,
@@ -2668,7 +2671,7 @@ def _frames2average(kwargs):
     return frame2average(**kwargs)
 
 
-def analyze_local_average(frames, times, mask=None, N=10):
+def analyze_local_average(frames, times=None, mask=None, N=10):
 
     loc = local_averages(frames, times, N=N)
     avg = frame2average(
