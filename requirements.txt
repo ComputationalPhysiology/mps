@@ -4,3 +4,4 @@ scipy
 imageio
 xmltodict
 imageio-ffmpeg
+tifffile
