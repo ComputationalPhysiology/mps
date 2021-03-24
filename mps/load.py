@@ -98,6 +98,11 @@ def get_single_frame(path, index=0):
             frames = f.asarray().squeeze()
         frame = frames[:, :, index]
 
+    elif ext in [".tif", ".stk", ".tiff"]:
+        with tifffile.TiffFile(path) as f:
+            frames = f.asarray().squeeze()
+        frame = frames[index, :, :]
+
     else:
         raise ValueError("Unkown extension {}".format(ext))
 
