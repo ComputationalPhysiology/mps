@@ -56,7 +56,7 @@ else:
 
 logger = utils.get_logger(__name__)
 
-
+valid_extensions = [".nd2", ".czi", ".tif", ".tiff", ".stk"]
 mps_data_fields = ["frames", "time_stamps", "info", "metadata", "pacing"]
 mps_data = namedtuple(  # type: ignore
     "mps_data", mps_data_fields, defaults=(None,) * len(mps_data_fields)  # type: ignore
@@ -575,6 +575,24 @@ class MPS(object):
     @property
     def pacing(self):
         return self.data.pacing
+
+    @property
+    def pacing_frequency(self):
+        """Return the pacing frequency in Hertz
+
+        Returns
+        -------
+        float
+            The pacing frequency
+        """
+        from .analysis import find_pacing_period
+
+        period = find_pacing_period(self.pacing)
+        if period < 1:
+            return 0
+
+        factor = 1000.0 if self.info["time_unit"] == "ms" else 1.0
+        return 1 / ((period * self.dt) / factor)
 
     @property
     def metadata(self):
