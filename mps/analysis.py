@@ -206,8 +206,8 @@ def find_pacing_period(pacing_data, pacing_amp=5):
             periods.append(j - i)
     if len(periods) > 0:
         return int(np.median(periods))
-    else:
-        return None
+
+    return 0.0
 
 
 def apd(V, percent, t=None, v_r=None, return_coords=False, rule=0, use_spline=True):

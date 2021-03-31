@@ -58,6 +58,10 @@ additional options
     mps2mp4
         Create movie of data file
 
+    split-pacing
+        Run script on a folder with files and this will copy the files into
+        folders with the same pacing frequency
+
     motion
         Run motion tracking algorithm. Note: this require the
         motion tracking package to be installed.
@@ -80,78 +84,97 @@ Contact
 Henrik Finsberg (henriknf@simula.no)
 
 """
+import typer
 
-import sys
+from mps import scripts
 
-from mps import bin_utils
+app = typer.Typer()
 
 
-def main():
-    """
-    Main execution of the mps package
-    """
+@app.command(help=scripts.split_pacing.__doc__)
+def split_pacing(
+    folder: str = typer.Argument(..., help="The folder to be analyzed"),
+    recursive: bool = typer.Option(False, help="Recursively go through all sufolders"),
+    verbose: bool = typer.Option(False, help="More verbose"),
+    keep_original: bool = typer.Option(
+        True, help="If True, copy the files, otherwise move them."
+    ),
+):
+    scripts.split_pacing.main(
+        folder=folder, recursive=recursive, verbose=verbose, keep_original=keep_original
+    )
 
-    if len(sys.argv) < 2:
-        print(__doc__)
-        return
 
-    # Show help message
-    if sys.argv[1] == "-h" or sys.argv[1] == "--help":
-        print(__doc__)
+# def main():
+#     """
+#     Main execution of the mps package
+#     """
 
-    elif sys.argv[1] == "-v" or sys.argv[1] == "--version":
-        from mps import __version__
+#     if len(sys.argv) < 2:
+#         print(__doc__)
+#         return
 
-        print(__version__)
+#     # Show help message
+#     if sys.argv[1] == "-h" or sys.argv[1] == "--help":
+#         print(__doc__)
 
-    elif sys.argv[1] == "-l" or sys.argv[1] == "--license":
-        print(__license__)
+#     elif sys.argv[1] == "-v" or sys.argv[1] == "--version":
+#         from mps import __version__
 
-    elif sys.argv[1] == "analyze":
-        bin_utils.analyze_mps.run(sys.argv[2:])
+#         print(__version__)
 
-    elif sys.argv[1] == "summary":
-        bin_utils.mps_summary.run(sys.argv[2:])
+#     elif sys.argv[1] == "-l" or sys.argv[1] == "--license":
+#         print(__license__)
 
-    elif sys.argv[1] == "phase_plot":
-        bin_utils.mps_phase_plot.run(sys.argv[2:])
+#     elif sys.argv[1] == "analyze":
+#         bin_utils.analyze_mps.run(sys.argv[2:])
 
-    elif sys.argv[1] == "prevalence":
-        bin_utils.mps_prevalence.run(sys.argv[2:])
+#     elif sys.argv[1] == "summary":
+#         bin_utils.mps_summary.run(sys.argv[2:])
 
-    elif sys.argv[1] == "collect":
-        bin_utils.collect_mps.run(sys.argv[2:])
+#     elif sys.argv[1] == "phase_plot":
+#         bin_utils.mps_phase_plot.run(sys.argv[2:])
 
-    elif sys.argv[1] == "mps2mp4":
-        bin_utils.mps2mp4.run(sys.argv[2:])
+#     elif sys.argv[1] == "prevalence":
+#         bin_utils.mps_prevalence.run(sys.argv[2:])
 
-    elif sys.argv[1] == "motion":
-        try:
-            import typer
-            from mps_motion_tracking import cli
-        except ImportError:
-            print("Motion tracking software not installed.")
-            print("Please ask Henrik (henriknf@simula.no)")
-            sys.exit()
+#     elif sys.argv[1] == "collect":
+#         bin_utils.collect_mps.run(sys.argv[2:])
 
-        # Run motion tracking
-        sys.argv[1:] = sys.argv[2:]
-        typer.run(cli.main)
-    elif sys.argv[1] == "automate":
-        try:
-            import typer
-            from mps_automation import cli
-        except ImportError:
-            print("Automation scripts are not installed.")
-            print("Please ask Henrik (henriknf@simula.no)")
-            sys.exit()
-        sys.argv[1:] = sys.argv[2:]
-        typer.run(cli.main)
+#     elif sys.argv[1] == "mps2mp4":
+#         bin_utils.mps2mp4.run(sys.argv[2:])
 
-    else:
-        print("Argument {} not recongnized".format(sys.argv[1]))
-        print(__doc__)
+#     elif sys.argv[1] == "split-pacing":
+#         bin_utils.split_pacing(sys.argv[2:])
+
+#     elif sys.argv[1] == "motion":
+#         try:
+#             import typer
+#             from mps_motion_tracking import cli
+#         except ImportError:
+#             print("Motion tracking software not installed.")
+#             print("Please ask Henrik (henriknf@simula.no)")
+#             sys.exit()
+
+#         # Run motion tracking
+#         sys.argv[1:] = sys.argv[2:]
+#         typer.run(cli.main)
+#     elif sys.argv[1] == "automate":
+#         try:
+#             import typer
+#             from mps_automation import cli
+#         except ImportError:
+#             print("Automation scripts are not installed.")
+#             print("Please ask Henrik (henriknf@simula.no)")
+#             sys.exit()
+#         sys.argv[1:] = sys.argv[2:]
+#         typer.run(cli.main)
+
+#     else:
+#         print("Argument {} not recongnized".format(sys.argv[1]))
+#         print(__doc__)
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    app()
