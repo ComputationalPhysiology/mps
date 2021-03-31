@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-__author__ = "Henrik Finsberg (henriknf@simula.no), 2017--2020"
+__author__ = "Henrik Finsberg (henriknf@simula.no), 2017--2021"
 __maintainer__ = "Henrik Finsberg"
 __email__ = "henriknf@simula.no"
+__program_name__ = "MPS"
 __license__ = """
-c) 2001-2020 Simula Research Laboratory ALL RIGHTS RESERVED
+c) 2001-2021 Simula Research Laboratory ALL RIGHTS RESERVED
 
 END-USER LICENSE AGREEMENT
 PLEASE READ THIS DOCUMENT CAREFULLY. By installing or using this
@@ -86,9 +87,36 @@ Henrik Finsberg (henriknf@simula.no)
 """
 import typer
 
-from mps import scripts
+from mps import __version__, scripts
 
 app = typer.Typer()
+
+
+def version_callback(show_version: bool):
+    """Prints version information."""
+    if show_version:
+        typer.echo(f"{__program_name__} {__version__}")
+        raise typer.Exit()
+
+
+def license_callback(show_license: bool):
+    """Prints license information."""
+    if show_license:
+        typer.echo(f"{__license__}")
+        raise typer.Exit()
+
+
+@app.callback()
+def main(
+    version: bool = typer.Option(
+        None, "--version", callback=version_callback, is_eager=True, help="Show version"
+    ),
+    license: bool = typer.Option(
+        None, "--license", callback=license_callback, is_eager=True, help="Show license"
+    ),
+):
+    # Do other global stuff, handle other global options here
+    return
 
 
 @app.command(help=scripts.split_pacing.__doc__)
