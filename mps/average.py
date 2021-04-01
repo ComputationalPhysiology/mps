@@ -30,9 +30,9 @@ SIMULA RESEARCH LABORATORY MAKES NO REPRESENTATIONS AND EXTENDS NO
 WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
 NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 """
-
 import functools as ft
 import itertools as it
+from enum import Enum
 
 import numpy as np
 from scipy.interpolate import UnivariateSpline
@@ -40,6 +40,12 @@ from scipy.interpolate import UnivariateSpline
 from . import utils
 
 logger = utils.get_logger(__name__)
+
+
+class AveragingType(str, Enum):
+    temporal = "temporal"
+    spatial = "spatial"
+    global_ = "global"
 
 
 def get_subsignal_average(signals):
@@ -187,7 +193,7 @@ def get_average_all(X):
     return ft.reduce(np.add, x, np.zeros(X.shape[-1]))
 
 
-def get_spatial_average(X, alpha=0.5, **kwargs):
+def get_spatial_average(X, alpha=1.0):
     r"""
     Get the spatial average
 
@@ -229,7 +235,7 @@ def get_spatial_average(X, alpha=0.5, **kwargs):
     return np.array(tuple(it.chain(x)))
 
 
-def get_temporal_average(X, alpha=0.5, **kwargs):
+def get_temporal_average(X, alpha=1.0, return_indices=False):
     r"""
     Get the temporal average
 
@@ -300,7 +306,6 @@ def get_temporal_average(X, alpha=0.5, **kwargs):
     # Compute the average
     average_intensity = np.mean(q[:, inds], 1)
 
-    return_indices = kwargs.get("return_indices", False)
     if return_indices:
         return average_intensity, inds
 

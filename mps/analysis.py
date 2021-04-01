@@ -784,7 +784,7 @@ def time_unit(time_stamps):
     return unit
 
 
-def average_intensity(data, **kwargs):
+def average_intensity(data, mask=None, alpha=1.0, averaging_type="spatial"):
     """
     Compute the average_intensity of the frame stack.
     The available keyword arguments depends on the averaging_type
@@ -806,10 +806,6 @@ def average_intensity(data, **kwargs):
         # Get the frames
         data = data.frames
 
-    mask = kwargs.pop("mask", None)
-    alpha = kwargs.pop("alpha", 1.0)
-    averaging_type = kwargs.pop("averaging_type", "temporal")
-
     if alpha == 1.0:
         # Mean of everything
         if mask is None:
@@ -820,10 +816,10 @@ def average_intensity(data, **kwargs):
     else:
 
         if averaging_type == "spatial":
-            avg = average.get_spatial_average(data, **kwargs)
+            avg = average.get_spatial_average(data, alpha=alpha)
 
         elif averaging_type == "temporal":
-            avg = average.get_temporal_average(data, **kwargs)
+            avg = average.get_temporal_average(data, alpha=alpha)
         else:
             msg = (
                 "Unknown averaging_type {}. Expected averaging type to "
@@ -1759,7 +1755,12 @@ def analyze_mps_func(mps_data, mask=None, **kwargs):
         **kwargs,
     )
     analyzer.analyze_all()
-    return analyzer.data
+    try:
+        import matplotlib.pyplot as plt
+
+        plt.close("all")
+    finally:
+        return analyzer.data
 
 
 def analyze_frequencies(
