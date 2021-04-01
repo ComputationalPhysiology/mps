@@ -31,60 +31,9 @@ SIMULA RESEARCH LABORATORY MAKES NO REPRESENTATIONS AND EXTENDS NO
 WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
 NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 """
-__doc__ = """MPS package for analyzing microphyisological systems
+from textwrap import dedent
+from typing import Optional
 
-
-Available arguments
--------------------
-All these arguments can be called with '-h' or '--help' to see the
-additional options
-
-    analyze
-        Analyze mps data (.nd2 or .czi)
-
-    summary
-        Create a summary figure and csv file of all files in a folder
-
-    phase_plot
-        Make a phase plot with voltage on the x-axis and calcium on the y-axis.
-
-    prevalence
-        Estimate the percentage of tissue in the chips,
-        and the percentage of beating tissue vs non-beating
-
-    collect
-        Gather Voltage and Calcium data into one file that can be
-        used as input to the inversion algorithm.
-
-    mps2mp4
-        Create movie of data file
-
-    split-pacing
-        Run script on a folder with files and this will copy the files into
-        folders with the same pacing frequency
-
-    motion
-        Run motion tracking algorithm. Note: this require the
-        motion tracking package to be installed.
-
-    automate
-        Run automated workflow script. Note: this require the
-        automation scripts to be installed.
-
-
-Available options
------------------
-
-    -h, --help      Show this help
-    -v, --version   Show version number
-    -l, --license   Show license
-
-
-Contact
--------
-Henrik Finsberg (henriknf@simula.no)
-
-"""
 import typer
 
 from mps import __version__, scripts
@@ -130,6 +79,170 @@ def split_pacing(
 ):
     scripts.split_pacing.main(
         folder=folder, recursive=recursive, verbose=verbose, keep_original=keep_original
+    )
+
+
+@app.command(help=scripts.analyze.__doc__)
+def analyze(
+    path: str = typer.Argument(..., help="Path to file or folder to be analyzed"),
+    outdir: Optional[str] = typer.Option(
+        None,
+        help=dedent(
+            """
+        Output directory for where you want to store the
+        output. If not provided a folder with the same
+        name as the basename of the input file in the
+        currect directory will be used"""
+        ),
+    ),
+    plot: bool = typer.Option(True, help="Plot data"),
+    filter_signal: bool = typer.Option(
+        True, help="Filter signal using a median filter"
+    ),
+    alpha: float = typer.Option(
+        1.0,
+        help=dedent(
+            """
+            When taking the average over the images include
+            only values larger than the bound when all
+            values are sorted. If alpha = 1.0, then all
+            values will be used when taking the average. If
+            alpha = 0.1 then only 10 percent of the pixels
+            will be included."""
+        ),
+    ),
+    ead_prom: float = typer.Option(
+        0.04,
+        help=dedent(
+            """
+            How prominent a peak should be in order to be
+            characterized as an EAD. This value shold be
+            between 0 and 1, with a greater value being more
+            prominent"""
+        ),
+    ),
+    ead_sigma: float = typer.Option(
+        3.0,
+        help=dedent(
+            """
+            Standard deviation in the gaussian smoothing
+            kernal applied before estimating EADs."""
+        ),
+    ),
+    std_ex_factor: float = typer.Option(
+        1.0,
+        help=dedent(
+            """
+            Exclude values outside this factor times 1
+            standard deviation. Default:1.0, meaning exclude
+            values outside of 1 std from the mean"""
+        ),
+    ),
+    spike_duration: float = typer.Option(
+        0.0,
+        help=dedent(
+            """
+            Remove spikes from signal by setting this value
+            greater than 0. This will locate the timing of
+            pacing (if available) and delete the signal this
+            amount after pacing starts. If 0 or no pacing is
+            detected, nothing will be deleted."""
+        ),
+    ),
+    chopping_threshold_factor: float = typer.Option(
+        0.3,
+        help=dedent(
+            """
+            Factor of where to synchronize data when
+            chopping. Default = 0.3"""
+        ),
+    ),
+    chopping_extend_front: Optional[int] = typer.Option(
+        None,
+        help=dedent(
+            """
+            How many milliseconds extra to extend signal at
+            the beginning when chopping"""
+        ),
+    ),
+    chopping_extend_end: Optional[int] = typer.Option(
+        None,
+        help=dedent(
+            """
+            How many milliseconds extra to extend signal at
+            the end when chopping"""
+        ),
+    ),
+    chopping_min_window: Optional[int] = typer.Option(
+        None,
+        help=dedent(
+            """
+            Smallest allowed length of beat (in
+            milliseconds) to be included in chopping"""
+        ),
+    ),
+    chopping_max_window: Optional[int] = typer.Option(
+        None,
+        help=dedent(
+            """
+            Largest allowed length of beat (in
+            milliseconds) to be included in chopping"""
+        ),
+    ),
+    ignore_pacing: bool = typer.Option(
+        False,
+        help=dedent(
+            """
+            Ignore pacing data, for example if the pacing is
+            wrong"""
+        ),
+    ),
+    overwrite: bool = typer.Option(
+        True,
+        help=dedent(
+            """
+            If True, overwrite existing data if outdir
+            allready exist. If False, then the olddata will
+            be copied to a subdirectory with version number
+            of the software. If version number is not found
+            it will be saved to a folder called "old"."""
+        ),
+    ),
+    reuse_settings: bool = typer.Option(
+        False,
+        help=dedent(
+            """
+            If the output folder contains a file called
+            settings.json and this flag is turned on, then
+            we will use the settings stored in the
+            settings.json file. This is handy if you e.g
+            want to compare the output of the software
+            between different versions, or you to reproduce
+            the exact traces from the raw data."""
+        ),
+    ),
+    verbose: bool = typer.Option(False, help="More verbose"),
+):
+
+    scripts.analyze.main(
+        path=path,
+        outdir=outdir,
+        plot=plot,
+        filter_signal=filter_signal,
+        alpha=alpha,
+        ead_prom=ead_prom,
+        ead_sigma=ead_sigma,
+        std_ex_factor=std_ex_factor,
+        spike_duration=spike_duration,
+        chopping_threshold_factor=chopping_threshold_factor,
+        chopping_extend_front=chopping_extend_front,
+        chopping_extend_end=chopping_extend_end,
+        chopping_min_window=chopping_min_window,
+        chopping_max_window=chopping_max_window,
+        ignore_pacing=ignore_pacing,
+        reuse_settings=reuse_settings,
+        overwrite=overwrite,
+        verbose=verbose,
     )
 
 
