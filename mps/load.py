@@ -456,34 +456,26 @@ class MPS(object):
 
     """
 
-    def __init__(self, fname="", parameters=None, data=None):
+    def __init__(self, fname="", verbose=False):
 
-        self.parameters = MPS.default_parameters()
-        if parameters is not None:
-            self.parameters.update(**parameters)
-        logger.setLevel(self.parameters["log_level"])
+        loglevel = logging.DEBUG if verbose else logging.INFO
+        logger.setLevel(loglevel)
 
-        if fname == "":
-            self._fname = ""
-            self._ext = ""
-            if data is None:
-                raise ValueError("Please provide data of filename")
-        else:
-            # Check extension
-            _, ext = os.path.splitext(fname)
+        # Check extension
+        _, ext = os.path.splitext(fname)
 
-            folder = os.path.abspath(os.path.dirname(fname))
-            # Find the correct extension
-            for f in os.listdir(folder):
-                if os.path.isfile(os.path.join(folder, f)):
-                    name_, ext_ = os.path.splitext(f)
-                    if name_ == fname:
-                        ext = ext_
+        folder = os.path.abspath(os.path.dirname(fname))
+        # Find the correct extension
+        for f in os.listdir(folder):
+            if os.path.isfile(os.path.join(folder, f)):
+                name_, ext_ = os.path.splitext(f)
+                if name_ == fname:
+                    ext = ext_
 
-            self._fname = os.path.abspath(fname)
-            self._ext = ext
+        self._fname = os.path.abspath(fname)
+        self._ext = ext
 
-            data = load_file(self._fname, self._ext)
+        data = load_file(self._fname, self._ext)
         self._unpack(data)
 
     @classmethod
@@ -506,37 +498,6 @@ class MPS(object):
 
     def __setstate__(self, state):
         self.__dict__.update(state)
-
-    @staticmethod
-    def default_parameters():
-        """
-        Returns
-        -------
-        parameters: dict
-            A dictionary with the follings key-value pairs:
-
-            background_polynomial_order : int
-                Order of polynomial applying in the background
-                correction algoritm
-            averaging_type : str
-                Type of averaging. Possible inputs are
-                ["spatial", "temporal", "global"] (Default: "global")
-            alpha : str
-                Take mean over value larger than this percentage value
-                (Default : 1.0, i.e take mean of all values)
-            local : array
-                List of indice to take take average over
-                [startx, endx, starty, endy]
-            log_level : int
-                Level of logging: Default 20 (INFO)
-        """
-        return dict(
-            background_polynomial_order=2,
-            log_level=logging.INFO,
-            alpha=1.0,
-            averaging_type="temporal",
-            local=[],
-        )
 
     def __repr__(self):
         return ("{self.__class__.__name__}" "({self._fname})").format(self=self)
