@@ -31,6 +31,7 @@ WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
 NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 """
 
+import datetime
 import logging
 import os
 import sys
@@ -312,6 +313,16 @@ def to_csv(data, path, header=None):
         for i in data:
             w.writerow(i)
     logger.debug("Saved to {}.csv".format(path))
+
+
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+
+    if isinstance(obj, (datetime.datetime)):
+        return obj.isoformat()
+    elif isinstance(obj, (np.ndarray)):
+        return obj.tolist()
+    raise TypeError("Type %s not serializable" % type(obj))
 
 
 def to_txt(data, path, header_list=None, delimiter=";", fmt="%10.6g"):

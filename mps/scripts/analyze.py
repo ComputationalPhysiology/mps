@@ -1,6 +1,7 @@
 """
 Analyze flourecense data
 """
+import datetime
 import json
 import logging
 import os
@@ -12,8 +13,19 @@ from typing import Any, Dict, Optional
 
 from ..analysis import analyze_mps_func
 from ..load import MPS, valid_extensions
+from ..utils import json_serial
 
 logger = logging.getLogger(__name__)
+
+
+def dump_settings(outdir, kwargs):
+    from .. import __version__
+
+    kwargs["time"] = datetime.datetime.now()
+    kwargs["mps_version"] = __version__
+    kwargs["full_path"] = os.path.abspath(kwargs["path"])
+    with open(os.path.join(outdir, "settings.json"), "w") as f:
+        json.dump(kwargs, f, indent=4, default=json_serial)
 
 
 def run_folder(**kwargs):
@@ -112,6 +124,8 @@ def run_file(**kwargs):
 
     mps_data = MPS(path)
     analyze_mps_func(mps_data, **kwargs)
+    dump_settings(outdir, kwargs)
+
     end = time.time()
     logger.info(
         (
