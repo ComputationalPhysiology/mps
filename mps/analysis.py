@@ -37,6 +37,7 @@ import logging
 from collections import namedtuple
 from copy import deepcopy
 from pathlib import Path
+from textwrap import dedent
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import numpy as np
@@ -2071,7 +2072,7 @@ class AnalyzeMPS:
             with open(self.outdir.joinpath("metadata.json"), "w") as f:
                 json.dump(self.metadata, f, indent=4, default=bin_utils.json_serial)
 
-            about_str = bin_utils.about()
+            about_str = AnalyzeMPS.about()
             with open(self.outdir.joinpath("ABOUT.md"), "w") as f:
                 f.write(about_str)
 
@@ -2079,6 +2080,58 @@ class AnalyzeMPS:
         self.analyze_unchopped_data()
         self.analyze_chopped_data()
         self.dump_data(dump_all=True)
+
+    @staticmethod
+    def about():
+        return dedent(
+            r"""
+            # About
+
+            The data in the folder was generated using the following settings
+
+            This folder contains the following files
+
+            * **original_trace**
+                - This is the the raw trace obtained after averaging the frames
+                in the stack without any background correction or filtering
+            * **corrected_trace**
+                - Left panel: This plots the original trace and the backgrund that we
+                subtract in the corrected trace.
+                - Right panel: The is the corrected version of the original trace where we
+                have performed a background correction and filtering.
+
+            * **chopped_data_features**
+                - Different panels with chopped data
+                - For e.g ADP30, we compute APD30 of all beats plotted in chopped_data:all
+                the panel with title all. Then we copmuted the mean and standard deviation (std)
+                of all those. Next we exclude those beats that are outside 1 std (default x = 1.0)
+                of the mean. This panel shows the beats that are within 1 std of the mean.
+            * **chopped_data**
+                - Left panel: This if all the beats that we were able to extract from
+                the corrected trace
+                - Right panel: This is shows the intersection of all beats plotted in chopped_data_z
+                described above.
+            * **average**
+                - These are the average of the traces in chopped_data
+            * **data.txt**
+                - This contains a short summary of analysis.
+            * **data.x where x is either mat of npy**
+                - This contains all the output data that can be loaded in python (data.npy)
+                of Matlab (data.mat)
+            * **unchopped_data.csv**
+                - This contains the unchopped traces, i.e the original trace and the corrected
+                trace ns a structured formated that are easy to view
+            * **chopped_data.csv**
+                - This contains the chopped traces, i.e the trace of each beat, the average trace etc,
+                in a structured formated that are easy to view
+            * **settings.js**
+                - Settings used to to perform the analysis. These settings
+                can be parsed to the analyze_mps script
+            * **metadata.js**
+                - Metadata stored within the mps file.
+
+            """
+        )
 
     def analyze_unchopped_data(self):
 
