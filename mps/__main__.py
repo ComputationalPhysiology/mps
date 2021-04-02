@@ -311,6 +311,84 @@ def mps2mp4(
     scripts.mps2mp4.main(path=path, outfile=outfile, synch=synch)
 
 
+try:
+    from mps_motion_tracking import cli
+    from mps_motion_tracking import motion_tracking as mt
+
+    @app.command(help="Estimate motion in stack of images")
+    def motion(
+        filename: str = typer.Argument(
+            ...,
+            help=dedent(
+                """
+            Path to file to be analyzed, typically an .nd2 or .
+            czi Brightfield file
+            """
+            ),
+        ),
+        algorithm: mt.FLOW_ALGORITHMS = typer.Option(
+            mt.FLOW_ALGORITHMS.farneback, help="The algorithm used to estimate motion"
+        ),
+        outdir: Optional[str] = typer.Option(
+            None,
+            "--outdir",
+            "-o",
+            help=dedent(
+                """
+            Directory where to store the results. If not provided, a folder with the the same
+            as the filename will be created and results will be stored in a subfolder inside
+            that called `motion`
+            """
+            ),
+        ),
+        scale: float = typer.Option(
+            0.3,
+            help=dedent(
+                """
+            Rescale data before running motion track. This is useful if the spatial resoltion
+            of the images are large. Scale = 1.0 will keep the original size
+            """
+            ),
+        ),
+        verbose: bool = typer.Option(False, "--verbose", "-v", help="More verbose"),
+        overwrite: bool = typer.Option(
+            True,
+            help=dedent(
+                """
+            If True, overwrite existing data if outdir
+            allready exist. If False, then the olddata will
+            be copied to a subdirectory with version number
+            of the software. If version number is not found
+            it will be saved to a folder called "old"."""
+            ),
+        ),
+    ):
+        cli.main(
+            filename=filename,
+            algorithm=algorithm,
+            outdir=outdir,
+            scale=scale,
+            verbose=verbose,
+            overwrite=overwrite,
+        )
+
+
+except ImportError:
+    pass
+
+# def automate():
+#     elif sys.argv[1] == "automate":
+#         try:
+#             import typer
+#             from mps_automation import cli
+#         except ImportError:
+#             print("Automation scripts are not installed.")
+#             print("Please ask Henrik (henriknf@simula.no)")
+#             sys.exit()
+#         sys.argv[1:] = sys.argv[2:]
+#         typer.run(cli.main)
+
+
 # def main():
 #     """
 #     Main execution of the mps package
@@ -353,28 +431,28 @@ def mps2mp4(
 #     elif sys.argv[1] == "split-pacing":
 #         bin_utils.split_pacing(sys.argv[2:])
 
-#     elif sys.argv[1] == "motion":
-#         try:
-#             import typer
-#             from mps_motion_tracking import cli
-#         except ImportError:
-#             print("Motion tracking software not installed.")
-#             print("Please ask Henrik (henriknf@simula.no)")
-#             sys.exit()
+# elif sys.argv[1] == "motion":
+#     try:
+#         import typer
+#         from mps_motion_tracking import cli
+#     except ImportError:
+#         print("Motion tracking software not installed.")
+#         print("Please ask Henrik (henriknf@simula.no)")
+#         sys.exit()
 
-#         # Run motion tracking
-#         sys.argv[1:] = sys.argv[2:]
-#         typer.run(cli.main)
-#     elif sys.argv[1] == "automate":
-#         try:
-#             import typer
-#             from mps_automation import cli
-#         except ImportError:
-#             print("Automation scripts are not installed.")
-#             print("Please ask Henrik (henriknf@simula.no)")
-#             sys.exit()
-#         sys.argv[1:] = sys.argv[2:]
-#         typer.run(cli.main)
+#     # Run motion tracking
+#     sys.argv[1:] = sys.argv[2:]
+#     typer.run(cli.main)
+# elif sys.argv[1] == "automate":
+#     try:
+#         import typer
+#         from mps_automation import cli
+#     except ImportError:
+#         print("Automation scripts are not installed.")
+#         print("Please ask Henrik (henriknf@simula.no)")
+#         sys.exit()
+#     sys.argv[1:] = sys.argv[2:]
+#     typer.run(cli.main)
 
 #     else:
 #         print("Argument {} not recongnized".format(sys.argv[1]))
