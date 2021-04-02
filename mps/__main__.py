@@ -246,6 +246,48 @@ def analyze(
     )
 
 
+@app.command(help=scripts.summary.__doc__)
+def summary(
+    folder: str = typer.Argument(..., help="The folder to be analyzed"),
+    filename: str = typer.Option(
+        "mps_summary",
+        help=dedent(
+            """
+            Name of the pdf and csv file that is
+            the output from the mps_summary script"""
+        ),
+    ),
+    silent: bool = typer.Option(False, help="Turn of printing"),
+    ignore_pacing: bool = typer.Option(
+        False,
+        help=dedent(
+            """
+            Ignore pacing data, for example if the pacing is
+            wrong"""
+        ),
+    ),
+    include_npy: bool = typer.Option(
+        False,
+        help=dedent(
+            """
+            If true then try to also open .npy
+            files. The default behavious is not to
+            include these, because the data that is
+            analyzed is also dumped to a .npy
+            files, and we do not want to open
+            those."""
+        ),
+    ),
+):
+    scripts.summary.main(
+        folder=folder,
+        filename=filename,
+        ignore_pacing=ignore_pacing,
+        silent=silent,
+        include_npy=include_npy,
+    )
+
+
 # def main():
 #     """
 #     Main execution of the mps package

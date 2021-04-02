@@ -31,7 +31,7 @@ def dump_settings(outdir, kwargs):
 def run_folder(**kwargs):
 
     path = Path(kwargs.get("path"))
-    if not path.exists():
+    if not path.is_dir():
         raise IOError(f"Folder {path} does not exist")
 
     for root, dirs, files in os.walk(path):
@@ -107,7 +107,7 @@ def check_overwrite(kwargs: Dict[str, Any], outdir: Path):
 def run_file(**kwargs):
 
     path = Path(kwargs.get("path"))
-    if not path.exists():
+    if not path.is_file():
         raise IOError(f"File {path} does not exist")
 
     outdir = kwargs.get("outdir")
