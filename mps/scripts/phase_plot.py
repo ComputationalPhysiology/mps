@@ -31,7 +31,6 @@ def main(voltage: str, calcium: str, outfile: Optional[str] = None):
         )
     else:
         outpath = Path(outfile)
-    outpath = outpath.with_suffix(".pdf")
 
     logger.info(
         f"Create phase plot of voltage at {voltage_path} and calcium at {calcium_path}."
