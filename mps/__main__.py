@@ -312,7 +312,7 @@ def mps2mp4(
 
 
 try:
-    from mps_motion_tracking import cli
+    from mps_motion_tracking import cli as cli_motion
     from mps_motion_tracking import motion_tracking as mt
 
     @app.command(help="Estimate motion in stack of images")
@@ -363,7 +363,7 @@ try:
             ),
         ),
     ):
-        cli.main(
+        cli_motion.main(
             filename=filename,
             algorithm=algorithm,
             outdir=outdir,
@@ -376,18 +376,46 @@ try:
 except ImportError:
     pass
 
-# def automate():
-#     elif sys.argv[1] == "automate":
-#         try:
-#             import typer
-#             from mps_automation import cli
-#         except ImportError:
-#             print("Automation scripts are not installed.")
-#             print("Please ask Henrik (henriknf@simula.no)")
-#             sys.exit()
-#         sys.argv[1:] = sys.argv[2:]
-#         typer.run(cli.main)
 
+try:
+    from mps_automation import cli as cli_automate
+
+    @app.command(help="Run automation script for MPS analysis")
+    def automate(
+        folder: str = typer.Argument(..., help="Path to the folder to be analyzed"),
+        config_file: Optional[str] = typer.Option(
+            None,
+            help=dedent(
+                """
+            Path to the configuration file. If not provided it will
+            look for a file called `config.yaml` in the root of the
+            folder you are trying to analyze"""
+            ),
+        ),
+        recompute: bool = typer.Option(
+            False,
+            help=dedent(
+                """
+            If True then redo analysis even though it allready
+            exist in the database"""
+            ),
+        ),
+        plot: bool = typer.Option(
+            True,
+            help=dedent(
+                """
+            Plot traces, by default True. Plotting takes quite a lot of
+            time so you can speed up the process by setting this to false."""
+            ),
+        ),
+    ):
+        cli_automate.main(
+            folder=folder, config_file=config_file, recompute=recompute, plot=plot
+        )
+
+
+except ImportError:
+    pass
 
 # def main():
 #     """
