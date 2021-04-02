@@ -61,7 +61,7 @@ NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 
 import logging as _logging
 
-from . import analysis, average, bin_utils, load, plotter, scripts, utils
+from . import analysis, average, load, plotter, scripts, utils
 from .load import MPS
 
 log_level = _logging.INFO

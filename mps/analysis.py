@@ -44,7 +44,7 @@ import numpy as np
 from scipy.interpolate import UnivariateSpline
 from scipy.ndimage import gaussian_filter1d
 
-from . import average, bin_utils, plotter, utils
+from . import average, plotter, utils
 
 logger = utils.get_logger(__name__)
 
@@ -2060,8 +2060,8 @@ class AnalyzeMPS:
 
         utils.dump_data(self.data, self.outdir.joinpath("data"), "npy")
         if dump_all:
-            chopped_data_padded = bin_utils.padding(self.chopped_data)
-            unchopped_data_padded = bin_utils.padding(self.unchopped_data)
+            chopped_data_padded = utils.padding(self.chopped_data)
+            unchopped_data_padded = utils.padding(self.unchopped_data)
             utils.to_csv(chopped_data_padded, self.outdir.joinpath("chopped_data"))
             utils.to_csv(unchopped_data_padded, self.outdir.joinpath("unchopped_data"))
 
@@ -2070,7 +2070,7 @@ class AnalyzeMPS:
 
             # utils.dump_data(data, self.outdir.joinpath("data"), "mat")
             with open(self.outdir.joinpath("metadata.json"), "w") as f:
-                json.dump(self.metadata, f, indent=4, default=bin_utils.json_serial)
+                json.dump(self.metadata, f, indent=4, default=utils.json_serial)
 
             about_str = AnalyzeMPS.about()
             with open(self.outdir.joinpath("ABOUT.md"), "w") as f:
