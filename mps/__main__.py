@@ -311,6 +311,25 @@ def mps2mp4(
     scripts.mps2mp4.main(path=path, outfile=outfile, synch=synch)
 
 
+@app.command(help=scripts.mps2mp4.__doc__)
+def phase_plot(
+    voltage: str = typer.Argument(..., help="Path to the voltage file"),
+    calcium: str = typer.Argument(..., help="Path to the calcium file"),
+    outfile: Optional[str] = typer.Option(
+        None,
+        "--outfile",
+        "-o",
+        help=dedent(
+            """
+            Output name for where you want to store the output
+            movie. If not provided a the same name as the basename
+            of the input file will be used"""
+        ),
+    ),
+):
+    scripts.phase_plot.main(voltage=voltage, calcium=calcium, outfile=outfile)
+
+
 try:
     from mps_motion_tracking import cli as cli_motion
     from mps_motion_tracking import motion_tracking as mt

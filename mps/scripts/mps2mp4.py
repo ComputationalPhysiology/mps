@@ -17,6 +17,7 @@ def main(
     synch: bool = False,
 ):
 
+    logger.setLevel(logging.INFO)
     file_path = Path(path)
     if not file_path.is_file():
         raise ValueError(f"Path {file_path} is not a file")
