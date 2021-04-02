@@ -39,7 +39,7 @@ def test_mps_phase_plot(mps_data_path):
             python,
             "-m",
             "mps",
-            "phase_plot",
+            "phase-plot",
             mps_data_path,
             mps_data_path,
             "-o",

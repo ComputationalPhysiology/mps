@@ -7,7 +7,7 @@ from setuptools import find_packages, setup
 with open("README.md") as readme_file:
     readme = readme_file.read()
 
-requirements = ["numpy", "scipy", "imageio", "tifffile"]
+requirements = ["numpy", "scipy", "imageio", "tifffile", "typer"]
 
 extras_require = {
     "zip": ["xmltodict"],

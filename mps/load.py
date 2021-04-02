@@ -56,7 +56,7 @@ else:
 
 logger = utils.get_logger(__name__)
 
-
+valid_extensions = [".nd2", ".czi", ".tif", ".tiff", ".stk"]
 mps_data_fields = ["frames", "time_stamps", "info", "metadata", "pacing"]
 mps_data = namedtuple(  # type: ignore
     "mps_data", mps_data_fields, defaults=(None,) * len(mps_data_fields)  # type: ignore
@@ -456,34 +456,30 @@ class MPS(object):
 
     """
 
-    def __init__(self, fname="", parameters=None, data=None):
+    def __init__(self, fname="", verbose=False):
 
-        self.parameters = MPS.default_parameters()
-        if parameters is not None:
-            self.parameters.update(**parameters)
-        logger.setLevel(self.parameters["log_level"])
-
+        loglevel = logging.DEBUG if verbose else logging.INFO
+        logger.setLevel(loglevel)
         if fname == "":
-            self._fname = ""
+            self._fname = "Unknown"
             self._ext = ""
-            if data is None:
-                raise ValueError("Please provide data of filename")
-        else:
-            # Check extension
-            _, ext = os.path.splitext(fname)
+            return
 
-            folder = os.path.abspath(os.path.dirname(fname))
-            # Find the correct extension
-            for f in os.listdir(folder):
-                if os.path.isfile(os.path.join(folder, f)):
-                    name_, ext_ = os.path.splitext(f)
-                    if name_ == fname:
-                        ext = ext_
+        # Check extension
+        _, ext = os.path.splitext(fname)
 
-            self._fname = os.path.abspath(fname)
-            self._ext = ext
+        folder = os.path.abspath(os.path.dirname(fname))
+        # Find the correct extension
+        for f in os.listdir(folder):
+            if os.path.isfile(os.path.join(folder, f)):
+                name_, ext_ = os.path.splitext(f)
+                if name_ == fname:
+                    ext = ext_
 
-            data = load_file(self._fname, self._ext)
+        self._fname = os.path.abspath(fname)
+        self._ext = ext
+
+        data = load_file(self._fname, self._ext)
         self._unpack(data)
 
     @classmethod
@@ -495,7 +491,9 @@ class MPS(object):
             data[field] = kwargs[field]
         data["pacing"] = kwargs.get("pacing", np.zeros_like(data["time_stamps"]))
         data["metadata"] = kwargs.get("metadata", {})
-        return cls(data=mps_data(**data))
+        obj = cls()
+        obj._unpack(mps_data(**data))
+        return data
 
     def __getstate__(self):
         # Copy the object's state from self.__dict__ which contains
@@ -506,37 +504,6 @@ class MPS(object):
 
     def __setstate__(self, state):
         self.__dict__.update(state)
-
-    @staticmethod
-    def default_parameters():
-        """
-        Returns
-        -------
-        parameters: dict
-            A dictionary with the follings key-value pairs:
-
-            background_polynomial_order : int
-                Order of polynomial applying in the background
-                correction algoritm
-            averaging_type : str
-                Type of averaging. Possible inputs are
-                ["spatial", "temporal", "global"] (Default: "global")
-            alpha : str
-                Take mean over value larger than this percentage value
-                (Default : 1.0, i.e take mean of all values)
-            local : array
-                List of indice to take take average over
-                [startx, endx, starty, endy]
-            log_level : int
-                Level of logging: Default 20 (INFO)
-        """
-        return dict(
-            background_polynomial_order=2,
-            log_level=logging.INFO,
-            alpha=1.0,
-            averaging_type="temporal",
-            local=[],
-        )
 
     def __repr__(self):
         return ("{self.__class__.__name__}" "({self._fname})").format(self=self)
@@ -566,15 +533,36 @@ class MPS(object):
         """
         Return number of frames per second
         """
+        fps = None
+        try:
+            factor = 1e-3 if self.info["time_unit"] == "ms" else 1.0
+            time_increment = self.info["dt"] * factor
+            fps = round(1.0 / time_increment)
 
-        factor = 1e-3 if self.info["time_unit"] == "ms" else 1.0
-        time_increment = self.info["dt"] * factor
-        fps = round(1.0 / time_increment)
-        return fps
+        finally:
+            return fps
 
     @property
     def pacing(self):
         return self.data.pacing
+
+    @property
+    def pacing_frequency(self):
+        """Return the pacing frequency in Hertz
+
+        Returns
+        -------
+        float
+            The pacing frequency
+        """
+        from .analysis import find_pacing_period
+
+        period = find_pacing_period(self.pacing)
+        if period < 1:
+            return 0
+
+        factor = 1000.0 if self.info["time_unit"] == "ms" else 1.0
+        return 1 / ((period * self.dt) / factor)
 
     @property
     def metadata(self):

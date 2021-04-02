@@ -61,21 +61,26 @@ NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 
 import logging as _logging
 
-from . import analysis, average, bin_utils, load, plotter, utils
+from . import analysis, average, load, plotter, scripts, utils
 from .load import MPS
 
 log_level = _logging.INFO
+_logging.basicConfig()
 
 
-def set_log_level(level):
+def set_log_level(level, logger=None):
 
-    for logger in [
-        utils.logger,
-        load.logger,
-        analysis.logger,
-        average.logger,
-        plotter.logger,
-    ]:
+    loggers = [logger]
+    if logger is None:
+        loggers = [
+            utils.logger,
+            load.logger,
+            analysis.logger,
+            average.logger,
+            plotter.logger,
+        ] + scripts._loggers
+
+    for logger in loggers:
 
         logger.setLevel(level)
         for h in logger.handlers:
@@ -93,4 +98,5 @@ __all__ = [
     "average",
     "bin_utils",
     "log_level",
+    "scripts",
 ]

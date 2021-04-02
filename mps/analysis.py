@@ -37,13 +37,14 @@ import logging
 from collections import namedtuple
 from copy import deepcopy
 from pathlib import Path
+from textwrap import dedent
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 from scipy.interpolate import UnivariateSpline
 from scipy.ndimage import gaussian_filter1d
 
-from . import average, bin_utils, plotter, utils
+from . import average, plotter, utils
 
 logger = utils.get_logger(__name__)
 
@@ -206,8 +207,8 @@ def find_pacing_period(pacing_data, pacing_amp=5):
             periods.append(j - i)
     if len(periods) > 0:
         return int(np.median(periods))
-    else:
-        return None
+
+    return 0.0
 
 
 def apd(V, percent, t=None, v_r=None, return_coords=False, rule=0, use_spline=True):
@@ -784,7 +785,7 @@ def time_unit(time_stamps):
     return unit
 
 
-def average_intensity(data, **kwargs):
+def average_intensity(data, mask=None, alpha=1.0, averaging_type="spatial"):
     """
     Compute the average_intensity of the frame stack.
     The available keyword arguments depends on the averaging_type
@@ -806,10 +807,6 @@ def average_intensity(data, **kwargs):
         # Get the frames
         data = data.frames
 
-    mask = kwargs.pop("mask", None)
-    alpha = kwargs.pop("alpha", 1.0)
-    averaging_type = kwargs.pop("averaging_type", "temporal")
-
     if alpha == 1.0:
         # Mean of everything
         if mask is None:
@@ -820,10 +817,10 @@ def average_intensity(data, **kwargs):
     else:
 
         if averaging_type == "spatial":
-            avg = average.get_spatial_average(data, **kwargs)
+            avg = average.get_spatial_average(data, alpha=alpha)
 
         elif averaging_type == "temporal":
-            avg = average.get_temporal_average(data, **kwargs)
+            avg = average.get_temporal_average(data, alpha=alpha)
         else:
             msg = (
                 "Unknown averaging_type {}. Expected averaging type to "
@@ -1759,7 +1756,12 @@ def analyze_mps_func(mps_data, mask=None, **kwargs):
         **kwargs,
     )
     analyzer.analyze_all()
-    return analyzer.data
+    try:
+        import matplotlib.pyplot as plt
+
+        plt.close("all")
+    finally:
+        return analyzer.data
 
 
 def analyze_frequencies(
@@ -2058,8 +2060,8 @@ class AnalyzeMPS:
 
         utils.dump_data(self.data, self.outdir.joinpath("data"), "npy")
         if dump_all:
-            chopped_data_padded = bin_utils.padding(self.chopped_data)
-            unchopped_data_padded = bin_utils.padding(self.unchopped_data)
+            chopped_data_padded = utils.padding(self.chopped_data)
+            unchopped_data_padded = utils.padding(self.unchopped_data)
             utils.to_csv(chopped_data_padded, self.outdir.joinpath("chopped_data"))
             utils.to_csv(unchopped_data_padded, self.outdir.joinpath("unchopped_data"))
 
@@ -2068,9 +2070,9 @@ class AnalyzeMPS:
 
             # utils.dump_data(data, self.outdir.joinpath("data"), "mat")
             with open(self.outdir.joinpath("metadata.json"), "w") as f:
-                json.dump(self.metadata, f, indent=4, default=bin_utils.json_serial)
+                json.dump(self.metadata, f, indent=4, default=utils.json_serial)
 
-            about_str = bin_utils.about()
+            about_str = AnalyzeMPS.about()
             with open(self.outdir.joinpath("ABOUT.md"), "w") as f:
                 f.write(about_str)
 
@@ -2078,6 +2080,58 @@ class AnalyzeMPS:
         self.analyze_unchopped_data()
         self.analyze_chopped_data()
         self.dump_data(dump_all=True)
+
+    @staticmethod
+    def about():
+        return dedent(
+            r"""
+            # About
+
+            The data in the folder was generated using the following settings
+
+            This folder contains the following files
+
+            * **original_trace**
+                - This is the the raw trace obtained after averaging the frames
+                in the stack without any background correction or filtering
+            * **corrected_trace**
+                - Left panel: This plots the original trace and the backgrund that we
+                subtract in the corrected trace.
+                - Right panel: The is the corrected version of the original trace where we
+                have performed a background correction and filtering.
+
+            * **chopped_data_features**
+                - Different panels with chopped data
+                - For e.g ADP30, we compute APD30 of all beats plotted in chopped_data:all
+                the panel with title all. Then we copmuted the mean and standard deviation (std)
+                of all those. Next we exclude those beats that are outside 1 std (default x = 1.0)
+                of the mean. This panel shows the beats that are within 1 std of the mean.
+            * **chopped_data**
+                - Left panel: This if all the beats that we were able to extract from
+                the corrected trace
+                - Right panel: This is shows the intersection of all beats plotted in chopped_data_z
+                described above.
+            * **average**
+                - These are the average of the traces in chopped_data
+            * **data.txt**
+                - This contains a short summary of analysis.
+            * **data.x where x is either mat of npy**
+                - This contains all the output data that can be loaded in python (data.npy)
+                of Matlab (data.mat)
+            * **unchopped_data.csv**
+                - This contains the unchopped traces, i.e the original trace and the corrected
+                trace ns a structured formated that are easy to view
+            * **chopped_data.csv**
+                - This contains the chopped traces, i.e the trace of each beat, the average trace etc,
+                in a structured formated that are easy to view
+            * **settings.js**
+                - Settings used to to perform the analysis. These settings
+                can be parsed to the analyze_mps script
+            * **metadata.js**
+                - Metadata stored within the mps file.
+
+            """
+        )
 
     def analyze_unchopped_data(self):
 

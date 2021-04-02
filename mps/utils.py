@@ -31,13 +31,14 @@ WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
 NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 """
 
+import datetime
 import logging
 import os
 import sys
 
 # Suppress scipy warning
 import warnings
-from collections import namedtuple
+from collections import OrderedDict, namedtuple
 from pathlib import Path
 
 import numpy as np
@@ -314,6 +315,16 @@ def to_csv(data, path, header=None):
     logger.debug("Saved to {}.csv".format(path))
 
 
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+
+    if isinstance(obj, (datetime.datetime)):
+        return obj.isoformat()
+    elif isinstance(obj, (np.ndarray)):
+        return obj.tolist()
+    raise TypeError("Type %s not serializable" % type(obj))
+
+
 def to_txt(data, path, header_list=None, delimiter=";", fmt="%10.6g"):
 
     if header_list is not None:
@@ -417,6 +428,19 @@ def normalize_frames(X, max_val=255, min_val=0, dtype=np.uint8):
     x_min = np.min(X)
     arr = ((X - x_min) / (np.max(X) - x_min)) * (max_val - min_val) + min_val
     return np.array(arr, dtype=dtype)
+
+
+def padding(data, fill_value=0):
+    """
+    Make sure all traces are of the same lenght and
+    fill in extra values if neccessary
+    """
+    N = np.max([len(a) for a in data.values()])
+    padded_data = OrderedDict()
+    for k, v in data.items():
+        padded_data[k] = np.concatenate((v, fill_value * np.ones(N - len(v))))
+
+    return padded_data
 
 
 def frames2mp4(frames, path, framerate=None):
