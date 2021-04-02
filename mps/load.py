@@ -460,6 +460,10 @@ class MPS(object):
 
         loglevel = logging.DEBUG if verbose else logging.INFO
         logger.setLevel(loglevel)
+        if fname == "":
+            self._fname = "Unknown"
+            self._ext = ""
+            return
 
         # Check extension
         _, ext = os.path.splitext(fname)
@@ -487,7 +491,9 @@ class MPS(object):
             data[field] = kwargs[field]
         data["pacing"] = kwargs.get("pacing", np.zeros_like(data["time_stamps"]))
         data["metadata"] = kwargs.get("metadata", {})
-        return cls(data=mps_data(**data))
+        obj = cls()
+        obj._unpack(mps_data(**data))
+        return data
 
     def __getstate__(self):
         # Copy the object's state from self.__dict__ which contains
@@ -527,11 +533,14 @@ class MPS(object):
         """
         Return number of frames per second
         """
+        fps = None
+        try:
+            factor = 1e-3 if self.info["time_unit"] == "ms" else 1.0
+            time_increment = self.info["dt"] * factor
+            fps = round(1.0 / time_increment)
 
-        factor = 1e-3 if self.info["time_unit"] == "ms" else 1.0
-        time_increment = self.info["dt"] * factor
-        fps = round(1.0 / time_increment)
-        return fps
+        finally:
+            return fps
 
     @property
     def pacing(self):

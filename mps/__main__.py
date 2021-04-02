@@ -72,7 +72,7 @@ def main(
 def split_pacing(
     folder: str = typer.Argument(..., help="The folder to be analyzed"),
     recursive: bool = typer.Option(False, help="Recursively go through all sufolders"),
-    verbose: bool = typer.Option(False, help="More verbose"),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="More verbose"),
     keep_original: bool = typer.Option(
         True, help="If True, copy the files, otherwise move them."
     ),
@@ -87,6 +87,8 @@ def analyze(
     path: str = typer.Argument(..., help="Path to file or folder to be analyzed"),
     outdir: Optional[str] = typer.Option(
         None,
+        "--outdir",
+        "-o",
         help=dedent(
             """
         Output directory for where you want to store the
@@ -221,7 +223,7 @@ def analyze(
             the exact traces from the raw data."""
         ),
     ),
-    verbose: bool = typer.Option(False, help="More verbose"),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="More verbose"),
 ):
 
     scripts.analyze.main(
@@ -286,6 +288,27 @@ def summary(
         silent=silent,
         include_npy=include_npy,
     )
+
+
+@app.command(help=scripts.mps2mp4.__doc__)
+def mps2mp4(
+    path: str = typer.Argument(..., help="Path to the mps file"),
+    outfile: Optional[str] = typer.Option(
+        None,
+        "--outfile",
+        "-o",
+        help=dedent(
+            """
+            Output name for where you want to store the output
+            movie. If not provided a the same name as the basename
+            of the input file will be used"""
+        ),
+    ),
+    synch: bool = typer.Option(
+        False, help="Start video at same time as start of pacing"
+    ),
+):
+    scripts.mps2mp4.main(path=path, outfile=outfile, synch=synch)
 
 
 # def main():
