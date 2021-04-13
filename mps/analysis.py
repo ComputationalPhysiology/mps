@@ -1740,12 +1740,35 @@ def exclude_x_std(data, x=None, skips=None):
     )
 
 
-def analyze_mps_func(mps_data, mask=None, **kwargs):
+def analyze_mps_func(
+    mps_data, mask=None, analysis_window_start=0, analysis_window_end=-1, **kwargs
+):
     avg = average_intensity(mps_data.frames, mask=mask)
     time_stamps = mps_data.time_stamps
     pacing = mps_data.pacing
     info = mps_data.info
     metadata = mps_data.metadata
+
+    start_index = 0
+    end_index = len(time_stamps)
+    if analysis_window_start > 0:
+        try:
+            start_index = next(
+                i for i, v in enumerate(time_stamps) if v >= analysis_window_start
+            )
+        except StopIteration:
+            pass
+    if analysis_window_end != -1:
+        try:
+            end_index = next(
+                i for i, v in enumerate(time_stamps) if v >= analysis_window_end
+            )
+        except StopIteration:
+            pass
+
+    avg = avg[start_index:end_index]
+    time_stamps = time_stamps[start_index:end_index]
+    pacing = pacing[start_index:end_index]
 
     analyzer = AnalyzeMPS(
         avg=avg,
