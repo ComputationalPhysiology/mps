@@ -77,7 +77,7 @@ dist: clean ## builds source and wheel package
 	ls -l dist
 
 install: clean ## install on unix
-	python -m pip install ".[all]"
+	python -m pip install ".[dev]"
 
 install-windows: clean ## install on windows usig pipwin
 	python -m pip install --upgrade pip
@@ -87,16 +87,13 @@ install-windows: clean ## install on windows usig pipwin
 
 dev: clean ## Developement install
 	python -m pip install --upgrade pip
-	python -m pip install -r requirements_dev.txt
-	python -m pip install -e ".[all]"
+	python -m pip install -e ".[dev]"
 	pre-commit install
 
 dev-windows: clean ## Developement install - windows
 	python -m pip install --upgrade pip
 	python -m pip install pipwin
-	pipwin install -r requirements_dev.txt
-	pipwin install -r requirements.txt
-	python -m pip install "."
+	python -m pip install ".[dev]"
 	pre-commit install
 
 installer: clean  ## make installer for unix
