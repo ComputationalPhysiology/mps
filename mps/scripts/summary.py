@@ -14,6 +14,7 @@ except ImportError:
     has_mpl = False
 
 
+import ap_features as apf
 import numpy as np
 
 from .. import analysis, utils
@@ -30,31 +31,31 @@ def get_data(path: Path, ignore_pacing: bool = False):
         average = analysis.average_intensity(data.frames)
         time_stamps = data.time_stamps
         pacing = data.pacing
-        background = analysis.background(time_stamps, average)
-        avg = analysis.filt(average - background, 3)
+        background = apf.background.background(time_stamps, average)
+        avg = apf.utils.filt(average - background, 3)
 
         pacing_chop = np.zeros_like(pacing) if ignore_pacing else pacing
-        chopped_data = analysis.chop_data(avg, time_stamps, pacing=pacing_chop)
+        chopped_data = apf.chopping.chop_data(avg, time_stamps, pacing=pacing_chop)
         apd_analysis = analysis.analyze_apds(
             chopped_data.data, chopped_data.times, plot=False
         )
 
         tau75s = [
-            analysis.tau(t, c, 0.75)
+            apf.features.tau(t, c, 0.75)
             for c, t in zip(chopped_data.data, chopped_data.times)
         ]
         upstroke80s = [
-            analysis.upstroke(t, c, 0.8)
+            apf.features.upstroke(t, c, 0.8)
             for c, t in zip(chopped_data.data, chopped_data.times)
         ]
         ttp = [
-            analysis.time_to_peak(t, c, p)
+            apf.features.time_to_peak(t, c, p)
             for c, t, p in zip(
                 chopped_data.data, chopped_data.times, chopped_data.pacing
             )
         ]
         nbeats = len(chopped_data.data)
-        freqs = analysis.beating_frequency_modified(
+        freqs = apf.features.beating_frequency_from_peaks(
             chopped_data.data, chopped_data.times
         )
 

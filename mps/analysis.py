@@ -40,9 +40,9 @@ from pathlib import Path
 from textwrap import dedent
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+import ap_features as apf
 import numpy as np
 from scipy.interpolate import UnivariateSpline
-from scipy.ndimage import gaussian_filter1d
 
 from . import average, plotter, utils
 
@@ -156,37 +156,6 @@ def remove_spikes(y, pacing, spike_duration=7):
     return np.delete(y, spike_points)
 
 
-def beating_frequency(times, unit="ms"):
-    """
-    Returns the approximate beating frequency
-    in Hz
-    """
-    if len(times) == 0:
-        return np.nan
-    # Get chopped data
-    # Find the average lenght of each beat in time
-    t_mean = np.mean([ti[-1] - ti[0] for ti in times])
-    # Convert to seconds
-    if unit == "ms":
-        t_mean /= 1000.0
-    # Return the freqency
-    return 1.0 / t_mean
-
-
-def beating_frequency_modified(data, times, unit="ms"):
-    """
-    Returns the approximate beating frequency
-    in Hz
-    """
-
-    t_maxs = [t[np.argmax(c)] for c, t in zip(data, times)]
-
-    dt = np.diff(t_maxs)
-    if unit == "ms":
-        dt = np.divide(dt, 1000.0)
-    return np.divide(1, dt)
-
-
 def find_pacing_period(pacing_data, pacing_amp=5):
     """
     Find period of pacing in pacing data
@@ -209,546 +178,6 @@ def find_pacing_period(pacing_data, pacing_amp=5):
         return int(np.median(periods))
 
     return 0.0
-
-
-def apd(V, percent, t=None, v_r=None, return_coords=False, rule=0, use_spline=True):
-    r"""
-    Return the action potential duration at the given
-    percent repolarization, so that percent = 0
-    would be zero, and percent = 1 given the time from triggering
-    to potential is down to resting potential.
-
-    Arguments
-    ---------
-
-    V : array
-        The signal
-    percent: float
-        The percentage (value between zero and 1)
-    t : array
-        List with times
-    v_r : float
-        The resting potential(optional). If not provided the minimum value
-        will be used
-    return_coords:
-        If True, return the coordinates of the start and stop
-        of the APD, and not the duration itself
-    rule : int
-        If 0 APD_X is computed as the difference between
-        the intersection points of the line at X percent from the max
-        If 1 APD_X is computed from the maximum derivative to the
-        intersection line. (Default: 0)
-    use_spline : bool
-        Use spline interpolation to get exact localization of the zeros
-        (Default : True)
-
-    Returns
-    -------
-    duration : float
-        The percentage action potential duration
-
-    .. Note::
-
-        If the signal has more intersection than two with the
-        APX_X line, then the first and last occurence will be used.
-
-
-    Notes
-    -----
-    If the signal represent voltage, we would like to compute the action
-    potential duration at a given percentage of the signals. Formally,
-    Let :math:`p \in (0, 100)`, and define
-
-    .. math::
-        y_p = \tilde{y} - \left(1- \frac{p}{100} \right).
-
-    Now let :math:`\mathcal{T}` denote the set of solutions of :math:`y_p = 0`,
-    i.e
-
-    .. math::
-        y_p(t) = 0, \;\; \forall t \in \mathcal{T}
-
-    Then there are three different scenarios; :math:`\mathcal{T}` contains one,
-    two or more than two elements. Note that :math:`\mathcal{T}` cannot be
-    empty (because of the intermediate value theorem).
-    The only valid scenario is the case when :math:`\mathcal{T}` contains
-    two (or more) elements. In this case we define
-
-    .. math::
-        \mathrm{APD} \; p = \max \mathcal{T} - \min \mathcal{T}
-
-    for :math:`p < 0.5` and
-
-    .. math::
-        \mathrm{APD} \; p = \min \mathcal{T} / \min \mathcal{T}  - \min \mathcal{T}
-
-    """
-    if t is None:
-        t = range(len(V))
-
-    msg = "The signal and time are not of same lenght"
-    assert len(t) == len(V), msg
-
-    y = normalize_signal(V, v_r) - (1 - percent)
-
-    if use_spline:
-
-        k = 3 if rule == 0 else 5
-        try:
-            f = UnivariateSpline(t, y, s=0, k=k)
-        except Exception as ex:
-            logger.warning(
-                (
-                    "Unable to compute APD {}. " "Please change your settings, {}" ""
-                ).format(percent * 100, ex)
-            )
-            return None
-
-        inds = f.roots()
-    else:
-        inds = t[np.where(np.diff(np.sign(y)))[0]]
-
-    if len(inds) == 0:
-        logger.warning("Warning: no root was found for APD {}".format(percent))
-        x1 = x2 = 0
-    if len(inds) == 1:
-        x1 = x2 = inds[0]
-        logger.warning("Warning: only one root was found for APD {}" "".format(percent))
-    else:
-        start_index = np.argmax(np.diff(inds))
-        x1 = sorted(inds)[start_index]
-        x2 = sorted(inds)[start_index + 1]
-        # if percent < 0.5:
-        #     x2 = sorted(inds)[-1]
-        # else:
-        #     x2 = sorted(inds)[1]
-
-    if rule == 1:
-
-        if use_spline:
-            h = f.derivative()
-            x1 = np.interp(np.argmax(h(h.derivative().roots())), range(len(t)), t)
-        else:
-            x1 = np.argmax(np.diff(y))
-
-    if return_coords:
-        g = UnivariateSpline(t, V, s=0)
-        val_x1 = g(x1)
-        val_x2 = g(x2)
-
-        val_th = np.min(V) + (1 - percent) * (np.max(V) - np.min(V))
-
-        return np.array([x1, x2]), np.array([val_x1, val_x2, val_th])
-
-    else:
-        return x2 - x1
-
-
-def tau(x, y, a=0.75):
-    """
-    Decay time. Time for the signal amplitude to go from maxium to
-    (1 - a) * 100 % of maximum
-
-    Arguments
-    ---------
-    x : array
-        The time stamps
-    y : array
-        The signal
-    a : The value for which you want to estimate the time decay
-    """
-    Y = UnivariateSpline(x, normalize_signal(y) - a, s=0, k=3)
-    t_max = x[np.argmax(y)]
-    r = Y.roots()
-    if len(r) >= 2:
-        t_a = r[1]
-    elif len(r) == 1:
-        logger.warning(
-            (
-                "Only one zero was found when computing tau{}. " "Result might be wrong"
-            ).format(int(a * 100))
-        )
-        t_a = r[0]
-    else:
-        logger.warning(
-            (
-                "No zero found when computing tau{}. "
-                "Return the value of time to peak"
-            ).format(int(a * 100))
-        )
-        t_a = x[0]
-
-    return t_a - t_max
-
-
-def time_to_peak(x, y, pacing=None):
-    """
-    Computed the time to peak from pacing is
-    triggered to maximum amplitude. Note, if pacing info
-    is not provided it will compute the time from
-    the beginning of the trace (which might not be consistent)
-    to the peak.
-
-    Arguments
-    ---------
-    x : array
-        The time stamps
-    y : array
-        The signal
-    pacing : array
-        The pacing amplitude
-    """
-
-    if pacing is None:
-        return x[np.argmax(y)]
-
-    t_max = x[np.argmax(y)]
-    if pacing is None:
-        t_start = x[0]
-    else:
-        try:
-            start_idx = (
-                next(i for i, p in enumerate(np.diff(pacing.astype(float))) if p > 0)
-                + 1
-            )
-        except StopIteration:
-            start_idx = 0
-    t_start = x[start_idx]
-
-    return t_max - t_start
-
-
-def upstroke(x, y, a=0.8):
-    """
-    Compute the time from (1-a)*100 % signal
-    amplitude to peak. For example if if a = 0.8
-    if will compute the time from the starting value
-    of APD80 to the upstroke.
-    """
-
-    Y = UnivariateSpline(x, normalize_signal(y) - (1 - a), s=0, k=3)
-    t_max = x[np.argmax(y)]
-    r = Y.roots()
-    if len(r) >= 1:
-        if len(r) == 1:
-            logger.warning(
-                (
-                    "Only one zero was found when computing upstroke{}. "
-                    "Result might be wrong"
-                ).format(int(a * 100))
-            )
-        t_a = r[0]
-    else:
-        logger.warning(
-            (
-                "No zero found when computing upstroke{}. "
-                "Return the value of time to peak"
-            ).format(int(a * 100))
-        )
-        t_a = x[0]
-
-    return t_max - t_a
-
-
-def interpolate(t: np.ndarray, trace: np.ndarray, dt: float = 1.0):
-
-    f = UnivariateSpline(t, trace, s=0, k=1)
-    t0 = np.arange(t[0], t[-1] + dt, dt)
-    return t0, f(t0)
-
-
-def find_upstroke_values(
-    t: np.ndarray, y: np.ndarray, upstroke_duration: int = 50, normalize: bool = True
-) -> np.ndarray:
-
-    # Find intersection with APD50 line
-    y_mid = (np.max(y) + np.min(y)) / 2
-    f = UnivariateSpline(t, y - y_mid, s=0, k=3)
-    zeros = f.roots()
-    if len(zeros) == 0:
-        return np.array([])
-    idx_mid = next(i for i, ti in enumerate(t) if ti > zeros[0])
-
-    # Upstroke should not be more than 50 ms
-    N = upstroke_duration // 2
-    upstroke = y[idx_mid - N : idx_mid + N + 1]
-
-    if normalize and len(upstroke) > 0:
-        upstroke_smooth = gaussian_filter1d(upstroke, 2.0)
-
-        y_min = np.min(upstroke_smooth)
-        y_max = np.max(upstroke_smooth)
-
-        upstroke_normalized = (upstroke - y_min) / (y_max - y_min)
-
-        return upstroke_normalized
-
-    return upstroke
-
-
-def time_between_APDs(t, y, from_APD, to_APD):
-    """Find the duration between first intersection
-    of two APD lines
-
-    Arguments
-    ---------
-    t : np.ndarray
-        Time values
-    y : np.ndarray
-        The trace
-    from_APD: int
-        First APD line
-    to_APD: int
-        Second APD line
-
-    Returns
-    -------
-    float:
-        The time between `from_APD` to `to_APD`
-
-    Example
-    -------
-
-    .. code:: python
-
-        # Compute the time between APD20 and APD80
-        t2080 = time_between_APDs(t, y, 20, 80)
-
-    """
-    y_norm = normalize_signal(y)
-
-    if not (0 < from_APD < 1):
-        from_APD /= 100
-    y_from = UnivariateSpline(t, y_norm - from_APD, s=0, k=3)
-    t_from = y_from.roots()[0]
-
-    if not (0 < to_APD < 1):
-        to_APD /= 100
-    y_to = UnivariateSpline(t, y_norm - to_APD, s=0, k=3)
-    t_to = y_to.roots()[0]
-
-    return t_to - t_from
-
-
-def max_relative_upstroke_velocity(
-    t: np.ndarray, y: np.ndarray, upstroke_duration: int = 50, sigmoid_fit: bool = True
-) -> Upstroke:
-    """Estimate maximum relative upstroke velocity
-
-    Arguments
-    ---------
-    t : np.ndarray
-        Time values
-    y : np.ndarray
-        The trace
-    upstroke_duration : int
-        Duration in milliseconds of upstroke (Default: 50).
-        This does not have to be exact up should at least be
-        longer than the upstroke.
-    sigmoid_fit : bool
-        If True then use a sigmoid function to fit the data
-        of the upstroke and report the maximum derivate of
-        the sigmoid as the maximum upstroke.
-
-    Notes
-    -----
-    Brief outline of current algorithm:
-    1. Interpolate data to have time resolution of 1 ms.
-    2. Find first intersection with ADP50 line
-    3. Select 25 ms before and after the point found in 2
-    4. Normalize the 50 ms (upstroke_duration) from 3 so that we have
-    a max and min value of 1 and 0 respectively.
-    If sigmoid fit is True
-    Fit the normalize trace to a sigmoid function and compte the
-
-    else:
-    5. Compute the successive differences in amplitude (i.e delta y)
-    and report the maximum value of these
-
-
-    """
-
-    # Interpolate to 1ms precision
-    t0, y0 = interpolate(t, y, dt=1.0)
-    # Find values beloning to upstroke
-    upstroke = find_upstroke_values(t0, y0, upstroke_duration=upstroke_duration)
-    dt = np.mean(np.diff(t))
-    if len(upstroke) == 0:
-        # There is no signal
-        index = 0
-        value = np.nan
-        x0 = None
-        s = None
-        time_APD20_to_APD80 = np.nan
-    else:
-        t_upstroke = t0[: len(upstroke)]
-        t_upstroke -= t_upstroke[0]
-        if sigmoid_fit:
-
-            def sigmoid(x, k, x0):
-                return 0.5 * (np.tanh(k * (x - x0)) + 1)
-
-            from scipy.optimize import curve_fit
-
-            popt, pcov = curve_fit(sigmoid, t_upstroke, upstroke, method="dogbox")
-
-            k, x0 = popt
-            index = None  # type:ignore
-            s = sigmoid(t_upstroke, k, x0)
-            value = k / 2
-            time_APD20_to_APD80 = time_between_APDs(t_upstroke, s, 20, 80)
-
-        else:
-            # Find max upstroke
-            index = np.argmax(np.diff(upstroke))  # type:ignore
-            value = np.max(np.diff(upstroke))
-            x0 = None
-            s = None
-            time_APD20_to_APD80 = time_between_APDs(t_upstroke, upstroke, 20, 80)
-
-    return Upstroke(
-        index=index,
-        value=value,
-        upstroke=upstroke,
-        dt=dt,
-        x0=x0,
-        sigmoid=s,
-        time_APD20_to_APD80=time_APD20_to_APD80,
-    )
-
-
-def maximum_upstroke_velocity(y, t=None, use_spline=True, normalize=False):
-    r"""
-    Compute maximum upstroke velocity
-
-    Arguments
-    ---------
-    y : array
-        The signal
-    t : array
-        The time points
-    use_spline : bool
-        Use spline interpolation
-        (Default : True)
-    normalize : bool
-        If true normalize signal first, so that max value is 1.0,
-        and min value is zero before performing the computation.
-
-    Returns
-    -------
-    float
-        The maximum upstroke velocity
-
-    Notes
-    -----
-    If :math:`y` is the voltage, this feature corresponds to the
-    maximum upstroke velocity. In the case when :math:`y` is a continuous
-    signal, i.e a 5th order spline interpolant of the data, then we can
-    simply find the roots of the second derivative, and evaluate the
-    derivative at that point, i.e
-
-    .. math::
-        \max \frac{\mathrm{d}y}{\mathrm{d}t}
-        = \frac{\mathrm{d}y}{\mathrm{d}t} (t^*),
-
-    where
-
-    .. math::
-        \frac{\mathrm{d}^2y}{\mathrm{d}^2t}(t^*) = 0.
-
-    If we decide to use the discrete version of the signal then the
-    above each derivative is approximated using a forward difference, i.e
-
-    .. math::
-        \frac{\mathrm{d}y}{\mathrm{d}t}(t_i) \approx
-        \frac{y_{i+1}-y_i}{t_{i+1} - t_i}.
-
-    """
-
-    if t is None:
-        t = range(len(y))
-
-    msg = "The signal and time are not of same lenght"
-    assert len(t) == len(y), msg
-
-    # Normalize
-    if normalize:
-        y = normalize_signal(y)
-
-    if use_spline:
-        f = UnivariateSpline(t, y, s=0, k=5)
-        h = f.derivative()
-        max_upstroke_vel = np.max(h(h.derivative().roots()))
-    else:
-        max_upstroke_vel = np.max(np.divide(np.diff(y), np.diff(t)))
-
-    return max_upstroke_vel
-
-
-def integrate_apd(y, t=None, percent=0.3, use_spline=True, normalize=False):
-    r"""
-    Compute the integral of the signals above
-    the APD p line
-
-    Arguments
-    ---------
-    y : array
-        The signal
-    t : array
-        The time points
-    use_spline : bool
-        Use spline interpolation
-        (Default : True)
-    normalize : bool
-        If true normalize signal first, so that max value is 1.0,
-        and min value is zero before performing the computation.
-
-
-    Returns
-    -------
-    integral : float
-        The integral above the line defined by the APD p line.
-
-    Notes
-    -----
-    This feature represents the integral of the signal above the
-    horizontal line defined by :math:`\mathrm{APD} p`. First let
-
-    .. math::
-        y_p = \tilde{y} - \left(1- \frac{p}{100} \right),
-
-    and let :math:`t_1` and :math:`t_2` be the two solutions solving
-    :math:`y_p(t_i) = 0, i=1,2` (assume that we have 2 solutions only).
-    The integral we are seeking can now be computed as follows:
-
-    .. math::
-        \mathrm{Int} \; p = \int_{t_1}^{t_2}
-        \left[ y - y(t_1) \right] \mathrm{d}t
-
-    """
-
-    if normalize:
-        y = normalize_signal(y)
-
-    if t is None:
-        t = range(len(y))
-
-    coords, vals = apd(y, percent, t, return_coords=True, use_spline=use_spline)
-
-    if use_spline:
-        Y = y - vals[0]
-        f = UnivariateSpline(t, Y, s=0, k=3)
-        integral = f.integral(*coords)
-
-    else:
-        Y = y - vals[-1]
-
-        t1 = t.tolist().index(coords[0])
-        t2 = t.tolist().index(coords[1]) + 1
-
-        integral = np.sum(np.multiply(Y[t1:t2], np.diff(t)[t1:t2]))
-
-    return integral
 
 
 def normalize_signal(V, v_r=None):
@@ -847,61 +276,6 @@ def filt(y, kernel_size=None):
     return smooth_trace
 
 
-def correct_background(x, y, *args, **kwargs):
-    r"""
-    Perform at background correction.
-    First estimate background :math:`b`, and let
-    :math:`F_0 = b(0)`. The corrected background is
-    then :math:`\frac{y - b}{F_0}`
-
-    Arguments
-    ---------
-    x : np.mdarray
-        Time points
-    y : Fluorecense amplitude
-
-    Returns
-    -------
-    np.mdarrray
-        The corrected trace
-    """
-
-    bkg = background(x, y, *args, **kwargs)
-    F0 = bkg[0]
-    corrected = (1 / F0) * (y - bkg)
-    return corrected
-
-
-def corrected_apd(apd, beat_rate, formula="friderica"):
-    """Correct the given APD (or any QT measurement) for the beat rate.
-    normally the faster the HR (or the shorter the RR interval),
-    the shorter the QT interval, and vice versa
-
-    Friderica formula (default):
-
-    .. math::
-
-        APD (RR)^{-1/3}
-
-    Bazett formula:
-
-    .. math::
-
-        APD (RR)^{-1/2}
-
-    """
-
-    formulas = ["friderica", "bazett"]
-    msg = f"Expected formula to be one of {formulas}, got {formula}"
-    assert formula in formulas, msg
-    RR = np.divide(60, beat_rate)
-
-    if formula == "friderica":
-        return np.multiply(apd, pow(RR, -1 / 3))
-    else:
-        return np.multiply(apd, pow(RR, -1 / 2))
-
-
 def analyze_apds(
     chopped_data: List[List[float]],
     chopped_times: List[List[float]],
@@ -912,23 +286,26 @@ def analyze_apds(
 
     apd_levels = np.sort(np.append(np.arange(0.1, 0.91, 0.2), 0.8))
     apds = {
-        int(100 * k): [apd(y, k, t) for y, t in zip(chopped_data, chopped_times)]
+        int(100 * k): [
+            apf.features.apd(k, y, t) for y, t in zip(chopped_data, chopped_times)
+        ]
         for k in apd_levels
     }
 
     apd_points = {
         int(100 * k): [
-            apd(y, k, t, return_coords=True)
-            for y, t in zip(chopped_data, chopped_times)
+            apf.features._apd(k, y, t) for y, t in zip(chopped_data, chopped_times)
         ]
         for k in apd_levels
     }
 
-    median_freq = np.median(beating_frequency_modified(chopped_data, chopped_times))
+    median_freq = np.median(
+        apf.features.beating_frequency_from_peaks(chopped_data, chopped_times)
+    )
     beat_rates = {}
     apd_dt = {}
     for k, apdx in apd_points.items():
-        apd_dt[k] = [v[0][0] for v in apdx]
+        apd_dt[k] = [v[0] for v in apdx]
         if len(apd_dt[k]) > 1:
             # Time between APD80
             # Let last beat have the median beat rate
@@ -944,7 +321,7 @@ def analyze_apds(
         const_APD80 = np.nan
 
     capds = {
-        k: corrected_apd(v, b).tolist()
+        k: apf.features.corrected_apd(v, b).tolist()
         for (k, v), b in zip(apds.items(), beat_rates.values())
     }
 
@@ -957,10 +334,10 @@ def analyze_apds(
 
     triangulation = []
     for y, t in zip(chopped_data, chopped_times):
-        apd30 = apd(y, 0.3, t, return_coords=True)
-        apd80 = apd(y, 0.8, t, return_coords=True)
+        apd30 = apf.features._apd(0.3, y, t)
+        apd80 = apf.features._apd(0.8, y, t)
 
-        tri = apd80[0][-1] - apd30[0][-1]
+        tri = apd80[-1] - apd30[-1]
         if tri < 0:
             # Something is wrong
             tri = np.nan
@@ -1052,9 +429,16 @@ def plot_apd_analysis(chopped_data, chopped_times, res: APDAnalysis, fname=""):
 
     for c, t in zip(chopped_data, chopped_times):
         ax[2].plot(t, c, color="k")
-    for label, vals in res.apd_points.items():
-        x = [v[0][0] for v in vals] + [v[0][1] for v in vals]
-        y = [v[1][0] for v in vals] * 2
+    for i, (label, vals) in enumerate(res.apd_points.items()):
+        x = [v[0] for v in vals] + [v[1] for v in vals]
+
+        y = [
+            UnivariateSpline(chopped_times[j], chopped_data[j])(v[0])
+            for j, v in enumerate(vals)
+        ] + [
+            UnivariateSpline(chopped_times[j], chopped_data[j])(v[1])
+            for j, v in enumerate(vals)
+        ]
         ax[2].plot(x, y, linestyle="", marker="o", label=label)
 
     ax[2].legend()
@@ -1065,497 +449,6 @@ def plot_apd_analysis(chopped_data, chopped_times, res: APDAnalysis, fname=""):
     if fname != "":
         fig.savefig(fname)
     plt.close()
-
-
-def background(x, y, order=2, s=0.01, fct="atq"):
-    """
-    Compute an estimation of the background (aka baseline)
-    in chemical spectra
-
-
-    This is a reimplementation of a MATLAB script that
-    can be found `here <https://se.mathworks.com/matlabcentral
-    /fileexchange/27429-background-correction>`
-
-    .. rubric:: References
-
-    [1] Mazet, V., Carteret, C., Brie, D., Idier, J. and Humbert, B.,
-    2005. Background removal from spectra by designing and minimising
-    a non-quadratic cost function. Chemometrics and intelligent
-    laboratory systems, 76(2), pp.121-133.
-
-    """
-
-    # Rescaling
-    N = len(x)
-    x, i = np.sort(x), np.argsort(x)
-
-    y = y[i]
-
-    maxy = np.max(y)
-    dely = (maxy - np.min(y)) / 2
-    # Normalize time
-    x = 2 * np.divide(np.subtract(x, x[N - 1]), x[N - 1] - x[0]) + 1
-    y = np.subtract(y, maxy) / dely + 1
-
-    # Vandermonde matrix
-    T = np.vander(x, order + 1)
-    Tinv = np.linalg.pinv(T.T.dot(T)).dot(T.T)
-
-    # Initialisation (least-squares estimation)
-    a = Tinv.dot(y)
-    z = T.dot(a)
-
-    #  Other variables
-    alpha = 0.99 * 1 / 2  # Scale parameter alpha
-    it = 0  # Iteration number
-    zp = np.ones(N)  # Previous estimation
-
-    # Iterate
-    while np.sum((z - zp) ** 2) / np.sum(zp ** 2) > 1e-9:
-
-        it = it + 1  # Iteration number
-        zp = z  # Previous estimation
-        res = y - z  # Residual
-
-        d = np.zeros(len(res))
-
-        # Estimate d
-        if fct == "sh":
-            d[np.abs(res) < s] += res[np.abs(res) < s] * (2 * alpha - 1)
-            d[res <= -s] -= alpha * 2 * s + res[res <= -s]
-            d[res >= s] -= res[res >= s] - alpha * 2 * s
-
-        elif fct == "ah":
-            d[np.abs(res) < s] += res[np.abs(res) < s] * (2 * alpha - 1)
-            d[res >= s] -= res[res >= s] - alpha * 2 * s
-        elif fct == "stq":
-            d[np.abs(res) < s] += res[np.abs(res) < s] * (2 * alpha - 1)
-            d[res >= s] -= res[res >= s] - alpha * 2 * s
-
-        elif fct == "atq":
-            d[res < s] += res[res < s] * (2 * alpha - 1)
-            d[res >= s] -= res[res >= s]
-
-        # Estimate z
-        a = Tinv.dot(y + d)  # Polynomial coefficients a
-        z = T.dot(a)  # Polynomial
-
-    # Rescaling
-    j = np.argsort(i)
-    z = (z[j] - 1) * dely + maxy
-
-    a[0] = a[0] - 1
-    a = a * dely  # + maxy
-    return z
-
-
-def chop_data(data, time, **kwargs):
-
-    if time is None:
-        time = np.arange(len(data))
-
-    pacing = kwargs.pop("pacing", np.zeros(len(time)))
-
-    if all(pacing == 0):
-        logger.debug("Chop data without pacing")
-        return chop_data_without_pacing(data, time, **kwargs)
-    else:
-        logger.debug("Chop data with pacing")
-        return chop_data_with_pacing(data, time, pacing, **kwargs)
-
-
-class EmptyChoppingError(ValueError):
-    pass
-
-
-def chop_data_without_pacing(
-    data,
-    time,
-    threshold_factor=None,
-    extend_front=None,
-    extend_end=None,
-    min_window=None,
-    max_window=None,
-    winlen=None,
-    N=None,
-    **kwargs,
-):
-
-    r"""
-    Chop data into beats
-
-    Arguments
-    ---------
-    data : list or array
-        The data that you want to chop
-    time : list or array
-        The time points. If none is provided time will be
-        just the indices.
-    threshold_factor : float
-        Thresholds for where the signal should be chopped (Default: 0.3)
-    extend_front : scalar
-        Extend the start of each subsignal this many milliseconds
-        before the threshold is detected. Default: 300 ms
-    extend_end : scalar
-        Extend the end of each subsignal this many milliseconds.
-        Default 60 ms.
-    min_window : scalar
-        Length of minimum window
-    max_window : scalar
-        Length of maximum window
-    N : int
-        Length of output signals
-
-    Returns
-    -------
-    chopped_data : list
-        List of chopped data
-    chopped_times : list
-        List of chopped times
-    chopped_pacing : list
-        List of chopped pacing amps (which are all zero)
-
-
-
-    Notes
-    -----
-
-    The signals extracted from the MPS data consist of data from several beats,
-    and in order to e.g compute properties from an average beat, we need a way
-    to chop the signal into different beats. Suppose we have the
-    signal :math:`y(t),
-    t \in [0, T]`, where we assume that filtering and background correction
-    have allready been applied. Suppose we have :math:`N` sub-signals,
-    :math:`z_1, z_2, \cdots, z_N`, each representing one beat. Let
-    :math:`\tau_i = [\tau_i^0, \tau_i^1], i = 1, \cdots N` be
-    non-empty intervals corresponding to the support of each sub-signal
-    ( :math:`\tau_i = \{ t \in [0,T]: z_i(t) \neq 0 \}`), with
-    :math:`\tau_i^j < \tau_{i+1}^j \forall i` and :math:`\bigcup_{i=1}^N
-    \tau_i = [0, T]`. Note that the intersection :math:` \tau_i \cap
-    \tau_{i+1}` can be non-empty. The aim is now to find good candidates
-    for :math:`\tau_i^j , i = 1 \cdots N, j = 0,1`. We have two different
-    scenarios, namely with or without pacing information.
-
-    If pacing information is available we can e.g set :math:`\tau_i^0`
-    to be 30 ms before each stimulus is applied and :math:`\tau_i^1`
-    to be 60 ms before the next stimulus is applied.
-
-    If pacing information is not available then we need to estimate the
-    beginning and end of each interval. We proceed as follows:
-
-
-    1.  Choose some threshold value :math:`\eta` (default :math:`\eta = 0.5`),
-        and compute :math:`y_{\eta}`
-
-    2. Let :math:`h = y - y_{\eta}`,  and define the set
-
-    .. math::
-        \mathcal{T}_0 = \{ t : h(t) = 0 \}
-
-    3. Sort the elements of :math:`\mathcal{T}_0` in increasing order,
-       i.e :math:`\mathcal{T}_0 = (t_1, t_2, \cdots, t_M)`,
-       with :math:`t_i < t_{i+1}`.
-
-    4. Select a minimum duration of a beat :math:`\nu` (default
-       :math:`\nu = 50` ms) and define the set
-
-    .. math::
-        \mathcal{T}_1 = \{t_i \in \mathcal{T}_0 : t_{i+1} - t_i > \eta \}
-
-    to be be the subset of :math:`\mathcal{T}_0` where the difference between
-    to subsequent time stamps are greater than :math:`\eta`.
-
-    5. Let :math:`\delta > 0` (default :math:`\delta` = 0.1 ms), and set
-
-    .. math::
-        \{\tilde{\tau_1}^0, \tilde{\tau_2}^0, \cdots,\tilde{\tau_N}^0\}
-        := \{ t \in  \mathcal{T}_1 : h(t + \delta) > 0 \} \\
-        \{\tilde{\tau_1}^1, \tilde{\tau_2}^1, \cdots,\tilde{\tau_N}^1\}
-        := \{ t \in  \mathcal{T}_1 : h(t + \delta) < 0 \} \\
-
-    Note that we need to also make sure that all beats have a start and an end.
-
-    6. Extend each subsignal at the beginning and end, i,e
-       if :math:`a,b \geq 0`, define
-
-    .. math::
-        \tau_i^0 = \tilde{\tau_i}^0 - a \\
-        \tau_i^1 = \tilde{\tau_i}^1 + b
-    """
-    logger.debug("Chopping without pacing")
-    threshold_factor = threshold_factor if threshold_factor is not None else 0.3
-    extend_end = extend_end if extend_end is not None else 300
-    extend_front = extend_front if extend_front is not None else 100
-    min_window = min_window if min_window is not None else 50
-    max_window = max_window if max_window is not None else 2000
-    winlen = winlen if winlen is not None else 50
-
-    chop_pars = chopping_parameters(
-        use_pacing_info=False, extend_end=extend_end, extend_front=extend_front
-    )
-    logger.debug(f"Use chopping parameters: {chop_pars}")
-    empty = chopped_data(data=[], times=[], pacing=[], parameters=chop_pars)
-
-    # Make a spline interpolation
-    data_spline = UnivariateSpline(time, data, s=0)
-
-    try:
-        starts, ends, zeros = locate_chop_points(
-            time, data, threshold_factor, chop_pars
-        )
-    except EmptyChoppingError:
-        return empty
-
-    if len(zeros) <= 3:
-        ## Just return the original data
-        return chopped_data(
-            data=[data],
-            times=[time],
-            pacing=[np.zeros_like(data)],
-            parameters=chop_pars,
-        )
-    starts, ends = filter_start_ends_in_chopping(starts, ends, extend_front, extend_end)
-
-    while len(ends) > 0 and ends[-1] > time[-1]:
-        ends = ends[:-1]
-        starts = starts[:-1]
-
-    if len(ends) == 0:
-        return empty
-
-    # Update the ends to be the start of the next trace
-    for i, s in enumerate(starts[1:]):
-        ends[i] = s
-    ends[-1] = min(ends[-1] + extend_end, time[-2])
-
-    # Storage
-    cutdata = []
-    times = []
-
-    for s, e in zip(starts, ends):
-
-        if N is None:
-            # Find the correct time points
-            s_idx = next(i for i, si in enumerate(time) if si > s)
-            e_idx = next(i for i, ei in enumerate(time) if ei > e)
-            t = time[s_idx - 1 : e_idx + 1]
-
-        else:
-            t = np.linspace(s, e, N)
-
-        if len(t) == 0:
-            continue
-
-        if t[-1] - t[0] < min_window:
-            # Skip this one
-            continue
-
-        if t[-1] - t[0] > max_window:
-
-            t_end = next(i for i, ti in enumerate(t) if ti - t[0] > max_window) + 1
-            t = t[:t_end]
-
-        sub = data_spline(t)
-
-        cutdata.append(sub)
-        times.append(t)
-
-    pacing = [np.zeros(len(ti)) for ti in times]
-    return chopped_data(data=cutdata, times=times, pacing=pacing, parameters=chop_pars)
-
-
-def filter_start_ends_in_chopping(
-    starts: Union[List[float], np.ndarray],
-    ends: Union[List[float], np.ndarray],
-    extend_front: float = 0,
-    extend_end: float = 0,
-):
-    starts = np.array(starts)
-    ends = np.array(ends)
-    # If there is no starts return nothing
-    if len(starts) == 0:
-        raise EmptyChoppingError
-
-    # The same with no ends
-    if len(ends) == 0:
-        raise EmptyChoppingError
-
-    # If the first end is lower than the first start
-    # we should drop the first end
-    if ends[0] < starts[0]:
-        ends = ends[1:]
-
-    # And we should check this one more time
-    if len(ends) == 0:
-        raise EmptyChoppingError
-
-    # Subtract the extend front
-    starts = np.subtract(starts, extend_front)
-    # If the trace starts in the middle of an event, that event is thrown out
-    if starts[0] < 0:
-        starts = starts[1:]
-
-    new_starts = []
-    new_ends = []
-    for s in np.sort(starts):
-        # if len(new_ends) !
-        new_starts.append(s)
-        for e in np.sort(ends):
-            if e > s:
-                new_ends.append(e)
-                break
-        else:
-            # If no end was appended
-            # we pop the last start
-            new_starts.pop()
-
-    return np.array(new_starts), np.array(new_ends)
-
-
-def locate_chop_points(time, data, threshold_factor, chop_pars, winlen=50, eps=0.1):
-    """FIXME"""
-    # Some perturbation away from the zeros
-    # eps = 0.1  # ms
-
-    threshold = ((np.max(data) - np.min(data)) * threshold_factor) + np.min(data)
-
-    # Data with zeros at the threshold
-    data_spline_thresh = UnivariateSpline(time, data - threshold, s=0)
-    # Localization of the zeros
-    zeros_threshold_ = data_spline_thresh.roots()
-
-    # Remove close indices
-    inds = winlen < np.diff(zeros_threshold_)
-    zeros_threshold = np.append(zeros_threshold_[0], zeros_threshold_[1:][inds])
-
-    # Find the starts
-    starts = zeros_threshold[data_spline_thresh(zeros_threshold + eps) > 0]
-
-    if len(starts) == 0:
-        logger.info("Chould not chop data. Try to reduce threshold factor")
-        # Then something is wrong try agains with a lower threshold factor
-        threshold_factor /= 2
-
-        threshold = ((np.max(data) - np.min(data)) * threshold_factor) + np.min(data)
-
-        # Data with zeros at the threshold
-        data_spline_thresh = UnivariateSpline(time, data - threshold, s=0)
-        # Localization of the zeros
-        zeros_threshold_ = data_spline_thresh.roots()
-
-        # Remove close indices
-        inds = winlen < np.diff(zeros_threshold_)
-        if len(zeros_threshold_) > 1:
-            zeros_threshold = np.append(zeros_threshold_[0], zeros_threshold_[1:][inds])
-            # Find the starts
-            starts = zeros_threshold[data_spline_thresh(zeros_threshold + eps) > 0]
-
-    # Find the endpoint where we hit the threshold
-    ends = zeros_threshold[data_spline_thresh(zeros_threshold + eps) < 0]
-
-    return starts, ends, zeros_threshold
-
-
-def chop_data_with_pacing(
-    data,
-    time,
-    pacing,
-    extend_front=0,
-    extend_end=0,
-    min_window=300,
-    max_window=2000,
-    **kwargs,
-):
-    """
-    Chop data based on pacing
-
-    Arguments
-    ---------
-    data : array
-        The data to be chopped
-    time : array
-        The time stamps for the data
-    pacing : array
-        The pacing amplitude
-    extend_front : scalar
-        Extend the start of each subsignal this many milliseconds
-        before the threshold is detected. Default: 300 ms
-    extend_end : scalar
-        Extend the end of each subsignal this many milliseconds.
-        Default 60 ms.
-    min_window : int
-        Minimum size of chopped signal
-
-    Returns
-    -------
-    chopped_data : list
-        List of chopped data
-    chopped_times : list
-        List of chopped times
-    chopped_pacing : list
-        List of chopped pacing amps
-
-
-    Notes
-    -----
-    We first find where the pacing for each beat starts by finding
-    the indices where the pacing amplitude goes form zero to
-    something positive. Then we iterate over these indices and let
-    the start of each beat be the start of the pacing (minus `extend_front`,
-    which has a default value of zero) and the end will be the time of the
-    beginning of the next beat (plus `extend_end` which is also has as
-    default value of zero).
-    """
-    extend_end = extend_end if extend_end is not None else 0
-    extend_front = extend_front if extend_front is not None else 0
-    min_window = min_window if min_window is not None else 300
-    max_window = max_window if max_window is not None else 2000
-
-    # Find indices for start of each pacing
-    start_pace_idx = np.where(np.diff(np.array(pacing, dtype=float)) > 0)[0].tolist()
-    N = len(data)
-    start_pace_idx.append(N)
-
-    idx_freq = 1.0 / np.mean(np.diff(time))
-    shift_start = int(idx_freq * extend_front)
-    shift_end = int(idx_freq * extend_end)
-
-    chopped_y = []
-    chopped_pacing = []
-    chopped_times = []
-
-    for i in range(len(start_pace_idx) - 1):
-        # Time
-        end = min(start_pace_idx[i + 1] + shift_end, N)
-        start = max(start_pace_idx[i] - shift_start, 0)
-
-        t = time[start:end]
-        if t[-1] - t[0] < min_window:
-            continue
-
-        if t[-1] - t[0] > max_window:
-            t_end = next(i for i, ti in enumerate(t) if ti - t[0] > max_window) + 1
-            end = start + t_end
-            t = time[start:end]
-
-        chopped_times.append(t)
-
-        # Data
-        c = data[start:end]
-        chopped_y.append(c)
-
-        # Pacing
-        p = pacing[start:end]
-        chopped_pacing.append(p)
-
-    chop_pars = chopping_parameters(
-        use_pacing_info=True, extend_end=extend_end, extend_front=extend_front
-    )
-
-    return chopped_data(
-        data=chopped_y, times=chopped_times, pacing=chopped_pacing, parameters=chop_pars
-    )
 
 
 def compute_features(chopped_data, use_spline=True, normalize=False):
@@ -1640,21 +533,23 @@ def compute_features(chopped_data, use_spline=True, normalize=False):
 
         time = np.multiply(unitfactor, time)
 
-        apd90[i] = apd(data, 0.9, time, use_spline=use_spline) or np.nan
-        apd80[i] = apd(data, 0.8, time, use_spline=use_spline) or np.nan
-        apd50[i] = apd(data, 0.5, time, use_spline=use_spline) or np.nan
-        apd30[i] = apd(data, 0.3, time, use_spline=use_spline) or np.nan
-        tau75[i] = tau(time, data, 0.75)
-        upstroke80 = upstroke(time, data, 0.8)
+        apd90[i] = apf.features.apd(0.9, data, time, use_spline=use_spline) or np.nan
+        apd80[i] = apf.features.apd(0.8, data, time, use_spline=use_spline) or np.nan
+        apd50[i] = apf.features.apd(0.5, data, time, use_spline=use_spline) or np.nan
+        apd30[i] = apf.features.apd(0.3, data, time, use_spline=use_spline) or np.nan
+        tau75[i] = apf.features.tau(time, data, 0.75)
+        upstroke80 = apf.features.upstroke(time, data, 0.8)
 
         dFdt_max[i] = (
-            maximum_upstroke_velocity(
+            apf.features.maximum_upstroke_velocity(
                 data, time, use_spline=use_spline, normalize=normalize
             )
             or np.nan
         )
         int30[i] = (
-            integrate_apd(data, time, 0.3, use_spline=use_spline, normalize=normalize)
+            apf.features.integrate_apd(
+                data, time, 0.3, use_spline=use_spline, normalize=normalize
+            )
             or np.nan
         )
     f = dict(
@@ -1746,6 +641,7 @@ def analyze_mps_func(
     avg = average_intensity(mps_data.frames, mask=mask)
     time_stamps = mps_data.time_stamps
     pacing = mps_data.pacing
+
     info = mps_data.info
     metadata = mps_data.metadata
 
@@ -1795,7 +691,9 @@ def analyze_frequencies(
     plot=True,
 ) -> np.ndarray:
 
-    freqs = beating_frequency_modified(chopped_data, chopped_times, time_unit)
+    freqs = apf.features.beating_frequency_from_peaks(
+        chopped_data, chopped_times, time_unit
+    )
 
     mean_freq = np.median(freqs)
     std_freq = np.std(freqs)
@@ -2005,7 +903,9 @@ def poincare_plot(
 
     """
     apds_points = {
-        k: [apd(y, k / 100, t) for y, t in zip(chopped_data, chopped_times)]
+        k: [
+            apf.features.apd(k / 100, y, t) for y, t in zip(chopped_data, chopped_times)
+        ]
         for k in apds
     }
 
@@ -2049,6 +949,7 @@ class AnalyzeMPS:
 
         self.unchopped_data: Dict[str, Any] = {}
         self.chopped_data: Dict[str, Any] = {}
+        self.intervals: List[apf.chopping.Intervals] = []
         self.features: Dict[str, Any] = {}
         self._all_features: Dict[str, Any] = {}
         self.features_computed = False
@@ -2075,6 +976,7 @@ class AnalyzeMPS:
             "features": self.features,
             "chopping_parameters": self.chopping_parameters,
             "attributes": self.info,
+            "intervals": self.intervals,
         }
 
     def dump_data(self, dump_all=False):
@@ -2183,7 +1085,8 @@ class AnalyzeMPS:
         self.dump_data()
 
     def _set_choopped_data(self):
-        self._chopped_data = chop_data(
+
+        self._chopped_data = apf.chopping.chop_data(
             self.avg, self.time_stamps, pacing=self.pacing, **self.chopping_parameters
         )
         if len(self._chopped_data.data) == 0:
@@ -2201,6 +1104,7 @@ class AnalyzeMPS:
             self.chopped_data["time_{}".format(i)] = t
             self.chopped_data["trace_{}".format(i)] = d
             self.chopped_data["pacing_{}".format(i)] = p
+        self.intervals = self._chopped_data.intervals
 
     def analyze_chopped_data(self):
         self._set_choopped_data()
@@ -2281,7 +1185,7 @@ class AnalyzeMPS:
         if not hasattr(self, "_chopped_data"):
             self._set_choopped_data()
 
-        freqs = beating_frequency_modified(
+        freqs = apf.features.beating_frequency_from_peaks(
             self._chopped_data.data,
             self._chopped_data.times,
             self.info.get("time_unit", "ms"),
@@ -2296,7 +1200,7 @@ class AnalyzeMPS:
             )
         )
         for k in [30, 50, 80, 90]:
-            self._all_features[f"capd{k}"] = corrected_apd(
+            self._all_features[f"capd{k}"] = apf.features.corrected_apd(
                 self._all_features[f"apd{k}"], 60 / self.features["beating_frequency"]
             )
 
@@ -2484,10 +1388,11 @@ class AnalyzeMPS:
 
             logger.debug("Apply background correction")
 
-            background_ = background(self.time_stamps, self.avg)
+            bkg = apf.background.correct_background(self.time_stamps, self.avg, "full")
+            background_ = bkg.background
             bkgplot_y = np.transpose([np.copy(self.avg), background_])
             bkgplot_x = np.transpose([self.time_stamps, self.time_stamps])
-            self.avg = correct_background(self.time_stamps, self.avg)
+            self.avg = bkg.corrected
 
             logger.debug("Plot corrected trace trace")
             if self.parameters["plot"]:
@@ -2644,7 +1549,7 @@ def frame2average(frame, times=None, normalize=True, background_correction=True)
         assert (
             times is not None
         ), "Please provide time stamps for background correection"
-        avg = correct_background(times, avg_)
+        avg = apf.background.correct_background(times, avg_, "full").corrected
     else:
         avg = avg_
 
@@ -2863,7 +1768,9 @@ def baseline_intensity(
     for i in range(shape[0]):
         for j in range(shape[1]):
             loc_ij = loc[i, j, :]
-            baseline_intensity[i, j, :] = background(times, loc_ij)
+            baseline_intensity[i, j, :] = apf.background.background(
+                times, loc_ij, "full"
+            ).corrected
 
     return baseline_intensity
 
@@ -2927,12 +1834,14 @@ def prevalence(
     )
 
     avg = average.get_average_all(mps_data.frames)
-    chopped_data = chop_data_without_pacing(avg, mps_data.time_stamps)
-    global_freq = beating_frequency(
+    chopped_data = apf.chopping.chop_data_without_pacing(avg, mps_data.time_stamps)
+    global_freq = apf.features.beating_frequency(
         chopped_data.times, unit=mps_data.info.get("time_unit", "ms")
     )
     logger.info(f"Global frequency: {global_freq}")
-    global_snr = snr(correct_background(mps_data.time_stamps, avg))
+    global_snr = snr(
+        apf.background.correct_background(mps_data.time_stamps, avg, "full").corrected
+    )
     logger.info(f"Global SNR: {global_snr}")
 
     # Find the beating frequency for each local average
@@ -2942,8 +1851,10 @@ def prevalence(
     is_tissue = np.ones(shape, dtype=bool)
     for i, j in it.product(range(shape[0]), range(shape[1])):
         loc_ij = loc[i, j, :]
-        chopped_data = chop_data_without_pacing(loc_ij, mps_data.time_stamps)
-        freq[i, j] = beating_frequency(
+        chopped_data = apf.chopping.chop_data_without_pacing(
+            loc_ij, mps_data.time_stamps
+        )
+        freq[i, j] = apf.features.beating_frequency(
             chopped_data.times, unit=mps_data.info.get("time_unit", "ms")
         )
         local_snr[i, j] = snr(loc[i, j, :])

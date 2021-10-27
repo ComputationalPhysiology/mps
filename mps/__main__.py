@@ -175,16 +175,16 @@ def analyze(
             the end when chopping"""
         ),
     ),
-    chopping_min_window: Optional[int] = typer.Option(
-        None,
+    chopping_min_window: float = typer.Option(
+        50,
         help=dedent(
             """
             Smallest allowed length of beat (in
             milliseconds) to be included in chopping"""
         ),
     ),
-    chopping_max_window: Optional[int] = typer.Option(
-        None,
+    chopping_max_window: float = typer.Option(
+        2000,
         help=dedent(
             """
             Largest allowed length of beat (in

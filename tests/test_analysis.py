@@ -1,6 +1,6 @@
+import ap_features as apf
 import numpy as np
 import pytest
-import scipy.spatial.distance
 
 import mps
 
@@ -25,118 +25,7 @@ def chopped_data(request):
 
     kwargs["use_pacing_info"] = request.param == "with_pacing"
 
-    yield mps.analysis.chop_data(**kwargs), kwargs
-
-
-def test_filt():
-
-    N = 700
-    x = np.linspace(0, 7.0, N)
-    average = np.sin(2 * np.pi * (x - 0.25))
-    smooth = mps.analysis.filt(average)
-
-    assert np.linalg.norm(average - smooth) / np.linalg.norm(average)
-
-
-def test_beating_frequency():
-
-    assert (
-        abs(mps.analysis.beating_frequency([range(101) for i in range(10)], "s") - 0.01)
-        < 1e-12
-    )
-    assert (
-        abs(
-            mps.analysis.beating_frequency([range(101) for i in range(10)], "ms") - 10.0
-        )
-        < 1e-12
-    )
-
-    assert (
-        abs(
-            mps.analysis.beating_frequency(
-                [range(10 * i, 101 + 10 * i) for i in range(10)]
-            )
-            - 10.0
-        )
-        < 1e-12
-    )
-
-
-def test_background():
-    N = 700
-    x = np.linspace(0, 7, N)
-    y = np.sin(2 * np.pi * 1.2 * x)
-
-    a = 0.1
-    b = -1.5
-    c = 10.0
-
-    # Test linear and quadratic background
-    for a in [0, 0.1]:
-
-        background = a * x ** 2 + b * x + c
-        background -= background[0]
-        signal = y + background
-        estimated_background = mps.analysis.background(x, signal)
-        corrected = mps.analysis.correct_background(x, signal)
-
-        z1 = background - background[-1]
-        z2 = estimated_background - estimated_background[-1]
-
-        print(abs(np.subtract(z1, z2)))
-        assert all(abs(np.subtract(z1, z2)) < 1e-2)
-        assert all(abs(np.subtract(corrected, y)))
-
-
-def test_chop_data(chopped_data):
-
-    chopped_data, kwargs = chopped_data
-    # assert len(chopped_data.data) == 7
-    print([len(c) for c in chopped_data.data])
-    assert chopped_data.parameters.use_pacing_info is kwargs["use_pacing_info"]
-    assert chopped_data.parameters.extend_front == kwargs["extend_front"]
-
-    # fig, ax = plt.subplots()
-    # for t, c in zip(chopped_data.times, chopped_data.data):
-    #     ax.plot(t, c)
-    # plt.show()
-    N = min([len(d) for d in chopped_data.data])
-    data = np.array([d[:N] for d in chopped_data.data])
-    q = scipy.spatial.distance.pdist(data, "euclidean") / max(
-        [np.linalg.norm(d) for d in data]
-    )
-    assert all(q < 0.1)
-
-    times = np.array([t[:N] for t in chopped_data.times])
-    assert all(scipy.spatial.distance.pdist([t - t[0] for t in times]) < 1e-10)
-
-
-@pytest.mark.parametrize(
-    "start_in, end_in, start_out, end_out",
-    (
-        ([0, 2, 4], [1, 3, 5], [0, 2, 4], [1, 3, 5]),
-        ([0, 2, 4, 6], [1, 3, 5], [0, 2, 4], [1, 3, 5]),
-        ([-1, 2, 4, 6], [1, 3, 5], [2, 4], [3, 5]),
-        ([4], [1, 3, 5], [4], [5]),
-        ([1, 2], [1, 2, 5], [1, 2], [2, 5]),
-    ),
-)
-def test_filter_start_ends_in_chopping(start_in, end_in, start_out, end_out):
-
-    s, e = mps.analysis.filter_start_ends_in_chopping(start_in, end_in)
-    print(e)
-    print(s)
-    assert np.all(s == np.array(start_out))
-    assert np.all(e == np.array(end_out))
-
-
-@pytest.mark.parametrize(
-    "start_in, end_in", (([], [1, 3, 5]), ([1, 3], []), ([], []), ([2, 3], [1]))
-)
-def test_filter_start_ends_in_chopping_raises_EmptyChoppingError(start_in, end_in):
-
-    with pytest.raises(mps.analysis.EmptyChoppingError):
-        mps.analysis.filter_start_ends_in_chopping(start_in, end_in)
+    yield apf.chopping.chop_data(**kwargs), kwargs
 
 
 def test_remove_spikes():
