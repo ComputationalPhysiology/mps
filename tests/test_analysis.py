@@ -99,3 +99,21 @@ def test_AnalyzeMPS(mps_data):
     )
 
     analyzer.analyze_all()
+
+
+def test_compare_get_average_all_and_local():
+    from pathlib import Path
+
+    here = Path(__file__).parent.absolute()
+    mps_data = mps.MPS(
+        here.parent.joinpath("demo").joinpath("data").joinpath("demo.nd2"),
+    )
+
+    analysis_data = mps.analysis.analyze_mps_func(mps_data)
+    avg1 = analysis_data["unchopped_data"]["trace"]
+    avg2 = mps.analysis.frame2average(
+        mps_data.frames,
+        mps_data.time_stamps,
+        background_correction=True,
+    )
+    assert np.isclose(avg1, avg2).all()

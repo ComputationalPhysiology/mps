@@ -1254,7 +1254,7 @@ class AnalyzeMPS:
 
         return dict(
             spike_duration=0,
-            filter=True,
+            filter=False,
             ignore_pacing=False,
             remove_points_list=(),
             chopping_threshold_factor=0.3,
@@ -1278,7 +1278,7 @@ class AnalyzeMPS:
         )
 
 
-def frame2average(frame, times=None, normalize=True, background_correction=True):
+def frame2average(frame, times=None, normalize=False, background_correction=True):
     """
     Compute average pixel intensity of the frames
 
