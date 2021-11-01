@@ -28,21 +28,6 @@ def chopped_data(request):
     yield apf.chopping.chop_data(**kwargs), kwargs
 
 
-def test_remove_spikes():
-    spike_pt = 2
-    N = 10
-    pacing = np.zeros(N)
-    pacing[spike_pt + 1] = 1
-    arr = np.arange(N)
-
-    for spike_dur in [0, 1, 4, 8]:
-        arr1 = mps.analysis.remove_spikes(arr, pacing, spike_dur)
-        assert all(
-            arr1
-            == np.concatenate((np.arange(spike_pt), np.arange(spike_pt + spike_dur, N)))
-        )
-
-
 def test_local_averages():
 
     dt = 10.0
@@ -85,7 +70,9 @@ def test_local_averages():
 
 def test_analyze_apds(chopped_data):
     apd_analysis = mps.analysis.analyze_apds(
-        chopped_data[0].data, chopped_data[0].times, plot=False
+        chopped_data[0].data,
+        chopped_data[0].times,
+        plot=False,
     )
 
     # APD50 should be 500
@@ -94,7 +81,9 @@ def test_analyze_apds(chopped_data):
 
 def test_analyze_frequencies(chopped_data):
     freq_analysis = mps.analysis.analyze_frequencies(
-        chopped_data[0].data, chopped_data[0].times, plot=False
+        chopped_data[0].data,
+        chopped_data[0].times,
+        plot=False,
     )
     assert np.all(np.abs(freq_analysis - 1.0) < 0.01)
 
@@ -102,27 +91,11 @@ def test_analyze_frequencies(chopped_data):
 def test_AnalyzeMPS(mps_data):
     avg = mps.average.get_average_all(mps_data.frames)
     analyzer = mps.analysis.AnalyzeMPS(
-        avg, mps_data.time_stamps, mps_data.pacing, outdir="test_outdir", plot=True
+        avg,
+        mps_data.time_stamps,
+        mps_data.pacing,
+        outdir="test_outdir",
+        plot=True,
     )
 
     analyzer.analyze_all()
-
-
-# def test_bumpy_signals():
-#     data = np.load("bumpy_data.npy", allow_pickle=True).item()
-
-#     time = data["x"]
-#     trace = data["y"]
-#     pacing = data["p"]
-
-#     import matplotlib.pyplot as plt
-
-#     plt.plot(time, trace)
-#     plt.show()
-#     q = mps.analysis.analyze_mps_func_avg(trace, time, pacing)
-
-#     assert q["features"]["apd90"] > q["features"]["apd80"]
-
-
-# def test_poincare_plot(chopped_data):
-#     mps.analysis.poincare_plot(chopped_data[0].data, chopped_data[0].times, apds=[0.8])

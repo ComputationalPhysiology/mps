@@ -41,9 +41,10 @@ from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 
+import ap_features as apf
 import numpy as np
 
-from . import analysis, czifile, utils
+from . import czifile, utils
 from .nd2file import ND2File
 
 try:
@@ -59,13 +60,15 @@ logger = utils.get_logger(__name__)
 valid_extensions = [".nd2", ".czi", ".tif", ".tiff", ".stk"]
 mps_data_fields = ["frames", "time_stamps", "info", "metadata", "pacing"]
 mps_data = namedtuple(  # type: ignore
-    "mps_data", mps_data_fields, defaults=(None,) * len(mps_data_fields)  # type: ignore
+    "mps_data",
+    mps_data_fields,
+    defaults=(None,) * len(mps_data_fields),  # type: ignore
 )
 
 
 def info_dictionary(time_stamps):
     dt = np.mean(np.diff(time_stamps))
-    time_unit = analysis.time_unit(time_stamps)
+    time_unit = apf.utils.time_unit(time_stamps)
 
     info = dict(num_frames=len(time_stamps), dt=dt, time_unit=time_unit)
     return info
@@ -133,7 +136,6 @@ def load_nd2(fname):
 
         num_frames = frames.imagecount
         metadata = frames.metadata
-
         images = np.zeros((frames.height, frames.width, num_frames), dtype=np.uint16)
         time_stamps = np.zeros(num_frames)
 
@@ -160,7 +162,7 @@ def load_nd2(fname):
     time_stamps -= time_stamps[0]
 
     # Make sure time is in milliseconds
-    time_unit = analysis.time_unit(time_stamps)
+    time_unit = apf.utils.time_unit(time_stamps)
     if time_unit == "s":
         time_stamps *= 1000
 
@@ -182,7 +184,7 @@ def load_nd2(fname):
                 "Could not find calcibration factor to convert "
                 "from pixels to micrometers. Use 0.325 "
                 "micrometers per pixel"
-            )
+            ),
         )
         # Scale with the binning
         binning = dic["dBinningX"]
@@ -231,7 +233,7 @@ def load_czi(fname):
     time_stamps -= time_stamps[0]
 
     # Make sure time is in milliseconds
-    time_unit = analysis.time_unit(time_stamps)
+    time_unit = apf.utils.time_unit(time_stamps)
     if time_unit == "s":
         time_stamps *= 1000
 
@@ -270,7 +272,7 @@ def load_zip(fname):
         size_y = int(metadata["OME"]["Image"]["Pixels"]["@SizeY"])
 
         time_stamps = np.array(
-            [float(p["@DeltaT"]) for p in metadata["OME"]["Image"]["Pixels"]["Plane"]]
+            [float(p["@DeltaT"]) for p in metadata["OME"]["Image"]["Pixels"]["Plane"]],
         )
         # Normalize so that they start at zero
         time_stamps -= time_stamps[0]
@@ -281,7 +283,7 @@ def load_zip(fname):
                 size_x=size_x,
                 size_y=size_y,
                 um_per_pixel=float(
-                    metadata["OME"]["Image"]["Pixels"]["@PhysicalSizeY"]
+                    metadata["OME"]["Image"]["Pixels"]["@PhysicalSizeY"],
                 ),
             )
         )
@@ -320,7 +322,7 @@ def load_stk(fname):
                 "tifffile is not installed. Please install "
                 "that if you want to load stk files. python -m"
                 " pip install tiffile"
-            )
+            ),
         )
 
     with tifffile.TiffFile(fname) as f:
@@ -337,7 +339,7 @@ def load_stk(fname):
             size_x=frames.shape[0] * metadata["XCalibration"],
             size_y=frames.shape[1] * metadata["YCalibration"],
             um_per_pixel=float(
-                metadata["YCalibration"]  # Different in x- and y direction
+                metadata["YCalibration"],  # Different in x- and y direction
             ),
         )
     )
@@ -365,13 +367,13 @@ def load_tiff_timestamps(f):
     get_page_timstamp = lambda i: time2isoformat(
         tifffile.tifffile.metaseries_description_metadata(f.pages.get(i).description)[
             "PlaneInfo"
-        ]["acquisition-time-local"]
+        ]["acquisition-time-local"],
     )
     return list(
         map(
             lambda x: (x - get_page_timstamp(0)).total_seconds(),
             map(get_page_timstamp, range(num_pages)),
-        )
+        ),
     )
 
 
@@ -383,7 +385,7 @@ def load_tiff(fname):
                 "tifffile is not installed. Please install "
                 "that if you want to load stk files. python -m"
                 " pip install tiffile"
-            )
+            ),
         )
 
     with tifffile.TiffFile(fname) as f:
@@ -400,7 +402,7 @@ def load_tiff(fname):
             um_per_pixel=float(
                 metadata["PlaneInfo"][
                     "spatial-calibration-y"
-                ]  # Different in x- and y direction
+                ],  # Different in x- and y direction
             ),
         )
     )

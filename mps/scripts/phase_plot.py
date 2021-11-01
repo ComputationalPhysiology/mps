@@ -1,10 +1,11 @@
 """
 Make a phase plot with voltage on the x-axis
 and calcium on the y-axis."""
-
 import logging
 from pathlib import Path
 from typing import Optional
+
+import ap_features as apf
 
 from .. import analysis
 from ..load import MPS
@@ -27,13 +28,13 @@ def main(voltage: str, calcium: str, outfile: Optional[str] = None):
 
     if outfile is None:
         outpath = voltage_path.parent.joinpath(
-            f"{voltage_path.stem}_{calcium_path.stem}"
+            f"{voltage_path.stem}_{calcium_path.stem}",
         )
     else:
         outpath = Path(outfile)
 
     logger.info(
-        f"Create phase plot of voltage at {voltage_path} and calcium at {calcium_path}."
+        f"Create phase plot of voltage at {voltage_path} and calcium at {calcium_path}.",
     )
 
     outpath.parent.mkdir(exist_ok=True, parents=True)
@@ -48,8 +49,8 @@ def main(voltage: str, calcium: str, outfile: Optional[str] = None):
     calcium_trace = calcium_data["chopped_data"]["trace_1std"]
 
     phase_plots(
-        analysis.normalize_signal(voltage_trace),
-        analysis.normalize_signal(calcium_trace),
+        apf.utils.normalize_signal(voltage_trace),
+        apf.utils.normalize_signal(calcium_trace),
         outpath,
     )
 

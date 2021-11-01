@@ -6,7 +6,6 @@
 # software you agree with the terms and conditions of this license
 # agreement. If you do not accept the terms of this license agreement
 # you may not install or use this software.
-
 # Permission to use, copy, modify and distribute any part of this
 # software for non-profit educational and research purposes, without
 # fee, and without a written agreement is hereby granted, provided
@@ -61,7 +60,7 @@ NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 
 import logging as _logging
 
-from . import analysis, average, load, plotter, scripts, utils
+from . import analysis, average, ead, load, plotter, scripts, utils
 from .load import MPS
 
 log_level = _logging.INFO
@@ -99,4 +98,5 @@ __all__ = [
     "bin_utils",
     "log_level",
     "scripts",
+    "ead",
 ]

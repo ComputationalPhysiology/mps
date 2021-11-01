@@ -47,7 +47,8 @@ import scipy.io as sio
 warnings.filterwarnings(action="ignore", module="scipy", message="^internal gelsd")
 
 grid_settings = namedtuple(
-    "grid_settings", ("nx, ny, dx, dy, x_start," " y_start, x_end, y_end")
+    "grid_settings",
+    ("nx, ny, dx, dy, x_start," " y_start, x_end, y_end"),
 )
 
 
@@ -61,7 +62,7 @@ def get_logger(name, level=logging.INFO):
         ch.setLevel(level)
 
         formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         )
         ch.setFormatter(formatter)
 
@@ -265,24 +266,40 @@ def collect_data(voltage_data, calcium_data):
         logger.info("Key {} - Voltage: {}, Calcium: {}".format(k, vk, ck))
         # Voltage
         exit_code, msg = get_data_from_dict(
-            data, vk, voltage_data["features"], k, "voltage"
+            data,
+            vk,
+            voltage_data["features"],
+            k,
+            "voltage",
         )
         if exit_code:
             # Backward compatible
             exit_code, _ = get_data_from_dict(
-                data, vk, voltage_data["features"], k.upper(), "voltage"
+                data,
+                vk,
+                voltage_data["features"],
+                k.upper(),
+                "voltage",
             )
             if exit_code:
                 logger.warning(msg)
 
         # Calcium
         exit_code, msg = get_data_from_dict(
-            data, ck, calcium_data["features"], k, "calcium"
+            data,
+            ck,
+            calcium_data["features"],
+            k,
+            "calcium",
         )
         if exit_code:
             # Backward compatible
             exit_code, _ = get_data_from_dict(
-                data, ck, calcium_data["features"], k.upper(), "calcium"
+                data,
+                ck,
+                calcium_data["features"],
+                k.upper(),
+                "calcium",
             )
             if exit_code:
                 logger.warning(msg)
@@ -329,7 +346,7 @@ def to_txt(data, path, header_list=None, delimiter=";", fmt="%10.6g"):
 
     if header_list is not None:
         header = delimiter.join(
-            [("{:>" + fmt[1:].split(".")[0] + "s}").format(h) for h in header_list]
+            [("{:>" + fmt[1:].split(".")[0] + "s}").format(h) for h in header_list],
         )
 
     else:
@@ -359,12 +376,6 @@ def dump_data(data, path, fileformat="npy"):
         from scipy.io import savemat
 
         savemat(path, data)
-
-    elif fileformat == "yml":
-        import yaml
-
-        with open(path + ".yml", "w") as f:
-            yaml.dump(data, f, default_flow_style=False)
 
     elif fileformat == "npy":
         np.save(path, data)
@@ -449,7 +460,7 @@ def frames2mp4(frames, path, framerate=None):
     except ImportError:
         logger.warning(
             '"imageio" not found. Please install imageio in order to'
-            'save frames to mp4 file: "pip install imageio"'
+            'save frames to mp4 file: "pip install imageio"',
         )
     else:
 
@@ -531,93 +542,3 @@ def loadmat(filename):
 
     data = sio.loadmat(filename, struct_as_record=False, squeeze_me=True)
     return _check_keys(data)
-
-
-def dict2h5(h5name, data, h5group=""):
-    import h5py
-
-    with h5py.File(h5name, "w") as h5file:
-
-        def dict2h5(a, group):
-
-            for key, val in a.items():
-
-                subgroup = "/".join([group, str(key)])
-
-                if isinstance(val, dict):
-                    dict2h5(val, subgroup)
-
-                elif isinstance(val, (list, np.ndarray, tuple)):
-
-                    if len(val) == 0:
-                        # If the list is empty we do nothing
-                        pass
-
-                    elif np.isscalar(val[0]):
-
-                        v = np.array(val)
-                        h5file.create_dataset(subgroup, data=v)
-
-                    elif (
-                        isinstance(val[0], list)
-                        or isinstance(val[0], np.ndarray)
-                        or isinstance(val[0], dict)
-                    ):
-                        # Make this list of lists into a dictionary
-                        f = {str(i): v for i, v in enumerate(val)}
-                        dict2h5(f, subgroup)
-
-                    else:
-                        raise ValueError("Unknown type {}".format(type(val[0])))
-                elif np.isscalar(val):
-                    v = np.array([float(val)], dtype=float)
-                    h5file.create_dataset(subgroup, data=v)
-
-                else:
-                    raise ValueError("Unknown type {}".format(type(val)))
-
-        dict2h5(data, h5group)
-
-
-def load_dict_from_h5(fname, h5group=""):
-    """
-    Load the given h5file into
-    a dictionary
-    """
-    import h5py
-
-    assert os.path.isfile(fname), "File {} does not exist".format(fname)
-
-    # Just some error handling in case file is broken
-    try:
-        f = h5py.File(fname, "r")
-    except Exception:
-        return {}
-    finally:
-        f.close()
-
-    with h5py.File(fname, "r") as h5file:
-
-        def h52dict(hdf):
-            if isinstance(hdf, h5py._hl.group.Group):
-                t = {}
-
-                for key in hdf.keys():
-                    t[str(key)] = h52dict(hdf[key])
-
-            elif isinstance(hdf, h5py._hl.dataset.Dataset):
-                t = np.array(hdf)
-
-            return t
-
-        if h5group != "":
-            if h5group in h5file:
-                d = h52dict(h5file[h5group])
-            else:
-                msg = "h5group {} does not exist in h5file {}".format(fname, h5group)
-                logger.warning(msg)
-                return None
-        else:
-            d = h52dict(h5file)
-
-    return d

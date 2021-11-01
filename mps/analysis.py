@@ -38,27 +38,21 @@ from collections import namedtuple
 from copy import deepcopy
 from pathlib import Path
 from textwrap import dedent
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional
 
 import ap_features as apf
 import numpy as np
 from scipy.interpolate import UnivariateSpline
 
-from . import average, plotter, utils
+from . import average, ead, plotter, utils
 
 logger = utils.get_logger(__name__)
 
-chopped_data = namedtuple("chopped_data", "data, times, pacing, parameters")
-chopping_parameters = namedtuple(
-    "chopping_parameters", "use_pacing_info, extend_end, extend_front"
-)
 mps_prevalence = namedtuple(
-    "mps_prevalence", "prevalence, tissue_covered_area, is_beating, is_tissue"
+    "mps_prevalence",
+    "prevalence, tissue_covered_area, is_beating, is_tissue",
 )
-Upstroke = namedtuple(
-    "Upstroke",
-    ["index", "value", "upstroke", "dt", "x0", "sigmoid", "time_APD20_to_APD80"],
-)
+
 APDAnalysis = namedtuple(
     "APDAnalysis",
     [
@@ -85,133 +79,15 @@ def active_pixel_mask(frames, cutoff_factor=0.5, *args, **kwargs):
     logger.debug("Get active pixel mask")
 
     avg, inds = average.get_temporal_average(
-        frames, alpha=cutoff_factor, return_indices=True
+        frames,
+        alpha=cutoff_factor,
+        return_indices=True,
     )
 
     mask = np.ones_like(frames.T[0], dtype=bool).reshape(-1)
     mask[inds] = False
     mask = mask.reshape(frames.T[0].T.shape)
     return mask
-
-
-def remove_points(x, y, t_start, t_end, normalize=True):
-    """
-    Remove points in x and y between start and end.
-    Also make sure that the new x starts a zero if
-    normalize = True
-    """
-
-    print(max(x), min(x), t_start, t_end)
-    start = next(i for i, t in enumerate(x) if t > t_start) - 1
-    try:
-        end = next(i for i, t in enumerate(x) if t > t_end)
-    except StopIteration:
-        end = len(x) - 1
-
-    logger.debug(
-        ("Remove points for t={} (index:{}) to t={} (index:{})" "").format(
-            t_start, start, t_end, end
-        )
-    )
-    x0 = x[:start]
-    x1 = np.subtract(x[end:], x[end] - x[start])
-    x_new = np.concatenate((x0, x1))
-
-    if normalize:
-        x_new -= x_new[0]
-    y_new = np.concatenate((y[:start], y[end:]))
-
-    return x_new, y_new
-
-
-def remove_spikes(y, pacing, spike_duration=7):
-    """
-    Remove spikes from signal
-
-    Arguments
-    ---------
-    y : array
-        The signal where you want to remove spikes
-    pacing : array
-        The pacing amplitude of same length as y
-    """
-
-    msg = (
-        "Pacing and signal must be of equal length, "
-        "got len(y) = {}, len(pacing) = {}"
-    ).format(len(y), len(pacing))
-    assert len(y) == len(pacing), msg
-
-    # Find time of pacing
-    (inds,) = np.where(np.diff(np.array(pacing, dtype=float)) > 0)
-
-    if len(inds) == 0:
-        logger.warning("No pacing found. Spike removal not possible.")
-        return y
-
-    spike_points = np.concatenate(
-        [np.arange(i, i + spike_duration) for i in inds]
-    ).astype(int)
-
-    return np.delete(y, spike_points)
-
-
-def find_pacing_period(pacing_data, pacing_amp=5):
-    """
-    Find period of pacing in pacing data
-
-    Arguments
-    ---------
-    pacing_data : array
-        The pacing data
-    pacing_amp : float
-        The stimulus amplitude
-
-    """
-
-    periods = []
-    pace = np.where(pacing_data == pacing_amp)[0]
-    for i, j in zip(pace[:-1], pace[1:]):
-        if not j == i + 1:
-            periods.append(j - i)
-    if len(periods) > 0:
-        return int(np.median(periods))
-
-    return 0.0
-
-
-def normalize_signal(V, v_r=None):
-    """
-    Normalize signal to have maximum value 1
-    and zero being the value equal to v_r (resting value).
-    If v_r is not provided the minimum value
-    in V will be used as v_r
-
-    Arguments
-    ---------
-    V : array
-        The signal
-    v_r : float
-        The resting value
-
-    """
-
-    # Maximum valu
-    v_max = np.max(V)
-
-    # Baseline or resting value
-    if v_r is None:
-        v_r = np.min(V)
-
-    return (np.array(V) - v_r) / (v_max - v_r)
-
-
-def time_unit(time_stamps):
-
-    dt = np.mean(np.diff(time_stamps))
-    # Assume dt is larger than 0.5 ms and smallar than 0.5 seconds
-    unit = "ms" if dt > 0.5 else "s"
-    return unit
 
 
 def average_intensity(data, mask=None, alpha=1.0, averaging_type="spatial"):
@@ -261,21 +137,6 @@ def average_intensity(data, mask=None, alpha=1.0, averaging_type="spatial"):
     return avg
 
 
-def filt(y, kernel_size=None):
-    """
-    Filer signal using a median filter.
-    Default kernel_size is 3
-    """
-    if kernel_size is None:
-        kernel_size = 3
-
-    logger.debug("\nFilter image")
-    from scipy.signal import medfilt
-
-    smooth_trace = medfilt(y, kernel_size)
-    return smooth_trace
-
-
 def analyze_apds(
     chopped_data: List[List[float]],
     chopped_times: List[List[float]],
@@ -300,7 +161,7 @@ def analyze_apds(
     }
 
     median_freq = np.median(
-        apf.features.beating_frequency_from_peaks(chopped_data, chopped_times)
+        apf.features.beating_frequency_from_peaks(chopped_data, chopped_times),
     )
     beat_rates = {}
     apd_dt = {}
@@ -373,7 +234,10 @@ def analyze_apds(
 
     if plot:
         plot_apd_analysis(
-            chopped_data=chopped_data, chopped_times=chopped_times, res=res, fname=fname
+            chopped_data=chopped_data,
+            chopped_times=chopped_times,
+            res=res,
+            fname=fname,
         )
 
     return res
@@ -407,7 +271,8 @@ def plot_apd_analysis(chopped_data, chopped_times, res: APDAnalysis, fname=""):
     )
     # Mark significatn patches
     for sig, patch in zip(
-        np.array(list(res.is_significant.values())).flatten(), ax[0].patches
+        np.array(list(res.is_significant.values())).flatten(),
+        ax[0].patches,
     ):
         if not sig:
             continue
@@ -528,7 +393,7 @@ def compute_features(chopped_data, use_spline=True, normalize=False):
     upstroke80 = np.zeros(num_events)
 
     for i, (data, time) in enumerate(zip(chopped_data.data, chopped_data.times)):
-        unit = time_unit(time)
+        unit = apf.utils.time_unit(time)
         unitfactor = 1000.0 if unit == "s" else 1.0
 
         time = np.multiply(unitfactor, time)
@@ -542,13 +407,20 @@ def compute_features(chopped_data, use_spline=True, normalize=False):
 
         dFdt_max[i] = (
             apf.features.maximum_upstroke_velocity(
-                data, time, use_spline=use_spline, normalize=normalize
+                data,
+                time,
+                use_spline=use_spline,
+                normalize=normalize,
             )
             or np.nan
         )
         int30[i] = (
             apf.features.integrate_apd(
-                data, time, 0.3, use_spline=use_spline, normalize=normalize
+                data,
+                time,
+                0.3,
+                use_spline=use_spline,
+                normalize=normalize,
             )
             or np.nan
         )
@@ -624,7 +496,8 @@ def exclude_x_std(data, x=None, skips=None):
             included_indices[k] = range(len(v))
 
     excluded_data = namedtuple(
-        "excluded_data", ("new_data, included_indices, " "all_included_indices")
+        "excluded_data",
+        ("new_data, included_indices, " "all_included_indices"),
     )
     intsect = utils.get_intersection(included_indices)
     all_included_indices = list(intsect)
@@ -633,54 +506,6 @@ def exclude_x_std(data, x=None, skips=None):
         included_indices=included_indices,
         all_included_indices=all_included_indices,
     )
-
-
-def analyze_mps_func(
-    mps_data, mask=None, analysis_window_start=0, analysis_window_end=-1, **kwargs
-):
-    avg = average_intensity(mps_data.frames, mask=mask)
-    time_stamps = mps_data.time_stamps
-    pacing = mps_data.pacing
-
-    info = mps_data.info
-    metadata = mps_data.metadata
-
-    start_index = 0
-    end_index = len(time_stamps)
-    if analysis_window_start > 0:
-        try:
-            start_index = next(
-                i for i, v in enumerate(time_stamps) if v >= analysis_window_start
-            )
-        except StopIteration:
-            pass
-    if analysis_window_end != -1:
-        try:
-            end_index = next(
-                i for i, v in enumerate(time_stamps) if v >= analysis_window_end
-            )
-        except StopIteration:
-            pass
-
-    avg = avg[start_index:end_index]
-    time_stamps = time_stamps[start_index:end_index]
-    pacing = pacing[start_index:end_index]
-
-    analyzer = AnalyzeMPS(
-        avg=avg,
-        time_stamps=time_stamps,
-        pacing=pacing,
-        info=info,
-        metadata=metadata,
-        **kwargs,
-    )
-    analyzer.analyze_all()
-    try:
-        import matplotlib.pyplot as plt
-
-        plt.close("all")
-    finally:
-        return analyzer.data
 
 
 def analyze_frequencies(
@@ -692,7 +517,9 @@ def analyze_frequencies(
 ) -> np.ndarray:
 
     freqs = apf.features.beating_frequency_from_peaks(
-        chopped_data, chopped_times, time_unit
+        chopped_data,
+        chopped_times,
+        time_unit,
     )
 
     mean_freq = np.median(freqs)
@@ -700,7 +527,7 @@ def analyze_frequencies(
 
     is_significant = np.abs(freqs - mean_freq) > std_freq
     logger.info(
-        f"Found {sum(is_significant)} significant beats with regard to beat frequency"
+        f"Found {sum(is_significant)} significant beats with regard to beat frequency",
     )
 
     if plot:
@@ -741,133 +568,6 @@ def analyze_frequencies(
         plt.close()
 
     return freqs
-
-
-def detect_ead(
-    y: Union[List[float], np.ndarray], sigma: float = 3, prominence_level: float = 0.04
-) -> Tuple[bool, Optional[int]]:
-    """Detect (Early afterdepolarizations) EADs
-    based on peak prominence.
-
-    Arguments
-    ---------
-    y : np.ndarray
-        The signal that you want to detect EADs
-    sigma : float
-        Standard deviation in the gaussian smoothing kernal
-        Default: 3.0
-    prominence_level: float
-        How prominent a peak should be in order to be
-        characterized as an EAD. This value shold be
-        between 0 and 1, with a greater value being
-        more prominent. Defaulta: 0.04
-
-    Notes
-    -----
-    Given a signal :math:`y` we want to determine wether we have
-    an EAD present in the signal. `EADs <https://en.wikipedia.org/wiki/Afterdepolarization>`_
-    are abnormal depolarizations happening after the upstroke in an action potential.
-
-    We assume that an EAD occurs betweeen the maximum value of the signal
-    (i.e the peak) and the next minimum value (i.e when the signal is at rest)
-
-    To remove noisy patterns we first smooth the signal
-    with a gaussian filter. Then we take out only the part
-    of the signal that is between its maximum and the next
-    minimum values. Then we find the peaks with a
-    `Topographic Prominence <https://en.wikipedia.org/wiki/Topographic_prominence>`_
-    greather than the given prominence level
-
-    Returns
-    -------
-    bool:
-        Flag indicating if an EAD is found or not
-    int or None:
-        Index where we found the EAD. If no EAD is found then
-        this will be None. I more than one peaks are found then
-        only the first will be returned.
-
-    """
-    from scipy.ndimage import gaussian_filter1d
-    from scipy.signal import find_peaks
-
-    y = np.array(y)
-    idx_max = int(np.argmax(y))
-    idx_min = idx_max + int(np.argmin(y[idx_max:]))
-
-    y_tmp = y[idx_max:idx_min] - y[idx_min]
-    if len(y_tmp) == 0:
-        return False, None
-
-    y_smooth = gaussian_filter1d(y_tmp / np.max(y_tmp), sigma)
-    peaks, props = find_peaks(y_smooth, prominence=prominence_level)
-
-    return len(peaks) > 0, None if len(peaks) == 0 else int(peaks[0] + idx_max)
-
-
-def analyze_eads(
-    chopped_data: List[List[float]],
-    chopped_times: List[List[float]],
-    sigma: float = 3,
-    prominence_threshold: float = 0.04,
-    plot=True,
-    fname: str = "",
-) -> int:
-    """
-    Loop over all beats and check for EADs.
-
-    Arguments
-    ---------
-    chopped_data : list
-        List of the amplitude of each beat
-    chopped_data : list
-        List of the time stamps of each beat
-    sigma: float
-        Standard deviation in the gaussian smoothing kernal used for
-        EAD detection. Default: 3.0
-    prominence_threshold: float
-        How prominent a peak should be in order to be
-        characterized as an EAD. This value shold be
-        between 0 and 1, with a greater value being
-        more prominent. Defaulta: 0.04
-    plot : bool
-        If True we plot the beats with the potential EAD marked
-        as a red dot. Default: True
-    fname : str
-        Path to file that you want to save the plot.
-
-    Returns
-    -------
-    int:
-        The number of EADs
-    """
-
-    num_eads = 0
-    peak_inds = {}
-    for i, (c, t) in enumerate(zip(chopped_data, chopped_times)):
-        has_ead, peak_index = detect_ead(c)
-        if has_ead and peak_index is not None:
-            num_eads += 1
-            peak_inds[i] = peak_index
-
-    if plot:
-        try:
-            import matplotlib.pyplot as plt
-        except ImportError:
-            return num_eads
-
-        fig, ax = plt.subplots()
-        num_eads = 0
-        for i, (c, t) in enumerate(zip(chopped_data, chopped_times)):
-            ax.plot(t, c)
-            if i in peak_inds:
-                ax.plot([t[peak_inds[i]]], [c[peak_inds[i]]], "ro")
-        ax.set_title(f"EADs are marked with red dots. Found EADs in {num_eads} beats")
-        if fname != "":
-            fig.savefig(fname)
-        plt.close()
-
-    return num_eads
 
 
 def poincare_plot(
@@ -931,6 +631,54 @@ def poincare_plot(
         plt.show()
     plt.close()
     return apds_points
+
+
+def analyze_mps_func(
+    mps_data, mask=None, analysis_window_start=0, analysis_window_end=-1, **kwargs
+):
+    avg = average_intensity(mps_data.frames, mask=mask)
+    time_stamps = mps_data.time_stamps
+    pacing = mps_data.pacing
+
+    info = mps_data.info
+    metadata = mps_data.metadata
+
+    start_index = 0
+    end_index = len(time_stamps)
+    if analysis_window_start > 0:
+        try:
+            start_index = next(
+                i for i, v in enumerate(time_stamps) if v >= analysis_window_start
+            )
+        except StopIteration:
+            pass
+    if analysis_window_end != -1:
+        try:
+            end_index = next(
+                i for i, v in enumerate(time_stamps) if v >= analysis_window_end
+            )
+        except StopIteration:
+            pass
+
+    avg = avg[start_index:end_index]
+    time_stamps = time_stamps[start_index:end_index]
+    pacing = pacing[start_index:end_index]
+
+    analyzer = AnalyzeMPS(
+        avg=avg,
+        time_stamps=time_stamps,
+        pacing=pacing,
+        info=info,
+        metadata=metadata,
+        **kwargs,
+    )
+    analyzer.analyze_all()
+    try:
+        import matplotlib.pyplot as plt
+
+        plt.close("all")
+    finally:
+        return analyzer.data
 
 
 class AnalyzeMPS:
@@ -1055,7 +803,7 @@ class AnalyzeMPS:
             * **metadata.js**
                 - Metadata stored within the mps file.
 
-            """
+            """,
         )
 
     def analyze_unchopped_data(self):
@@ -1064,7 +812,9 @@ class AnalyzeMPS:
 
         if self.parameters["plot"]:
             plotter.plot_single_trace(
-                self.time_stamps, self.avg, self.outdir.joinpath("original_trace")
+                self.time_stamps,
+                self.avg,
+                self.outdir.joinpath("original_trace"),
             )
 
         self.remove_spikes()
@@ -1099,7 +849,7 @@ class AnalyzeMPS:
                 self._chopped_data.times,
                 self._chopped_data.data,
                 self._chopped_data.pacing,
-            )
+            ),
         ):
             self.chopped_data["time_{}".format(i)] = t
             self.chopped_data["trace_{}".format(i)] = d
@@ -1151,7 +901,7 @@ class AnalyzeMPS:
             else self.outdir.joinpath("frequency_analysis"),
         )
 
-        self.features["num_eads"] = analyze_eads(
+        self.features["num_eads"] = ead.analyze_eads(
             self._chopped_data.data,
             self._chopped_data.times,
             sigma=self.parameters["ead_sigma"],
@@ -1177,8 +927,8 @@ class AnalyzeMPS:
                     ["\n"],
                     ["Info"],
                     info_txt,
-                )
-            )
+                ),
+            ),
         )
 
     def compute_features(self):
@@ -1197,11 +947,12 @@ class AnalyzeMPS:
                 self._chopped_data,
                 use_spline=self.parameters["use_spline"],
                 normalize=self.parameters["normalize"],
-            )
+            ),
         )
         for k in [30, 50, 80, 90]:
             self._all_features[f"capd{k}"] = apf.features.corrected_apd(
-                self._all_features[f"apd{k}"], 60 / self.features["beating_frequency"]
+                self._all_features[f"apd{k}"],
+                60 / self.features["beating_frequency"],
             )
 
     def compute_mean_features(self):
@@ -1209,7 +960,9 @@ class AnalyzeMPS:
             self.compute_features()
 
         self._excluded = exclude_x_std(
-            self._all_features, self.parameters["std_ex"], skips=["upstroke80"]
+            self._all_features,
+            self.parameters["std_ex"],
+            skips=["upstroke80"],
         )
 
         mean_features = {}
@@ -1278,7 +1031,7 @@ class AnalyzeMPS:
         # Average of everything
         if self.parameters["spike_duration"] > 0:
             self.chopped_data["trace_all"] = average.get_subsignal_average(
-                self._chopped_data.data
+                self._chopped_data.data,
             )
             idx = np.argmax([len(xi) for xi in self._xs_all])
             self.chopped_data["time_all"] = self._xs_all[idx]
@@ -1287,7 +1040,9 @@ class AnalyzeMPS:
                 self.chopped_data["trace_all"],
                 self.chopped_data["time_all"],
             ) = average.get_subsignal_average_interpolate(
-                self._chopped_data.data, self._xs_all, N
+                self._chopped_data.data,
+                self._xs_all,
+                N,
             )
 
     def get_pacing_avg(self):
@@ -1336,7 +1091,7 @@ class AnalyzeMPS:
 
         if self.parameters["spike_duration"] > 0:
             self.chopped_data["trace_1std"] = average.get_subsignal_average(
-                self._ys_1std
+                self._ys_1std,
             )
             self.chopped_data["time_1std"] = self._xs_1std[
                 np.argmax([len(xi) for xi in self._xs_1std])
@@ -1346,7 +1101,9 @@ class AnalyzeMPS:
                 self.chopped_data["trace_1std"],
                 self.chopped_data["time_1std"],
             ) = average.get_subsignal_average_interpolate(
-                self._ys_1std, self._xs_1std, N
+                self._ys_1std,
+                self._xs_1std,
+                N,
             )
 
     def plot_chopped_averages(self):
@@ -1416,8 +1173,10 @@ class AnalyzeMPS:
         for p in self.parameters["remove_points_list"]:
             logger.debug(f"Remove points: '{p}'")
             t_ = np.copy(self.time_stamps)
-            self.time_stamps, self.avg = remove_points(self.time_stamps, self.avg, *p)
-            _, self.pacing = remove_points(t_, self.pacing, *p)
+            self.time_stamps, self.avg = apf.filters.remove_points(
+                self.time_stamps, self.avg, *p
+            )
+            _, self.pacing = apf.filters.remove_points(t_, self.pacing, *p)
 
     def ignore_pacing(self):
         if self.parameters["ignore_pacing"]:
@@ -1427,7 +1186,7 @@ class AnalyzeMPS:
     def filter(self):
         if self.parameters["filter"]:
             logger.debug("Filter signal")
-            self.avg = filt(self.avg)
+            self.avg = apf.filters.filt(self.avg)
 
     def remove_spikes(self):
         if self.parameters["spike_duration"] == 0:
@@ -1435,9 +1194,9 @@ class AnalyzeMPS:
 
         sd = self.parameters["spike_duration"]
         logger.debug(f"Remove spikes with spike duration {sd}")
-        self.avg = remove_spikes(self.avg, self.pacing, sd)
-        self.time_stamps = remove_spikes(self.time_stamps, self.pacing, sd)
-        self.pacing = remove_spikes(self.pacing, self.pacing, sd)
+        self.avg = apf.filters.remove_spikes(self.avg, self.pacing, sd)
+        self.time_stamps = apf.filters.remove_spikes(self.time_stamps, self.pacing, sd)
+        self.pacing = apf.filters.remove_spikes(self.pacing, self.pacing, sd)
 
         self.unchopped_data["original_trace_no_spikes"] = np.copy(self.avg)
         self.unchopped_data["original_times_no_spikes"] = np.copy(self.time_stamps)
@@ -1554,7 +1313,7 @@ def frame2average(frame, times=None, normalize=True, background_correction=True)
         avg = avg_
 
     if normalize:
-        trace = normalize_signal(avg)
+        trace = apf.utils.normalize_signal(avg)
     else:
         trace = avg
 
@@ -1612,7 +1371,12 @@ def local_averages(
     logger = utils.get_logger(__name__, loglevel)
     logger.debug("Compute local averages")
     grid = utils.get_grid_settings(
-        N, x_start=x_start, y_start=y_start, x_end=x_end, y_end=y_end, frames=frames
+        N,
+        x_start=x_start,
+        y_start=y_start,
+        x_end=x_end,
+        y_end=y_end,
+        frames=frames,
     )
 
     futures = np.empty((grid.nx, grid.ny), dtype=object)
@@ -1657,7 +1421,10 @@ def analyze_local_average(frames, times=None, mask=None, N=10):
 
     loc = local_averages(frames, times, N=N)
     avg = frame2average(
-        frame=frames, times=times, normalize=False, background_correction=True
+        frame=frames,
+        times=times,
+        normalize=False,
+        background_correction=True,
     )
     avg_std = np.std(avg)
     if mask is None:
@@ -1697,10 +1464,6 @@ def analyze_local_average(frames, times=None, mask=None, N=10):
     #         )
     #         ax.add_patch(p)
     # plt.show()
-    # from IPython import embed
-
-    # embed()
-    # exit()
     return loc, new_mask
 
 
@@ -1769,7 +1532,9 @@ def baseline_intensity(
         for j in range(shape[1]):
             loc_ij = loc[i, j, :]
             baseline_intensity[i, j, :] = apf.background.background(
-                times, loc_ij, "full"
+                times,
+                loc_ij,
+                "full",
             ).corrected
 
     return baseline_intensity
@@ -1836,11 +1601,12 @@ def prevalence(
     avg = average.get_average_all(mps_data.frames)
     chopped_data = apf.chopping.chop_data_without_pacing(avg, mps_data.time_stamps)
     global_freq = apf.features.beating_frequency(
-        chopped_data.times, unit=mps_data.info.get("time_unit", "ms")
+        chopped_data.times,
+        unit=mps_data.info.get("time_unit", "ms"),
     )
     logger.info(f"Global frequency: {global_freq}")
     global_snr = snr(
-        apf.background.correct_background(mps_data.time_stamps, avg, "full").corrected
+        apf.background.correct_background(mps_data.time_stamps, avg, "full").corrected,
     )
     logger.info(f"Global SNR: {global_snr}")
 
@@ -1852,10 +1618,12 @@ def prevalence(
     for i, j in it.product(range(shape[0]), range(shape[1])):
         loc_ij = loc[i, j, :]
         chopped_data = apf.chopping.chop_data_without_pacing(
-            loc_ij, mps_data.time_stamps
+            loc_ij,
+            mps_data.time_stamps,
         )
         freq[i, j] = apf.features.beating_frequency(
-            chopped_data.times, unit=mps_data.info.get("time_unit", "ms")
+            chopped_data.times,
+            unit=mps_data.info.get("time_unit", "ms"),
         )
         local_snr[i, j] = snr(loc[i, j, :])
 
@@ -1866,7 +1634,7 @@ def prevalence(
     # Frequencies that deviates too much from the
     # global frequency is most likely noise
     freq_dev = np.where(
-        ~np.isclose(freq, global_freq, frequency_threshold * global_freq)
+        ~np.isclose(freq, global_freq, frequency_threshold * global_freq),
     )
     is_beating[freq_dev] = False
 

@@ -32,12 +32,14 @@ def get_data(path: Path, ignore_pacing: bool = False):
         time_stamps = data.time_stamps
         pacing = data.pacing
         background = apf.background.background(time_stamps, average)
-        avg = apf.utils.filt(average - background, 3)
+        avg = apf.filters.filt(average - background, 3)
 
         pacing_chop = np.zeros_like(pacing) if ignore_pacing else pacing
         chopped_data = apf.chopping.chop_data(avg, time_stamps, pacing=pacing_chop)
         apd_analysis = analysis.analyze_apds(
-            chopped_data.data, chopped_data.times, plot=False
+            chopped_data.data,
+            chopped_data.times,
+            plot=False,
         )
 
         tau75s = [
@@ -51,12 +53,15 @@ def get_data(path: Path, ignore_pacing: bool = False):
         ttp = [
             apf.features.time_to_peak(t, c, p)
             for c, t, p in zip(
-                chopped_data.data, chopped_data.times, chopped_data.pacing
+                chopped_data.data,
+                chopped_data.times,
+                chopped_data.pacing,
             )
         ]
         nbeats = len(chopped_data.data)
         freqs = apf.features.beating_frequency_from_peaks(
-            chopped_data.data, chopped_data.times
+            chopped_data.data,
+            chopped_data.times,
         )
 
         return dict(
@@ -109,12 +114,12 @@ def plot(
 
         ax[0].plot(
             data["time_stamps"],
-            analysis.normalize_signal(data["average"]),
+            apf.utils.normalize_signal(data["average"]),
             color="b",
         )
         ax[0].plot(
             data["time_stamps"],
-            analysis.normalize_signal(data["pacing"]),
+            apf.utils.normalize_signal(data["pacing"]),
             label="Pacing ignored!",
             color="r",
         )
@@ -160,7 +165,8 @@ def plot(
                 s1 = f"{data[key]:.2f}"
             else:
                 s1 = "{:.2f} +/- {:.2f} ms".format(
-                    float(np.mean(data[key])), float(np.std(data[key]))
+                    float(np.mean(data[key])),
+                    float(np.std(data[key])),
                 )
             s = "{}: {}".format(label, s1)
             ax[1].text(0.0, pos[j], s)
@@ -203,7 +209,7 @@ def plot(
                 np.std(data["freqs"]),
                 data["slope_APD80"],
                 data["slope_cAPD80"],
-            ]
+            ],
         )
 
     header = [
@@ -273,7 +279,7 @@ def main(
 
     if not has_mpl:
         logger.error(
-            "Cannot run script without matplotlib. Please install that first - 'pip install matplotlib'"
+            "Cannot run script without matplotlib. Please install that first - 'pip install matplotlib'",
         )
         return
 

@@ -58,10 +58,18 @@ def license_callback(show_license: bool):
 @app.callback()
 def main(
     version: bool = typer.Option(
-        None, "--version", callback=version_callback, is_eager=True, help="Show version"
+        None,
+        "--version",
+        callback=version_callback,
+        is_eager=True,
+        help="Show version",
     ),
     license: bool = typer.Option(
-        None, "--license", callback=license_callback, is_eager=True, help="Show license"
+        None,
+        "--license",
+        callback=license_callback,
+        is_eager=True,
+        help="Show license",
     ),
 ):
     # Do other global stuff, handle other global options here
@@ -74,11 +82,15 @@ def split_pacing(
     recursive: bool = typer.Option(False, help="Recursively go through all sufolders"),
     verbose: bool = typer.Option(False, "--verbose", "-v", help="More verbose"),
     keep_original: bool = typer.Option(
-        True, help="If True, copy the files, otherwise move them."
+        True,
+        help="If True, copy the files, otherwise move them.",
     ),
 ):
     scripts.split_pacing.main(
-        folder=folder, recursive=recursive, verbose=verbose, keep_original=keep_original
+        folder=folder,
+        recursive=recursive,
+        verbose=verbose,
+        keep_original=keep_original,
     )
 
 
@@ -94,12 +106,13 @@ def analyze(
         Output directory for where you want to store the
         output. If not provided a folder with the same
         name as the basename of the input file in the
-        currect directory will be used"""
+        currect directory will be used""",
         ),
     ),
     plot: bool = typer.Option(True, help="Plot data"),
     filter_signal: bool = typer.Option(
-        True, help="Filter signal using a median filter"
+        True,
+        help="Filter signal using a median filter",
     ),
     alpha: float = typer.Option(
         1.0,
@@ -110,7 +123,7 @@ def analyze(
             values are sorted. If alpha = 1.0, then all
             values will be used when taking the average. If
             alpha = 0.1 then only 10 percent of the pixels
-            will be included."""
+            will be included.""",
         ),
     ),
     ead_prom: float = typer.Option(
@@ -120,7 +133,7 @@ def analyze(
             How prominent a peak should be in order to be
             characterized as an EAD. This value shold be
             between 0 and 1, with a greater value being more
-            prominent"""
+            prominent""",
         ),
     ),
     ead_sigma: float = typer.Option(
@@ -128,7 +141,7 @@ def analyze(
         help=dedent(
             """
             Standard deviation in the gaussian smoothing
-            kernal applied before estimating EADs."""
+            kernal applied before estimating EADs.""",
         ),
     ),
     std_ex_factor: float = typer.Option(
@@ -137,7 +150,7 @@ def analyze(
             """
             Exclude values outside this factor times 1
             standard deviation. Default:1.0, meaning exclude
-            values outside of 1 std from the mean"""
+            values outside of 1 std from the mean""",
         ),
     ),
     spike_duration: float = typer.Option(
@@ -148,7 +161,7 @@ def analyze(
             greater than 0. This will locate the timing of
             pacing (if available) and delete the signal this
             amount after pacing starts. If 0 or no pacing is
-            detected, nothing will be deleted."""
+            detected, nothing will be deleted.""",
         ),
     ),
     chopping_threshold_factor: float = typer.Option(
@@ -156,7 +169,7 @@ def analyze(
         help=dedent(
             """
             Factor of where to synchronize data when
-            chopping. Default = 0.3"""
+            chopping. Default = 0.3""",
         ),
     ),
     chopping_extend_front: Optional[int] = typer.Option(
@@ -164,7 +177,7 @@ def analyze(
         help=dedent(
             """
             How many milliseconds extra to extend signal at
-            the beginning when chopping"""
+            the beginning when chopping""",
         ),
     ),
     chopping_extend_end: Optional[int] = typer.Option(
@@ -172,7 +185,7 @@ def analyze(
         help=dedent(
             """
             How many milliseconds extra to extend signal at
-            the end when chopping"""
+            the end when chopping""",
         ),
     ),
     chopping_min_window: float = typer.Option(
@@ -180,7 +193,7 @@ def analyze(
         help=dedent(
             """
             Smallest allowed length of beat (in
-            milliseconds) to be included in chopping"""
+            milliseconds) to be included in chopping""",
         ),
     ),
     chopping_max_window: float = typer.Option(
@@ -188,7 +201,7 @@ def analyze(
         help=dedent(
             """
             Largest allowed length of beat (in
-            milliseconds) to be included in chopping"""
+            milliseconds) to be included in chopping""",
         ),
     ),
     ignore_pacing: bool = typer.Option(
@@ -196,7 +209,7 @@ def analyze(
         help=dedent(
             """
             Ignore pacing data, for example if the pacing is
-            wrong"""
+            wrong""",
         ),
     ),
     overwrite: bool = typer.Option(
@@ -207,7 +220,7 @@ def analyze(
             allready exist. If False, then the olddata will
             be copied to a subdirectory with version number
             of the software. If version number is not found
-            it will be saved to a folder called "old"."""
+            it will be saved to a folder called "old".""",
         ),
     ),
     reuse_settings: bool = typer.Option(
@@ -220,7 +233,7 @@ def analyze(
             settings.json file. This is handy if you e.g
             want to compare the output of the software
             between different versions, or you to reproduce
-            the exact traces from the raw data."""
+            the exact traces from the raw data.""",
         ),
     ),
     verbose: bool = typer.Option(False, "--verbose", "-v", help="More verbose"),
@@ -256,7 +269,7 @@ def summary(
         help=dedent(
             """
             Name of the pdf and csv file that is
-            the output from the mps_summary script"""
+            the output from the mps_summary script""",
         ),
     ),
     silent: bool = typer.Option(False, help="Turn of printing"),
@@ -265,7 +278,7 @@ def summary(
         help=dedent(
             """
             Ignore pacing data, for example if the pacing is
-            wrong"""
+            wrong""",
         ),
     ),
     include_npy: bool = typer.Option(
@@ -277,7 +290,7 @@ def summary(
             include these, because the data that is
             analyzed is also dumped to a .npy
             files, and we do not want to open
-            those."""
+            those.""",
         ),
     ),
 ):
@@ -301,11 +314,12 @@ def mps2mp4(
             """
             Output name for where you want to store the output
             movie. If not provided a the same name as the basename
-            of the input file will be used"""
+            of the input file will be used""",
         ),
     ),
     synch: bool = typer.Option(
-        False, help="Start video at same time as start of pacing"
+        False,
+        help="Start video at same time as start of pacing",
     ),
 ):
     scripts.mps2mp4.main(path=path, outfile=outfile, synch=synch)
@@ -323,7 +337,7 @@ def phase_plot(
             """
             Output name for where you want to store the output
             movie. If not provided a the same name as the basename
-            of the input file will be used"""
+            of the input file will be used""",
         ),
     ),
 ):
@@ -342,11 +356,12 @@ try:
                 """
             Path to file to be analyzed, typically an .nd2 or .
             czi Brightfield file
-            """
+            """,
             ),
         ),
         algorithm: mt.FLOW_ALGORITHMS = typer.Option(
-            mt.FLOW_ALGORITHMS.farneback, help="The algorithm used to estimate motion"
+            mt.FLOW_ALGORITHMS.farneback,
+            help="The algorithm used to estimate motion",
         ),
         outdir: Optional[str] = typer.Option(
             None,
@@ -357,7 +372,7 @@ try:
             Directory where to store the results. If not provided, a folder with the the same
             as the filename will be created and results will be stored in a subfolder inside
             that called `motion`
-            """
+            """,
             ),
         ),
         scale: float = typer.Option(
@@ -366,7 +381,7 @@ try:
                 """
             Rescale data before running motion track. This is useful if the spatial resoltion
             of the images are large. Scale = 1.0 will keep the original size
-            """
+            """,
             ),
         ),
         verbose: bool = typer.Option(False, "--verbose", "-v", help="More verbose"),
@@ -378,7 +393,7 @@ try:
             allready exist. If False, then the olddata will
             be copied to a subdirectory with version number
             of the software. If version number is not found
-            it will be saved to a folder called "old"."""
+            it will be saved to a folder called "old".""",
             ),
         ),
     ):
@@ -408,7 +423,7 @@ try:
                 """
             Path to the configuration file. If not provided it will
             look for a file called `config.yaml` in the root of the
-            folder you are trying to analyze"""
+            folder you are trying to analyze""",
             ),
         ),
         recompute: bool = typer.Option(
@@ -416,7 +431,7 @@ try:
             help=dedent(
                 """
             If True then redo analysis even though it allready
-            exist in the database"""
+            exist in the database""",
             ),
         ),
         plot: bool = typer.Option(
@@ -424,87 +439,20 @@ try:
             help=dedent(
                 """
             Plot traces, by default True. Plotting takes quite a lot of
-            time so you can speed up the process by setting this to false."""
+            time so you can speed up the process by setting this to false.""",
             ),
         ),
     ):
         cli_automate.main(
-            folder=folder, config_file=config_file, recompute=recompute, plot=plot
+            folder=folder,
+            config_file=config_file,
+            recompute=recompute,
+            plot=plot,
         )
 
 
 except ImportError:
     pass
-
-# def main():
-#     """
-#     Main execution of the mps package
-#     """
-
-#     if len(sys.argv) < 2:
-#         print(__doc__)
-#         return
-
-#     # Show help message
-#     if sys.argv[1] == "-h" or sys.argv[1] == "--help":
-#         print(__doc__)
-
-#     elif sys.argv[1] == "-v" or sys.argv[1] == "--version":
-#         from mps import __version__
-
-#         print(__version__)
-
-#     elif sys.argv[1] == "-l" or sys.argv[1] == "--license":
-#         print(__license__)
-
-#     elif sys.argv[1] == "analyze":
-#         bin_utils.analyze_mps.run(sys.argv[2:])
-
-#     elif sys.argv[1] == "summary":
-#         bin_utils.mps_summary.run(sys.argv[2:])
-
-#     elif sys.argv[1] == "phase_plot":
-#         bin_utils.mps_phase_plot.run(sys.argv[2:])
-
-#     elif sys.argv[1] == "prevalence":
-#         bin_utils.mps_prevalence.run(sys.argv[2:])
-
-#     elif sys.argv[1] == "collect":
-#         bin_utils.collect_mps.run(sys.argv[2:])
-
-#     elif sys.argv[1] == "mps2mp4":
-#         bin_utils.mps2mp4.run(sys.argv[2:])
-
-#     elif sys.argv[1] == "split-pacing":
-#         bin_utils.split_pacing(sys.argv[2:])
-
-# elif sys.argv[1] == "motion":
-#     try:
-#         import typer
-#         from mps_motion_tracking import cli
-#     except ImportError:
-#         print("Motion tracking software not installed.")
-#         print("Please ask Henrik (henriknf@simula.no)")
-#         sys.exit()
-
-#     # Run motion tracking
-#     sys.argv[1:] = sys.argv[2:]
-#     typer.run(cli.main)
-# elif sys.argv[1] == "automate":
-#     try:
-#         import typer
-#         from mps_automation import cli
-#     except ImportError:
-#         print("Automation scripts are not installed.")
-#         print("Please ask Henrik (henriknf@simula.no)")
-#         sys.exit()
-#     sys.argv[1:] = sys.argv[2:]
-#     typer.run(cli.main)
-
-#     else:
-#         print("Argument {} not recongnized".format(sys.argv[1]))
-#         print(__doc__)
-
 
 if __name__ == "__main__":
     # main()

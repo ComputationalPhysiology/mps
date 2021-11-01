@@ -1,4 +1,5 @@
 from pathlib import Path
+from unittest import mock
 
 import numpy as np
 
@@ -70,6 +71,36 @@ def test_from_dict():
 
     dummy_data = create_dummy_data()
     mps.MPS.from_dict(**dummy_data)
+
+
+def test_nd2_file():
+
+    dummy_data = create_dummy_data()
+
+    class Frames:
+        def __init__(self, frames, times) -> None:
+            self._frames = frames
+            self._times = times
+            self.metadata = {
+                "ImageMetadataSeqLV|0": {"SLxPictureMetadata": {"dCalibration": 0.42}},
+            }
+
+            self.height, self.width, self.imagecount = frames.shape
+
+        def image(self, t):
+            return self._frames[:, :, t]
+
+        def get_time(self, t):
+            return self._times[t]
+
+    frames = Frames(dummy_data["frames"], dummy_data["time_stamps"])
+
+    with mock.patch("mps.load.ND2File") as m:
+        m.return_value.__enter__.return_value = frames
+        data = mps.load.load_nd2("test_file.nd2")
+
+    m.assert_called_with("test_file.nd2")
+    assert np.isclose(dummy_data["time_stamps"], data.time_stamps).all()
 
 
 if __name__ == "__main__":
