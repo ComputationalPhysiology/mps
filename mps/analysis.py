@@ -145,18 +145,14 @@ def analyze_apds(
     plot=True,
 ) -> APDAnalysis:
 
-    apd_levels = np.sort(np.append(np.arange(0.1, 0.91, 0.2), 0.8))
+    apd_levels = (100 * np.sort(np.append(np.arange(0.1, 0.91, 0.2), 0.8))).astype(int)
     apds = {
-        int(100 * k): [
-            apf.features.apd(k, y, t) for y, t in zip(chopped_data, chopped_times)
-        ]
+        k: [apf.features.apd(k, y, t) for y, t in zip(chopped_data, chopped_times)]
         for k in apd_levels
     }
 
     apd_points = {
-        int(100 * k): [
-            apf.features._apd(k, y, t) for y, t in zip(chopped_data, chopped_times)
-        ]
+        k: [apf.features._apd(k, y, t) for y, t in zip(chopped_data, chopped_times)]
         for k in apd_levels
     }
 
@@ -195,8 +191,8 @@ def analyze_apds(
 
     triangulation = []
     for y, t in zip(chopped_data, chopped_times):
-        apd30 = apf.features._apd(0.3, y, t)
-        apd80 = apf.features._apd(0.8, y, t)
+        apd30 = apf.features._apd(30, y, t)
+        apd80 = apf.features._apd(80, y, t)
 
         tri = apd80[-1] - apd30[-1]
         if tri < 0:
@@ -398,10 +394,10 @@ def compute_features(chopped_data, use_spline=True, normalize=False):
 
         time = np.multiply(unitfactor, time)
 
-        apd90[i] = apf.features.apd(0.9, data, time, use_spline=use_spline) or np.nan
-        apd80[i] = apf.features.apd(0.8, data, time, use_spline=use_spline) or np.nan
-        apd50[i] = apf.features.apd(0.5, data, time, use_spline=use_spline) or np.nan
-        apd30[i] = apf.features.apd(0.3, data, time, use_spline=use_spline) or np.nan
+        apd90[i] = apf.features.apd(90, data, time, use_spline=use_spline) or np.nan
+        apd80[i] = apf.features.apd(80, data, time, use_spline=use_spline) or np.nan
+        apd50[i] = apf.features.apd(50, data, time, use_spline=use_spline) or np.nan
+        apd30[i] = apf.features.apd(30, data, time, use_spline=use_spline) or np.nan
         tau75[i] = apf.features.tau(time, data, 0.75)
         upstroke80 = apf.features.upstroke(time, data, 0.8)
 
@@ -603,9 +599,7 @@ def poincare_plot(
 
     """
     apds_points = {
-        k: [
-            apf.features.apd(k / 100, y, t) for y, t in zip(chopped_data, chopped_times)
-        ]
+        k: [apf.features.apd(k, y, t) for y, t in zip(chopped_data, chopped_times)]
         for k in apds
     }
 
@@ -1410,7 +1404,7 @@ def local_averages(
         for j in range(grid.ny):
             local_averages[i, j, :] = futures[i, j].result()
 
-    return local_averages
+    return np.fliplr(local_averages)
 
 
 def _frames2average(kwargs):
