@@ -57,13 +57,19 @@ else:
 
 logger = utils.get_logger(__name__)
 
-valid_extensions = [".nd2", ".czi", ".tif", ".tiff", ".stk"]
-mps_data_fields = ["frames", "time_stamps", "info", "metadata", "pacing"]
-mps_data = namedtuple(  # type: ignore
-    "mps_data",
-    mps_data_fields,
-    defaults=(None,) * len(mps_data_fields),  # type: ignore
-)
+valid_extensions = [
+    ".nd2",
+    ".czi",
+    ".tif",
+    ".tiff",
+    ".stk",
+    ".avi",
+    ".mp4",
+    ".mpeg",
+    ".mov",
+]
+
+MPSData = namedtuple("MPSData", ["frames", "time_stamps", "info", "metadata", "pacing"])
 
 
 def info_dictionary(time_stamps):
@@ -74,7 +80,7 @@ def info_dictionary(time_stamps):
     return info
 
 
-def get_single_frame(path, index=0):
+def get_single_frame(path: os.PathLike, index: int = 0) -> np.ndarray:
     """
     Get a single frame from a czi or nd2 file.
 
@@ -97,7 +103,7 @@ def get_single_frame(path, index=0):
             frame = frames.image(index).squeeze()
 
     elif ext == ".czi":
-        with czifile.CziFile(path) as f:
+        with czifile.CziFile(path) as f:  # type: ignore
             frames = f.asarray().squeeze()
         frame = frames[:, :, index]
 
@@ -112,7 +118,7 @@ def get_single_frame(path, index=0):
     return frame
 
 
-def load_nd2(fname):
+def load_nd2(fname: os.PathLike) -> MPSData:
     """
     Load ND2 file (Nikon image file)
 
@@ -153,7 +159,7 @@ def load_nd2(fname):
     if np.all(time_stamps == 0):
         # Then there is something wrong with the file
         # Assume standard framrate
-        if "BF" in fname:  # BrightField
+        if "BF" in str(fname):  # BrightField
             dt = 25.0
         else:
             dt = 10.0
@@ -202,7 +208,7 @@ def load_nd2(fname):
     else:
         pacing = np.zeros(len(time_stamps))
 
-    return mps_data(
+    return MPSData(
         frames=images,
         info=info,
         time_stamps=time_stamps,
@@ -244,7 +250,7 @@ def load_czi(fname):
     info["size_x"] = images.shape[0]
     info["size_y"] = images.shape[1]
 
-    return mps_data(
+    return MPSData(
         frames=np.swapaxes(images, 0, -1),
         time_stamps=time_stamps,
         pacing=np.zeros(len(time_stamps)),
@@ -253,7 +259,7 @@ def load_czi(fname):
     )
 
 
-def load_zip(fname):
+def load_zip(fname: os.PathLike) -> MPSData:
 
     try:
         import xmltodict
@@ -305,7 +311,7 @@ def load_zip(fname):
 
             frames[:, :, idx] = data["image"].T
 
-        return mps_data(
+        return MPSData(
             frames=frames,
             time_stamps=time_stamps,
             pacing=np.zeros(len(time_stamps)),
@@ -314,7 +320,7 @@ def load_zip(fname):
         )
 
 
-def load_stk(fname):
+def load_stk(fname: os.PathLike) -> MPSData:
 
     if not has_tifffile:
         raise ImportError(
@@ -344,8 +350,53 @@ def load_stk(fname):
         )
     )
 
-    return mps_data(
+    return MPSData(
         frames=np.swapaxes(frames, 0, -1),
+        time_stamps=time_stamps,
+        pacing=np.zeros(len(time_stamps)),
+        info=info,
+        metadata=metadata,
+    )
+
+
+def load_movie(fname: os.PathLike) -> MPSData:
+
+    try:
+        import imageio
+    except ImportError as ex:
+        raise ImportError(
+            ("Cannot load movie file. "),
+            "Please install imageio - pip install imageio",
+        ) from ex
+
+    reader = imageio.get_reader(fname)
+    metadata = reader.get_meta_data()
+    num_frames = reader.count_frames()
+    fps = reader.get_meta_data()["fps"]
+    # Duration in milliseconds
+    duration = 1000 * num_frames / fps
+    dt = 1000 / fps
+    time_stamps = np.arange(0, duration, dt)
+
+    data = np.array(list(reader.iter_data())).squeeze()
+    # Convert to grayscale
+    if data.shape[-1] == 3:
+        data = data[..., 1]
+    frames = data
+
+    if frames.shape.index(num_frames) != len(frames.shape) - 1:
+        frames = np.swapaxes(frames, frames.shape.index(num_frames), -1)
+
+    info = dict(
+        num_frames=num_frames,
+        dt=dt,
+        time_unit="ms",
+        size_x=frames.shape[0],
+        size_y=frames.shape[1],
+    )
+
+    return MPSData(
+        frames=frames,
         time_stamps=time_stamps,
         pacing=np.zeros(len(time_stamps)),
         info=info,
@@ -407,7 +458,7 @@ def load_tiff(fname):
         )
     )
 
-    return mps_data(
+    return MPSData(
         frames=np.swapaxes(frames, 0, -1),
         time_stamps=time_stamps,
         pacing=np.zeros(len(time_stamps)),
@@ -434,10 +485,11 @@ def load_file(fname, ext):
         data = load_tiff(fname)
 
     elif ext == ".npy":
-        data = mps_data(**np.load(fname, allow_pickle=True).item())
+        data = MPSData(**np.load(fname, allow_pickle=True).item())
 
     else:
-        raise IOError("Unknown file extension {}".format(ext))
+        # Try to load with imageio
+        data = load_movie(fname=fname)
 
     return data
 
@@ -494,7 +546,7 @@ class MPS(object):
         data["pacing"] = kwargs.get("pacing", np.zeros_like(data["time_stamps"]))
         data["metadata"] = kwargs.get("metadata", {})
         obj = cls()
-        obj._unpack(mps_data(**data))
+        obj._unpack(MPSData(**data))
         return data
 
     def __getstate__(self):
