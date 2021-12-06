@@ -695,6 +695,7 @@ class AnalyzeMPS:
         self.features: Dict[str, Any] = {}
         self._all_features: Dict[str, Any] = {}
         self.features_computed = False
+        self.upstroke_times: List[float] = []
 
         self.unchopped_data["original_trace"] = np.copy(avg)
         self.unchopped_data["original_times"] = np.copy(time_stamps)
@@ -719,6 +720,7 @@ class AnalyzeMPS:
             "chopping_parameters": self.chopping_parameters,
             "attributes": self.info,
             "intervals": self.intervals,
+            "upstroke_times": self.upstroke_times,
         }
 
     def dump_data(self, dump_all=False):
@@ -849,6 +851,7 @@ class AnalyzeMPS:
             self.chopped_data["trace_{}".format(i)] = d
             self.chopped_data["pacing_{}".format(i)] = p
         self.intervals = self._chopped_data.intervals
+        self.upstroke_times = self._chopped_data.upstroke_times
 
     def analyze_chopped_data(self):
         self._set_choopped_data()
