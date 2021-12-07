@@ -30,14 +30,14 @@ SIMULA RESEARCH LABORATORY MAKES NO REPRESENTATIONS AND EXTENDS NO
 WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
 NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 """
-
+from typing import Dict, Optional, Any
 import io
 import logging
 import multiprocessing
 import os
 import time
+from dataclasses import dataclass
 import zipfile
-from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 
@@ -69,7 +69,18 @@ valid_extensions = [
     ".mov",
 ]
 
-MPSData = namedtuple("MPSData", ["frames", "time_stamps", "info", "metadata", "pacing"])
+
+@dataclass
+class MPSData:
+    frames: np.ndarray
+    time_stamps: np.ndarray
+    pacing: np.ndarray
+    info: Dict[str, Any]
+    metadata: Optional[Dict[str, Any]] = None
+
+    def __post_init__(self):
+        if self.metadata is None:
+            self.metadata = {}
 
 
 def info_dictionary(time_stamps):
