@@ -87,6 +87,7 @@ install-windows: clean ## install on windows usig pipwin
 
 dev: clean ## Developement install
 	python -m pip install --upgrade pip
+	python -m pip install git+https://github.com/ComputationalPhysiology/ap_features.git@master
 	python -m pip install -e ".[dev]"
 	pre-commit install
 

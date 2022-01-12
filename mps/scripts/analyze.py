@@ -9,10 +9,13 @@ import shutil
 import time
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
+from typing import Dict
+from typing import Optional
 
 from ..analysis import analyze_mps_func
-from ..load import MPS, valid_extensions
+from ..load import MPS
+from ..load import valid_extensions
 from ..utils import json_serial
 
 logger = logging.getLogger(__name__)
@@ -21,10 +24,13 @@ logger = logging.getLogger(__name__)
 def dump_settings(outdir, kwargs):
     from .. import __version__
 
+    outdir = Path(outdir)
+    outdir.mkdir(exist_ok=True, parents=True)
+
     kwargs["time"] = datetime.datetime.now()
     kwargs["mps_version"] = __version__
-    kwargs["full_path"] = os.path.abspath(kwargs["path"])
-    with open(os.path.join(outdir, "settings.json"), "w") as f:
+    kwargs["full_path"] = Path(kwargs["path"]).absolute().as_posix()
+    with open(outdir.joinpath("settings.json"), "w") as f:
         json.dump(kwargs, f, indent=4, default=json_serial)
 
 
@@ -131,7 +137,7 @@ def run_file(**kwargs):
         (
             f"Finished analyzing MPS data. Data stored in {outdir}. "
             f"\nTotal elapsed time: {end - start} seconds"
-        )
+        ),
     )
 
 
@@ -139,8 +145,7 @@ def main(
     path: str,
     outdir: Optional[str] = None,
     plot: bool = True,
-    filter_signal: bool = True,
-    alpha: float = 1.0,
+    filter_signal: bool = False,
     ead_prom: float = 0.04,
     ead_sigma: float = 3.0,
     std_ex_factor: float = 1.0,
@@ -171,7 +176,6 @@ def main(
         outdir=outdir,
         plot=plot,
         filter_signal=filter_signal,
-        alpha=alpha,
         ead_prom=ead_prom,
         ead_sigma=ead_sigma,
         std_ex_factor=std_ex_factor,

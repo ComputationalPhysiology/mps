@@ -111,23 +111,11 @@ def analyze(
     ),
     plot: bool = typer.Option(True, help="Plot data"),
     filter_signal: bool = typer.Option(
-        True,
+        False,
         help="Filter signal using a median filter",
     ),
-    alpha: float = typer.Option(
-        1.0,
-        help=dedent(
-            """
-            When taking the average over the images include
-            only values larger than the bound when all
-            values are sorted. If alpha = 1.0, then all
-            values will be used when taking the average. If
-            alpha = 0.1 then only 10 percent of the pixels
-            will be included.""",
-        ),
-    ),
     ead_prom: float = typer.Option(
-        0.04,
+        0.07,
         help=dedent(
             """
             How prominent a peak should be in order to be
@@ -137,7 +125,7 @@ def analyze(
         ),
     ),
     ead_sigma: float = typer.Option(
-        3.0,
+        1.0,
         help=dedent(
             """
             Standard deviation in the gaussian smoothing
@@ -244,7 +232,6 @@ def analyze(
         outdir=outdir,
         plot=plot,
         filter_signal=filter_signal,
-        alpha=alpha,
         ead_prom=ead_prom,
         ead_sigma=ead_sigma,
         std_ex_factor=std_ex_factor,
