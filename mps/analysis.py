@@ -46,7 +46,7 @@ import numpy as np
 
 from . import average, plotter, utils
 
-logger = utils.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 mps_prevalence = namedtuple(
     "mps_prevalence",
@@ -1260,7 +1260,6 @@ def local_averages(
         Verbosity. Default: INFO (=20). For more info see the logging library.
     """
 
-    logger = utils.get_logger(__name__, loglevel)
     logger.debug("Compute local averages")
     grid = utils.get_grid_settings(
         N,

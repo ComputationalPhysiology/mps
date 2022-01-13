@@ -64,7 +64,7 @@ from . import analysis, average, load, plotter, scripts, utils
 from .load import MPS
 
 log_level = _logging.INFO
-_logging.basicConfig()
+_logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 
 def set_log_level(level, logger=None):

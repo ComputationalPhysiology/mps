@@ -33,12 +33,12 @@ NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 import functools as ft
 import itertools as it
 from enum import Enum
+import logging
 
 import numpy as np
 
-from . import utils
 
-logger = utils.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class AveragingType(str, Enum):

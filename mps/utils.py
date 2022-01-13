@@ -51,29 +51,7 @@ grid_settings = namedtuple(
     ("nx, ny, dx, dy, x_start," " y_start, x_end, y_end"),
 )
 
-
-def get_logger(name, level=logging.INFO):
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-
-    if len(logger.handlers) == 0:
-
-        ch = logging.StreamHandler()
-        ch.setLevel(level)
-
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        )
-        ch.setFormatter(formatter)
-
-        logger.addHandler(ch)
-    else:
-        logger.handlers[0].setLevel(level)
-
-    return logger
-
-
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def get_space_step(N, x_start, x_end, y_start, y_end, **kwargs):
