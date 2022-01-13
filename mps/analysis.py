@@ -43,7 +43,6 @@ from typing import Any, Dict, List, Optional
 
 import ap_features as apf
 import numpy as np
-from scipy.interpolate import UnivariateSpline
 
 from . import average, plotter, utils
 
@@ -164,7 +163,6 @@ def analyze_apds(
 ) -> APDAnalysis:
 
     apd_levels = (100 * np.sort(np.append(np.arange(0.1, 0.91, 0.2), 0.8))).astype(int)
-
     apds = {k: [b.apd(k) for b in beats] for k in apd_levels}
     apd_points = {k: [b.apd_point(k) for b in beats] for k in apd_levels}
     apd_dt = {k: [v[0] for v in value] for k, value in apd_points.items()}
@@ -271,9 +269,9 @@ def plot_apd_analysis(beats: List[apf.Beat], res: APDAnalysis, fname=""):
     for i, (label, vals) in enumerate(res.apd_points.items()):
         x = [v[0] for v in vals] + [v[1] for v in vals]
 
-        y = [
-            UnivariateSpline(beats[j].t, beats[j].y)(v[0]) for j, v in enumerate(vals)
-        ] + [UnivariateSpline(beats[j].t, beats[j].y)(v[1]) for j, v in enumerate(vals)]
+        y = [beats[j].as_spline(k=3, s=0)(v[0]) for j, v in enumerate(vals)] + [
+            beats[j].as_spline(k=3, s=0)(v[1]) for j, v in enumerate(vals)
+        ]
         ax[2].plot(x, y, linestyle="", marker="o", label=label)
 
     ax[2].legend()
@@ -370,6 +368,7 @@ def compute_features(beats: List[apf.Beat], use_spline=True, normalize=False):
         int30=np.zeros(num_beats),
         tau75=np.zeros(num_beats),
         upstroke80=np.zeros(num_beats),
+        ttp=np.zeros(num_beats),
     )
 
     for i, beat in enumerate(beats):
@@ -383,6 +382,7 @@ def compute_features(beats: List[apf.Beat], use_spline=True, normalize=False):
         features["capd80"][i] = beat.capd(80, use_spline=use_spline) or np.nan
         features["capd50"][i] = beat.capd(50, use_spline=use_spline) or np.nan
         features["capd30"][i] = beat.capd(30, use_spline=use_spline) or np.nan
+        features["ttp"][i] = beat.ttp() or np.nan
         features["tau75"][i] = beat.tau(0.75) or np.nan
         features["upstroke80"][i] = beat.upstroke(0.8) or np.nan
         features["dFdt_max"][i] = (
@@ -405,7 +405,8 @@ def compute_features(beats: List[apf.Beat], use_spline=True, normalize=False):
         features[k] = v[~np.isnan(v)]
 
     features["beating_frequency"] = beats[0].parent.beating_frequency
-
+    features["beating_frequencies"] = beats[0].parent.beating_frequencies
+    features["num_beats"] = num_beats
     return features
 
 
@@ -506,16 +507,15 @@ def exclude_x_std(data, x=None, use=None):
 
 
 def analyze_frequencies(
-    chopped_data: List[List[float]],
-    chopped_times: List[List[float]],
+    beats,
     time_unit: str = "ms",
     fname: str = "",
     plot=True,
 ) -> np.ndarray:
 
     freqs = apf.features.beating_frequency_from_peaks(
-        chopped_data,
-        chopped_times,
+        [beat.y for beat in beats],
+        [beat.t for beat in beats],
         time_unit,
     )
 
@@ -551,11 +551,11 @@ def analyze_frequencies(
         ax[0].set_ylabel("Frequency [Hz]")
         ax[0].set_xlabel("Beat number")
 
-        points_x = [t[int(np.argmax(c))] for c, t in zip(chopped_data, chopped_times)]
-        points_y = [np.max(c) for c in chopped_data]
+        points_x = [beat.t[int(np.argmax(beat.y))] for beat in beats]
+        points_y = [np.max(beat.y) for beat in beats]
 
-        for c, t in zip(chopped_data, chopped_times):
-            ax[1].plot(t, c)
+        for beat in beats:
+            ax[1].plot(beat.t, beat.y)
 
         ax[1].plot(points_x, points_y, linestyle="", marker="o", color="r")
         ax[1].set_xlabel("Time [ms]")
@@ -851,6 +851,9 @@ def about():
             This contains a short summary of analysis.
         - EAD_analysis.png
             A plot of the beats containing EADs
+        - frequency_analysis.png
+            A plot of the frequencies of the different beats computed
+            as the time between peaks.
         - metadata.json
             Metadata stored inside the raw data
         - original_pacing.png
@@ -899,7 +902,11 @@ def analyze_unchopped_data(
     )
     # Original data
     collector.register_unchopped(trace, "original")
-    trace.plot(collector.outdir.joinpath("original_pacing.png"), include_pacing=True)
+    if collector.plot and collector.outdir is not None:
+        trace.plot(
+            collector.outdir.joinpath("original_pacing.png"),
+            include_pacing=True,
+        )
     # Remove spikes and filter
     filtered_trace = trace.remove_spikes(spike_duration=spike_duration)
 
@@ -923,10 +930,11 @@ def analyze_unchopped_data(
     )
     collector.register_unchopped(corrected_trace, "")
     collector.unchopped_data["background"] = np.copy(trace.background)
-    corrected_trace.plot(
-        collector.outdir.joinpath("background.png"),
-        include_background=True,
-    )
+    if collector.plot and collector.outdir is not None:
+        corrected_trace.plot(
+            collector.outdir.joinpath("background.png"),
+            include_background=True,
+        )
     return corrected_trace
 
 
@@ -1037,6 +1045,14 @@ def analyze_chopped_data(
             fname=collector.outdir.joinpath("chopped_data_aligned.png"),
             align=True,
         )
+    fname = ""
+    if collector.plot and collector.outdir is not None:
+        collector.outdir.joinpath("frequency_analysis.png")
+    analyze_frequencies(
+        beats,
+        fname=fname,
+        plot=collector.plot,
+    )
     collector.features = compute_all_features(
         beats,
         outdir=collector.outdir,
@@ -1061,30 +1077,31 @@ def analyze_chopped_data(
     collector.chopped_data["trace_all"] = average_all.y
     collector.chopped_data["pacing_all"] = average_all.pacing
 
-    plotter.plot_multiple_traces(
-        [[b.t for b in beats], [b.t for b in included_beats]],
-        [[b.y for b in beats], [b.y for b in included_beats]],
-        collector.outdir.joinpath("chopped_data.png"),
-        ["all", "1 std"],
-        ylabels=[r"$\Delta F / F$" for _ in range(len(beats))],
-        deep=True,
-    )
+    if collector.plot and collector.outdir is not None:
+        plotter.plot_multiple_traces(
+            [[b.t for b in beats], [b.t for b in included_beats]],
+            [[b.y for b in beats], [b.y for b in included_beats]],
+            collector.outdir.joinpath("chopped_data.png"),
+            ["all", "1 std"],
+            ylabels=[r"$\Delta F / F$" for _ in range(len(beats))],
+            deep=True,
+        )
 
-    plotter.plot_multiple_traces(
-        [collector.chopped_data["time_all"], collector.chopped_data["time_1std"]],
-        [collector.chopped_data["trace_all"], collector.chopped_data["trace_1std"]],
-        collector.outdir.joinpath("average.png"),
-        ["all", "1 std"],
-        ylabels=[r"$\Delta F / F$" for _ in range(len(beats))],
-    )
+        plotter.plot_multiple_traces(
+            [collector.chopped_data["time_all"], collector.chopped_data["time_1std"]],
+            [collector.chopped_data["trace_all"], collector.chopped_data["trace_1std"]],
+            collector.outdir.joinpath("average.png"),
+            ["all", "1 std"],
+            ylabels=[r"$\Delta F / F$" for _ in range(len(beats))],
+        )
 
-    plotter.plot_twin_trace(
-        collector.chopped_data["time_1std"],
-        collector.chopped_data["time_1std"],
-        collector.chopped_data["trace_1std"],
-        collector.chopped_data["pacing_1std"],
-        collector.outdir.joinpath("average_pacing.png"),
-    )
+        plotter.plot_twin_trace(
+            collector.chopped_data["time_1std"],
+            collector.chopped_data["time_1std"],
+            collector.chopped_data["trace_1std"],
+            collector.chopped_data["pacing_1std"],
+            collector.outdir.joinpath("average_pacing.png"),
+        )
 
 
 def analyze_mps_func(

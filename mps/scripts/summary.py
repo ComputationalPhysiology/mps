@@ -24,68 +24,37 @@ logger = logging.getLogger(__name__)
 
 
 def get_data(path: Path, ignore_pacing: bool = False):
-
+    mps_data = MPS(path)
     try:
-        logger.info(f"Processing file {path}")
-        data = MPS(path)
-        average = analysis.average_intensity(data.frames)
-        time_stamps = data.time_stamps
-        pacing = data.pacing
-        background = apf.background.background(time_stamps, average)
-        avg = apf.filters.filt(average - background, 3)
-
-        pacing_chop = np.zeros_like(pacing) if ignore_pacing else pacing
-        chopped_data = apf.chopping.chop_data(avg, time_stamps, pacing=pacing_chop)
-        apd_analysis = analysis.analyze_apds(
-            chopped_data.data,
-            chopped_data.times,
+        data = analysis.analyze_mps_func(
+            mps_data=mps_data,
+            ignore_pacing=ignore_pacing,
             plot=False,
-        )
-
-        tau75s = [
-            apf.features.tau(t, c, 0.75)
-            for c, t in zip(chopped_data.data, chopped_data.times)
-        ]
-        upstroke80s = [
-            apf.features.upstroke(t, c, 0.8)
-            for c, t in zip(chopped_data.data, chopped_data.times)
-        ]
-        ttp = [
-            apf.features.time_to_peak(t, c, p)
-            for c, t, p in zip(
-                chopped_data.data,
-                chopped_data.times,
-                chopped_data.pacing,
-            )
-        ]
-        nbeats = len(chopped_data.data)
-        freqs = apf.features.beating_frequency_from_peaks(
-            chopped_data.data,
-            chopped_data.times,
-        )
-
-        return dict(
-            average=average,
-            time_stamps=time_stamps,
-            pacing=pacing,
-            apd30s=apd_analysis.apds[30],
-            apd80s=apd_analysis.apds[80],
-            apd90s=apd_analysis.apds[90],
-            capd30s=apd_analysis.capds[30],
-            capd80s=apd_analysis.capds[80],
-            capd90s=apd_analysis.capds[90],
-            slope_APD80=apd_analysis.slope_APD80,
-            slope_cAPD80=apd_analysis.slope_cAPD80,
-            triangulation=apd_analysis.triangulation,
-            tau75s=tau75s,
-            upstroke80s=upstroke80s,
-            nbeats=nbeats,
-            ttp=ttp,
-            freqs=freqs,
+            outdir=None,
         )
     except Exception as ex:
         logger.warning(ex, exc_info=True)
         return None
+    else:
+        return dict(
+            average=data["unchopped_data"]["original_trace"],
+            time_stamps=data["unchopped_data"]["original_times"],
+            pacing=data["unchopped_data"]["original_pacing"],
+            apd30s=data["all_features"]["features_beats"]["apd30"],
+            apd80s=data["all_features"]["features_beats"]["apd80"],
+            apd90s=data["all_features"]["features_beats"]["apd90"],
+            capd30s=data["all_features"]["features_beats"]["capd30"],
+            capd80s=data["all_features"]["features_beats"]["capd80"],
+            capd90s=data["all_features"]["features_beats"]["capd90"],
+            slope_APD80=data["all_features"]["features_beats"]["slope_APD80"],
+            slope_cAPD80=data["all_features"]["features_beats"]["slope_cAPD80"],
+            triangulation=data["all_features"]["features_beats"]["triangulation"],
+            tau75s=data["all_features"]["features_beats"]["tau75"],
+            upstroke80s=data["all_features"]["features_beats"]["upstroke80"],
+            nbeats=data["all_features"]["features_beats"]["num_beats"],
+            ttp=data["all_features"]["features_beats"]["ttp"],
+            freqs=data["all_features"]["features_beats"]["beating_frequencies"],
+        )
 
 
 def plot(
