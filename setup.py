@@ -1,5 +1,5 @@
 from setuptools import setup
 
 setup(
-    version="2022.0.0",
+    version="2022.1.0",
 )
