@@ -6,7 +6,7 @@ import mps
 
 
 @pytest.fixture(params=["with_pacing", "without_pacing"])
-def chopped_data(request):
+def beats(request):
     N = 700
     x = np.linspace(0, 7.0, N)
     time = x * 1000
@@ -17,15 +17,20 @@ def chopped_data(request):
     pacing = np.zeros(len(x))
     for r in range(8):
         pacing[1 + 100 * r : 100 * r + 10] = 1
-    kwargs = dict(data=average, time=time, extend_front=0)
-    if request.param == "with_pacing":
-        kwargs["pacing"] = pacing
-    else:
-        kwargs["extend_front"] = 250
 
-    kwargs["use_pacing_info"] = request.param == "with_pacing"
+    chopping_options = {"extend_front": 0}
+    if request.param == "without_pacing":
+        chopping_options["extend_front"] = 250
 
-    yield apf.chopping.chop_data(**kwargs), kwargs
+    chopping_options["ignore_pacing"] = request.param == "without_pacing"
+    beat = apf.Beats(
+        t=time,
+        y=average,
+        pacing=pacing,
+        chopping_options=chopping_options,
+    )
+
+    yield beat.beats
 
 
 def test_local_averages():
@@ -68,10 +73,9 @@ def test_local_averages():
     assert np.linalg.norm(avg - y) / np.linalg.norm(y) < 0.05
 
 
-def test_analyze_apds(chopped_data):
+def test_analyze_apds(beats):
     apd_analysis = mps.analysis.analyze_apds(
-        chopped_data[0].data,
-        chopped_data[0].times,
+        beats,
         plot=False,
     )
 
@@ -79,26 +83,16 @@ def test_analyze_apds(chopped_data):
     assert np.all(np.abs(np.subtract(apd_analysis.apds[50], 500)) < 1.0)
 
 
-def test_analyze_frequencies(chopped_data):
+def test_analyze_frequencies(beats):
     freq_analysis = mps.analysis.analyze_frequencies(
-        chopped_data[0].data,
-        chopped_data[0].times,
+        beats,
         plot=False,
     )
     assert np.all(np.abs(freq_analysis - 1.0) < 0.01)
 
 
 def test_AnalyzeMPS(mps_data):
-    avg = mps.average.get_average_all(mps_data.frames)
-    analyzer = mps.analysis.AnalyzeMPS(
-        avg,
-        mps_data.time_stamps,
-        mps_data.pacing,
-        outdir="test_outdir",
-        plot=True,
-    )
-
-    analyzer.analyze_all()
+    mps.analysis.analyze_mps_func(mps_data, plot=False)
 
 
 def test_compare_get_average_all_and_local(mps_data):

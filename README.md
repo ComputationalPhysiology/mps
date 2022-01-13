@@ -3,16 +3,60 @@
 # MPS data
 
 This repository contains the software for reading and analyzing MPS data.
+The analysis scripts are heavily based on [ap_features](https://github.com/ComputationalPhysiology/ap_features) which is a package for computing features of action potential traces.
 
-## Instructions for regular users
+## Installation
 
-### Installation
+To install the package you can clone the repository and install from source
+```
+cd mps
+python -m pip install "."
+```
+or install directly from github
+```
+python -m pip install git+https://github.com/finsberg/mps.git
+```
+Developers should install some extra dependencies including a pre-commit hook.
+Execute `make dev` or consult the `dev` target in the [Makefile](Makefile).
 
-If you only want to use this software (and not develop it) then you can download the binaries
+## Usage
+
+
+### CLI
+Once installed you can use the command line script from the terminal.
+
+In the following demo I have the `mps` packaged installed in a [virtual environment](https://realpython.com/python-virtual-environments-a-primer/) which is first activated. Then it shows how to run the analysis script on a single file.
+
+![_](docs/usage.gif)
+
+### Python API
+The most useful features of this package it to read imaging data which can be done as follow
+
+```python
+import mps
+# Object containing the frames, time stamps and metadata
+data = mps.MPS("file.nd2")
+```
+To convert the data into a trace you can do
+```python
+import ap_features as apf
+
+# Compute the average over all pixels
+y = average.get_average_all(data.frames)
+# Convert it to an apf.Beats and compute features
+# using the ap_features package
+trace = apf.Beats(y=y, t=data.time_stamps, pacing=data.pacing)
+```
+
+
+## Pre-built binaries
+
+You can also get pre-built binaries for Windows, MaxOSX and Linux in case you don't want to install anything.
 
 - [Windows binaries](https://github.com/finsberg/mps/suites/2312934745/artifacts/48565576)
 - [MacOSX binaries](https://github.com/finsberg/mps/suites/2312934745/artifacts/48565574)
 - [Linux binaries](https://github.com/finsberg/mps/suites/2312934745/artifacts/48565575)
+
 
 The binary is called `mps` (with a `.exe` extension if you are running on Windows)
 Note that the binaries ships with python, so to don't even need to install python to run the binaries.
@@ -42,44 +86,25 @@ or on Windows
 you should get the following output
 
 ```
-MPS package for analyzing microphyisological systems
+Usage: __main__.py [OPTIONS] COMMAND [ARGS]...
 
-Available arguments
--------------------
-All these arguments can be called with '-h' or '--help' to see the
-additional options
+Options:
+  --version                       Show version
+  --license                       Show license
+  --install-completion [bash|zsh|fish|powershell|pwsh]
+                                  Install completion for the specified shell.
+  --show-completion [bash|zsh|fish|powershell|pwsh]
+                                  Show completion for the specified shell, to
+                                  copy it or customize the installation.
 
-    analyze
-        Analyze mps data (.nd2 or .czi)
+  --help                          Show this message and exit.
 
-    summary
-        Create a summary figure and csv file of all files in a folder
-
-    phase_plot
-        Make a phase plot with voltage on the x-axis and calcium on the y-axis.
-
-    prevalence
-        Estimate the percentage of tissue in the chips,
-        and the percentage of beating tissue vs non-beating
-
-    collect
-        Gather Voltage and Calcium data into one file that can be
-        used as input to the inversion algorithm.
-
-    mps2mp4
-        Create movie of data file
-
-
-Available options
------------------
-
-    -h, --help      Show this help
-    -v, --version   Show version number
-
-
-Contact
--------
-Henrik Finsberg (henriknf@simula.no)
+Commands:
+  analyze       Analyze flourecense data
+  mps2mp4       Create movie of data file
+  phase-plot    Create movie of data file
+  split-pacing  Run script on a folder with files and this will copy the...
+  summary       Create a summary pdf of all files in the a directory.
 ```
 
 This shows the available commands that you can use with the script.
@@ -103,46 +128,23 @@ will analyze that file. You can also type
 to see all the available options.
 
 
-### Known issues
+
+## Known issues
 
 1. The `prevalence` script is not yet working
 
 2. To use the `mps2mp4` script you also need to install `ffmpeg` separatly
 
 
-## Instructions for developers
+## Integration with motion tracking
 
-### Installations instructions
-
-To install a development version of the code you need to first clone the repo, change directory to the root directory and type
-```
-python -m pip install "."
-```
-This will install only the minimal version of the code. To install the full version (recommended) execute the command
-```
-python -m pip install ".[all]"
-```
-You can also use the `Makefile` to install the software. Here you can also find dedicated commands for windows which uses `pipwin` instead of `pip` to install dependencies.
-The following commands can be used to install the software
+If you also have installed the [motion tracking script](https://github.com/ComputationalPhysiology/mps_motion_tracking) should should be able to also run
 
 ```
-make install              install on unix
-make install-windows      install on windows usig pipwin
-make dev                  Developement install
-make dev-windows          Developement install - windows
+python -m mps motion file.nd2
 ```
+in order to run the motion analysis.
 
-### Usage
-
-Once installed you can use package from anywhere by typing
-```
-python -m mps [script]
-```
-where `[script]` is one of the scripts. Typing `python -m mps` will display the same message as above.
-For example to analyze a file called `file.nd2`, you type
-```
-python -m mps analyze file.nd2
-```
 
 ## Documentation
 
@@ -168,7 +170,7 @@ If you need to get in contact, please send me an email at [henriknf@simula.no](m
 
 ## License
 
-c) 2001-2020 Simula Research Laboratory ALL RIGHTS RESERVED
+c) 2001-2022 Simula Research Laboratory ALL RIGHTS RESERVED
 
 END-USER LICENSE AGREEMENT
 PLEASE READ THIS DOCUMENT CAREFULLY. By installing or using this

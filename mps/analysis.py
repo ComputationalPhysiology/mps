@@ -32,21 +32,21 @@ NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 """
 import concurrent.futures
 import itertools as it
+import operator as op
 import json
 import logging
-from collections import namedtuple
-from copy import deepcopy
+from collections import namedtuple, defaultdict
+from collections.abc import Iterable
 from pathlib import Path
 from textwrap import dedent
 from typing import Any, Dict, List, Optional
 
 import ap_features as apf
 import numpy as np
-from scipy.interpolate import UnivariateSpline
 
-from . import average, ead, plotter, utils
+from . import average, plotter, utils
 
-logger = utils.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 mps_prevalence = namedtuple(
     "mps_prevalence",
@@ -67,6 +67,24 @@ APDAnalysis = namedtuple(
         "const_cAPD80",
         "apd_dt",
     ],
+)
+
+Features = namedtuple(
+    "Features",
+    [
+        "features",  # Mean features
+        "features_beats",  # Features for all beats
+        "features_included_beats",  # Features for the included beats
+        "features_1std_str",  # Same as features but as strings
+        "features_all_str",  # Sane as 'features_1std_str' but for all beats
+        "included_indices",  # List of common indices included
+        "included_indices_beats",  # Included indices for all beats
+    ],
+)
+
+ExcludedData = namedtuple(
+    "ExcludedData",
+    ("new_data, included_indices, " "all_included_indices"),
 )
 
 
@@ -138,67 +156,26 @@ def average_intensity(data, mask=None, alpha=1.0, averaging_type="spatial"):
 
 
 def analyze_apds(
-    chopped_data: List[List[float]],
-    chopped_times: List[List[float]],
+    beats: List[apf.Beat],
     max_allowed_apd_change: Optional[float] = None,
     fname: str = "",
     plot=True,
 ) -> APDAnalysis:
 
     apd_levels = (100 * np.sort(np.append(np.arange(0.1, 0.91, 0.2), 0.8))).astype(int)
-    apds = {
-        k: [apf.features.apd(k, y, t) for y, t in zip(chopped_data, chopped_times)]
-        for k in apd_levels
-    }
+    apds = {k: [b.apd(k) for b in beats] for k in apd_levels}
+    apd_points = {k: [b.apd_point(k) for b in beats] for k in apd_levels}
+    apd_dt = {k: [v[0] for v in value] for k, value in apd_points.items()}
+    capds = {k: [b.capd(k) for b in beats] for k in apd_levels}
 
-    apd_points = {
-        k: [apf.features._apd(k, y, t) for y, t in zip(chopped_data, chopped_times)]
-        for k in apd_levels
-    }
-
-    median_freq = np.median(
-        apf.features.beating_frequency_from_peaks(chopped_data, chopped_times),
+    slope_APD80, const_APD80 = apf.beat.apd_slope(beats=beats, factor=80)
+    slope_cAPD80, const_cAPD80 = apf.beat.apd_slope(
+        beats=beats,
+        factor=80,
+        corrected_apd=True,
     )
-    beat_rates = {}
-    apd_dt = {}
-    for k, apdx in apd_points.items():
-        apd_dt[k] = [v[0] for v in apdx]
-        if len(apd_dt[k]) > 1:
-            # Time between APD80
-            # Let last beat have the median beat rate
-            beat_rates[k] = [
-                60 * (v1 - v0) / 1000.0 for v0, v1 in zip(apd_dt[k][:-1], apd_dt[k][1:])
-            ] + [60.0 / median_freq]
 
-    if len(apds[80]) > 1:
-        a, const_APD80 = np.polyfit(apd_dt[80], apds[80], deg=1)
-        slope_APD80 = a * 1000 * 60  # d APD / min
-    else:
-        slope_APD80 = np.nan
-        const_APD80 = np.nan
-
-    capds = {
-        k: apf.features.corrected_apd(v, b).tolist()
-        for (k, v), b in zip(apds.items(), beat_rates.values())
-    }
-
-    if len(apds[80]) > 1:
-        a, const_cAPD80 = np.polyfit(apd_dt[80], capds[80], deg=1)
-        slope_cAPD80 = a * 1000 * 60  # d APD / min
-    else:
-        slope_cAPD80 = np.nan
-        const_cAPD80 = np.nan
-
-    triangulation = []
-    for y, t in zip(chopped_data, chopped_times):
-        apd30 = apf.features._apd(30, y, t)
-        apd80 = apf.features._apd(80, y, t)
-
-        tri = apd80[-1] - apd30[-1]
-        if tri < 0:
-            # Something is wrong
-            tri = np.nan
-        triangulation.append(tri)
+    triangulation = [b.triangulation(low=30, high=80) for b in beats]
 
     median_apds = {k: np.median(v) for k, v in apds.items()}
 
@@ -213,7 +190,7 @@ def analyze_apds(
 
     msg = "Found the following number of significant beats based on APDs: \n"
     msg += "\n".join([f"APD{k}: {sum(v)}" for k, v in is_significant.items()])
-    logger.info(msg)
+    logger.debug(msg)
 
     res = APDAnalysis(
         apds=apds,
@@ -230,8 +207,7 @@ def analyze_apds(
 
     if plot:
         plot_apd_analysis(
-            chopped_data=chopped_data,
-            chopped_times=chopped_times,
+            beats=beats,
             res=res,
             fname=fname,
         )
@@ -239,7 +215,7 @@ def analyze_apds(
     return res
 
 
-def plot_apd_analysis(chopped_data, chopped_times, res: APDAnalysis, fname=""):
+def plot_apd_analysis(beats: List[apf.Beat], res: APDAnalysis, fname=""):
     try:
         import matplotlib.pyplot as plt
     except ImportError:
@@ -288,17 +264,13 @@ def plot_apd_analysis(chopped_data, chopped_times, res: APDAnalysis, fname=""):
         axi.legend()
         axi.grid()
 
-    for c, t in zip(chopped_data, chopped_times):
-        ax[2].plot(t, c, color="k")
+    for beat in beats:
+        ax[2].plot(beat.t, beat.y, color="k")
     for i, (label, vals) in enumerate(res.apd_points.items()):
         x = [v[0] for v in vals] + [v[1] for v in vals]
 
-        y = [
-            UnivariateSpline(chopped_times[j], chopped_data[j])(v[0])
-            for j, v in enumerate(vals)
-        ] + [
-            UnivariateSpline(chopped_times[j], chopped_data[j])(v[1])
-            for j, v in enumerate(vals)
+        y = [beats[j].as_spline(k=3, s=0)(v[0]) for j, v in enumerate(vals)] + [
+            beats[j].as_spline(k=3, s=0)(v[1]) for j, v in enumerate(vals)
         ]
         ax[2].plot(x, y, linestyle="", marker="o", label=label)
 
@@ -312,7 +284,7 @@ def plot_apd_analysis(chopped_data, chopped_times, res: APDAnalysis, fname=""):
     plt.close()
 
 
-def compute_features(chopped_data, use_spline=True, normalize=False):
+def compute_features(beats: List[apf.Beat], use_spline=True, normalize=False):
     r"""
     Analyze signals. Compute all features and
     include only the relevant beats
@@ -320,8 +292,8 @@ def compute_features(chopped_data, use_spline=True, normalize=False):
 
     Arguments
     ---------
-    chopped_data : namedtuple
-        The chopped data, time and pacing as a named tuple
+    beats : List[apf.Beat]
+        List of beats
     use_spline : bool
         Use spline interpolation
         (Default : True)
@@ -377,67 +349,121 @@ def compute_features(chopped_data, use_spline=True, normalize=False):
     return :math:`\bar{f}`.
 
     """
-    num_events = len(chopped_data.data)
+    num_beats = len(beats)
+    if num_beats == 0:
+        return {}
 
-    apd30 = np.zeros(num_events)
-    apd50 = np.zeros(num_events)
-    apd80 = np.zeros(num_events)
-    apd90 = np.zeros(num_events)
-    dFdt_max = np.zeros(num_events)
-    int30 = np.zeros(num_events)
-    tau75 = np.zeros(num_events)
-    upstroke80 = np.zeros(num_events)
+    assert beats[0].parent is not None, "Beats must have a parent"
 
-    for i, (data, time) in enumerate(zip(chopped_data.data, chopped_data.times)):
-        unit = apf.utils.time_unit(time)
-        unitfactor = 1000.0 if unit == "s" else 1.0
+    features: Dict[str, Any] = dict(
+        apd30=np.zeros(num_beats),
+        apd50=np.zeros(num_beats),
+        apd80=np.zeros(num_beats),
+        apd90=np.zeros(num_beats),
+        capd30=np.zeros(num_beats),
+        capd50=np.zeros(num_beats),
+        capd80=np.zeros(num_beats),
+        capd90=np.zeros(num_beats),
+        dFdt_max=np.zeros(num_beats),
+        int30=np.zeros(num_beats),
+        tau75=np.zeros(num_beats),
+        upstroke80=np.zeros(num_beats),
+        ttp=np.zeros(num_beats),
+    )
 
-        time = np.multiply(unitfactor, time)
+    for i, beat in enumerate(beats):
+        beat.ensure_time_unit("ms")
 
-        apd90[i] = apf.features.apd(90, data, time, use_spline=use_spline) or np.nan
-        apd80[i] = apf.features.apd(80, data, time, use_spline=use_spline) or np.nan
-        apd50[i] = apf.features.apd(50, data, time, use_spline=use_spline) or np.nan
-        apd30[i] = apf.features.apd(30, data, time, use_spline=use_spline) or np.nan
-        tau75[i] = apf.features.tau(time, data, 0.75)
-        upstroke80 = apf.features.upstroke(time, data, 0.8)
-
-        dFdt_max[i] = (
-            apf.features.maximum_upstroke_velocity(
-                data,
-                time,
+        features["apd90"][i] = beat.apd(90, use_spline=use_spline) or np.nan
+        features["apd80"][i] = beat.apd(80, use_spline=use_spline) or np.nan
+        features["apd50"][i] = beat.apd(50, use_spline=use_spline) or np.nan
+        features["apd30"][i] = beat.apd(30, use_spline=use_spline) or np.nan
+        features["capd90"][i] = beat.capd(90, use_spline=use_spline) or np.nan
+        features["capd80"][i] = beat.capd(80, use_spline=use_spline) or np.nan
+        features["capd50"][i] = beat.capd(50, use_spline=use_spline) or np.nan
+        features["capd30"][i] = beat.capd(30, use_spline=use_spline) or np.nan
+        features["ttp"][i] = beat.ttp() or np.nan
+        features["tau75"][i] = beat.tau(0.75) or np.nan
+        features["upstroke80"][i] = beat.upstroke(0.8) or np.nan
+        features["dFdt_max"][i] = (
+            beat.maximum_upstroke_velocity(
                 use_spline=use_spline,
                 normalize=normalize,
             )
             or np.nan
         )
-        int30[i] = (
-            apf.features.integrate_apd(
-                data,
-                time,
+        features["int30"][i] = (
+            beat.integrate_apd(
                 0.3,
                 use_spline=use_spline,
                 normalize=normalize,
             )
             or np.nan
         )
-    f = dict(
-        apd30=apd30,
-        apd50=apd50,
-        apd80=apd80,
-        apd90=apd90,
-        dFdt_max=dFdt_max,
-        int30=int30,
-        tau75=tau75,
-        upstroke80=upstroke80,
-    )
 
-    for k, v in f.items():
-        f[k] = v[~np.isnan(v)]
+    features["beating_frequencies"] = beats[0].parent.beating_frequencies
+    for k, v in features.items():
+        features[k] = v[~np.isnan(v)]
 
-    return f
+    features["beating_frequency"] = beats[0].parent.beating_frequency
+    features["num_beats"] = num_beats
+    return features
 
 
-def exclude_x_std(data, x=None, skips=None):
+def find_included_indices(data, x=None, use=None):
+    """Given a list of values return a list of all
+    values that are within x factor of the mean.
+
+    Parameters
+    ----------
+    data : dict
+        A dictionary of lists of values, e.g a list of apd30
+    x : float
+        The number of standard deviations to be
+        included, ex x = 1.0. If none is provided
+        everything will be included
+    use : List[str]
+        List of features to use
+
+    Returns
+    -------
+    Tuple[Dict[str, List[int]], List[int]]
+        List of indices or each beat and list of common indices
+
+    """
+    if use is None:
+        use = ["apd30", "apd80"]
+
+    included_indices = defaultdict(list)  # {k: [] for k in data.keys()}
+
+    # Find minimum number of beats:
+    num_beats = 0
+    for k, v in data.items():
+        if not isinstance(v, Iterable):
+            continue
+        if num_beats == 0:
+            num_beats = len(v)
+        num_beats = min(num_beats, len(v))
+
+    for k, v in data.items():
+        if not isinstance(v, Iterable) or k not in use:
+            continue
+        for j, s in enumerate(v):
+
+            # Include only signals within factor *
+            # standard deviation from the mean
+            if -np.std(v) * x < (s - np.mean(v)) < np.std(v) * x:
+                included_indices[k].append(j)
+
+        # Check if list is empty
+        if not len(included_indices[k]) == 0:
+            included_indices[k] = list(range(num_beats))
+
+    intsect = utils.get_intersection(included_indices)
+    return dict(included_indices), [ind for ind in intsect if ind < num_beats]
+
+
+def exclude_x_std(data, x=None, use=None):
     """
     Given a list of values return a list of all
     values that are within x factor of the mean.
@@ -450,6 +476,8 @@ def exclude_x_std(data, x=None, skips=None):
         The number of standard deviations to be
         included, ex x = 1.0. If none is provided
         everything will be included
+    use : List[str]
+        List of features to use
 
     Returns
     -------
@@ -463,41 +491,15 @@ def exclude_x_std(data, x=None, skips=None):
 
 
     """
-    if skips is None:
-        skips = []
-    # List with new data
-    new_data = {k: [] for k in data.keys()}
-    included_indices = {k: [] for k in data.keys()}
-
+    included_indices, all_included_indices = find_included_indices(data, x, use)
+    new_data = {}
     for k, v in data.items():
-        if x is not None:
-            for j, s in enumerate(v):
-
-                # Include only signals within factor *
-                # standard deviation from the mean
-                if -np.std(v) * x < (s - np.mean(v)) < np.std(v) * x:
-
-                    new_data[k].append(s)
-                    included_indices[k].append(j)
-
-        # Check if list is empty
-        if not new_data[k]:
-            if x is not None and k not in skips:
-                msg = (
-                    "No data were within {} std for key {}" ". Include all data"
-                ).format(k, x)
-                logger.info(msg)
-            # If it is empty lets include everything
+        if isinstance(v, Iterable):
+            new_data[k] = np.array(v)[np.array(all_included_indices)].tolist()
+        else:
             new_data[k] = v
-            included_indices[k] = range(len(v))
 
-    excluded_data = namedtuple(
-        "excluded_data",
-        ("new_data, included_indices, " "all_included_indices"),
-    )
-    intsect = utils.get_intersection(included_indices)
-    all_included_indices = list(intsect)
-    return excluded_data(
+    return ExcludedData(
         new_data=new_data,
         included_indices=included_indices,
         all_included_indices=all_included_indices,
@@ -505,16 +507,15 @@ def exclude_x_std(data, x=None, skips=None):
 
 
 def analyze_frequencies(
-    chopped_data: List[List[float]],
-    chopped_times: List[List[float]],
+    beats,
     time_unit: str = "ms",
     fname: str = "",
     plot=True,
 ) -> np.ndarray:
 
     freqs = apf.features.beating_frequency_from_peaks(
-        chopped_data,
-        chopped_times,
+        [beat.y for beat in beats],
+        [beat.t for beat in beats],
         time_unit,
     )
 
@@ -550,11 +551,11 @@ def analyze_frequencies(
         ax[0].set_ylabel("Frequency [Hz]")
         ax[0].set_xlabel("Beat number")
 
-        points_x = [t[int(np.argmax(c))] for c, t in zip(chopped_data, chopped_times)]
-        points_y = [np.max(c) for c in chopped_data]
+        points_x = [beat.t[int(np.argmax(beat.y))] for beat in beats]
+        points_y = [np.max(beat.y) for beat in beats]
 
-        for c, t in zip(chopped_data, chopped_times):
-            ax[1].plot(t, c)
+        for beat in beats:
+            ax[1].plot(beat.t, beat.y)
 
         ax[1].plot(points_x, points_y, linestyle="", marker="o", color="r")
         ax[1].set_xlabel("Time [ms]")
@@ -566,713 +567,607 @@ def analyze_frequencies(
     return freqs
 
 
-def poincare_plot(
-    chopped_data: List[List[float]],
-    chopped_times: List[List[float]],
-    apds: List[int],
+def analyze_eads(
+    beats: List[apf.Beat],
+    sigma: float = 1,
+    prominence_threshold: float = 0.07,
+    plot=True,
     fname: str = "",
-) -> Dict[int, List[float]]:
+) -> int:
     """
-    Create poincare plots for given APDs
+    Loop over all beats and check for EADs.
 
     Arguments
     ---------
-    chopped_data : list
-        List of the amplitude of each beat
-    chopped_data : list
-        List of the time stamps of each beat
-    apds : list
-        List of APDs to be used, e.g [30, 50, 80]
-        will plot the APS30, APD50 and APD80.
+    beats : List[apf.Beat]
+        List of beats
+    sigma: float
+        Standard deviation in the gaussian smoothing kernal used for
+        EAD detection. Default: 3.0
+    prominence_threshold: float
+        How prominent a peak should be in order to be
+        characterized as an EAD. This value shold be
+        between 0 and 1, with a greater value being
+        more prominent. Defaulta: 0.04
+    plot : bool
+        If True we plot the beats with the potential EAD marked
+        as a red dot. Default: True
     fname : str
-        Path to filename to save the figure.
-
-    Notes
-    -----
-    For more info see <http://doi.org/10.1371/journal.pcbi.1003202>
+        Path to file that you want to save the plot.
 
     Returns
     -------
-    dict:
-        A dictionary with the key being the :math:`x` in APD:math:`x`
-        and the value begin the points being plotted.
-
+    int:
+        The number of EADs
     """
-    apds_points = {
-        k: [apf.features.apd(k, y, t) for y, t in zip(chopped_data, chopped_times)]
-        for k in apds
-    }
 
-    if len(chopped_data) <= 1:
-        # No possible to plot poincare plot with 1 or zero elements
-        return apds_points
+    num_eads = 0
+    peak_inds = {}
+    for i, beat in enumerate(beats):
+        has_ead, peak_index = beat.detect_ead(
+            sigma=sigma,
+            prominence_level=prominence_threshold,
+        )
+        if has_ead and peak_index is not None:
+            num_eads += 1
+            peak_inds[i] = peak_index
+
+    if plot:
+        plot_ead(fname, beats, peak_inds)
+
+    return num_eads
+
+
+def plot_ead(fname, beats, peak_inds):
 
     try:
         import matplotlib.pyplot as plt
     except ImportError:
-        return apds_points
+        return
 
     fig, ax = plt.subplots()
-    for k, v in apds_points.items():
-        ax.plot(v[:-1], v[1:], label=f"APD{k}", marker=".")
-    ax.legend()
-    ax.grid()
-    ax.set_xlabel("APD(n-1)[ms]")
-    ax.set_ylabel("APD(n) [ms]")
+    num_eads = 0
+    for i, beat in enumerate(beats):
+        ax.plot(beat.t, beat.y)
+        if i in peak_inds:
+            ax.plot([beat.t[peak_inds[i]]], [beat.y[peak_inds[i]]], "ro")
+    ax.set_title(f"EADs are marked with red dots. Found EADs in {num_eads} beats")
     if fname != "":
         fig.savefig(fname)
-    else:
-        plt.show()
     plt.close()
-    return apds_points
 
 
-def analyze_mps_func(
-    mps_data, mask=None, analysis_window_start=0, analysis_window_end=-1, **kwargs
-):
-    avg = average_intensity(mps_data.frames, mask=mask)
-    time_stamps = mps_data.time_stamps
-    pacing = mps_data.pacing
-
-    info = mps_data.info
-    metadata = mps_data.metadata
-
-    start_index = 0
-    end_index = len(time_stamps)
-    if analysis_window_start > 0:
-        try:
-            start_index = next(
-                i for i, v in enumerate(time_stamps) if v >= analysis_window_start
-            )
-        except StopIteration:
-            pass
-    if analysis_window_end != -1:
-        try:
-            end_index = next(
-                i for i, v in enumerate(time_stamps) if v >= analysis_window_end
-            )
-        except StopIteration:
-            pass
-
-    avg = avg[start_index:end_index]
-    time_stamps = time_stamps[start_index:end_index]
-    pacing = pacing[start_index:end_index]
-
-    analyzer = AnalyzeMPS(
-        avg=avg,
-        time_stamps=time_stamps,
-        pacing=pacing,
-        info=info,
-        metadata=metadata,
-        **kwargs,
-    )
-    analyzer.analyze_all()
-    try:
-        import matplotlib.pyplot as plt
-
-        plt.close("all")
-    finally:
-        return analyzer.data
-
-
-class AnalyzeMPS:
-    def __init__(
-        self,
-        avg: List[float],
-        time_stamps: List[float],
-        pacing: Optional[List[float]] = None,
-        **kwargs,
-    ):
-
-        self.avg = avg
-        self.time_stamps = time_stamps
-        self.pacing = pacing
-        self._handle_arguments(kwargs)
+class Collector:
+    def __init__(self, outdir=None, plot: bool = False, params=None):
 
         self.unchopped_data: Dict[str, Any] = {}
         self.chopped_data: Dict[str, Any] = {}
         self.intervals: List[apf.chopping.Intervals] = []
-        self.features: Dict[str, Any] = {}
+        self.features = Features({}, {}, {}, [], [], [], {})
         self._all_features: Dict[str, Any] = {}
-        self.features_computed = False
         self.upstroke_times: List[float] = []
+        self.chopping_parameters: Dict[str, Any] = {}
+        self.params = {} if params is None else params
 
-        self.unchopped_data["original_trace"] = np.copy(avg)
-        self.unchopped_data["original_times"] = np.copy(time_stamps)
-        self.unchopped_data["original_pacing"] = np.copy(pacing)
+        if outdir is not None:
+            outdir = Path(outdir)
+            logger.info(f"Create directory {outdir}")
+            outdir.mkdir(exist_ok=True, parents=True)
+        self.outdir = outdir
+        self.plot = plot
 
     @property
-    def chopping_parameters(self):
-        return dict(
-            threshold_factor=self.parameters["chopping_threshold_factor"],
-            extend_front=self.parameters["chopping_extend_front"],
-            extend_end=self.parameters["chopping_extend_end"],
-            min_window=self.parameters["chopping_min_window"],
-            max_window=self.parameters["chopping_max_window"],
-        )
+    def info(self) -> Dict[str, Any]:
+        return self._info
+
+    @info.setter
+    def info(self, info: Optional[Dict[str, Any]]) -> None:
+        if info is None:
+            info = {}
+        self._info = info
+
+    @property
+    def metadata(self) -> Dict[str, Any]:
+        return self._metadata
+
+    @metadata.setter
+    def metadata(self, metadata: Optional[Dict[str, Any]]) -> None:
+        if metadata is None:
+            metadata = {}
+        self._metadata = metadata
+
+    def register_unchopped(self, trace: apf.Beats, label: str = "") -> None:
+        if label != "":
+            label += "_"
+
+        self.y = np.copy(trace.y)
+        self.t = np.copy(trace.t)
+        self.pacing = np.copy(trace.pacing)
+        self.unchopped_data[label + "trace"] = self.y
+        self.unchopped_data[label + "times"] = self.t
+        self.unchopped_data[label + "pacing"] = self.pacing
+        self.dump()
+        if self.plot:
+            fname = (
+                self.outdir.joinpath("trace")
+                if label == ""
+                else self.outdir.joinpath(label.strip("_"))
+            )
+            trace.plot(fname=fname.with_suffix(".png"))
+
+    def register_chopped_data(self, chopped_data: apf.chopping.ChoppedData) -> None:
+
+        if len(chopped_data.data) == 0 and hasattr(self, "y"):
+            chopped_data.data.append(np.copy(self.y))
+            chopped_data.times.append(np.copy(self.t))
+            chopped_data.pacing.append(np.copy(self.pacing))
+
+        for i, (t, d, p) in enumerate(
+            zip(
+                chopped_data.times,
+                chopped_data.data,
+                chopped_data.pacing,
+            ),
+        ):
+            self.chopped_data["time_{}".format(i)] = t
+            self.chopped_data["trace_{}".format(i)] = d
+            self.chopped_data["pacing_{}".format(i)] = p
+        self.intervals = chopped_data.intervals
+        self.upstroke_times = chopped_data.upstroke_times
 
     @property
     def data(self):
         return {
             "chopped_data": self.chopped_data,
             "unchopped_data": self.unchopped_data,
-            "features": self.features,
+            "features": self.features.features,
+            "all_features": self.features._asdict(),
             "chopping_parameters": self.chopping_parameters,
             "attributes": self.info,
             "intervals": self.intervals,
             "upstroke_times": self.upstroke_times,
+            "settings": self.params,
         }
 
-    def dump_data(self, dump_all=False):
-        if self.outdir is None:
-            return
-
-        utils.dump_data(self.data, self.outdir.joinpath("data"), "npy")
-        if dump_all:
-            chopped_data_padded = utils.padding(self.chopped_data)
-            unchopped_data_padded = utils.padding(self.unchopped_data)
-            utils.to_csv(chopped_data_padded, self.outdir.joinpath("chopped_data"))
-            utils.to_csv(unchopped_data_padded, self.outdir.joinpath("unchopped_data"))
-
-            with open(self.outdir.joinpath("data.txt"), "w") as f:
-                f.write(self.info_txt)
-
-            # utils.dump_data(data, self.outdir.joinpath("data"), "mat")
-            with open(self.outdir.joinpath("metadata.json"), "w") as f:
-                json.dump(self.metadata, f, indent=4, default=utils.json_serial)
-
-            about_str = AnalyzeMPS.about()
-            with open(self.outdir.joinpath("ABOUT.md"), "w") as f:
-                f.write(about_str)
-
-    def analyze_all(self):
-        self.analyze_unchopped_data()
-        self.analyze_chopped_data()
-        self.dump_data(dump_all=True)
-
-    @staticmethod
-    def about():
-        return dedent(
-            r"""
-            # About
-
-            The data in the folder was generated using the following settings
-
-            This folder contains the following files
-
-            * **original_trace**
-                - This is the the raw trace obtained after averaging the frames
-                in the stack without any background correction or filtering
-            * **corrected_trace**
-                - Left panel: This plots the original trace and the backgrund that we
-                subtract in the corrected trace.
-                - Right panel: The is the corrected version of the original trace where we
-                have performed a background correction and filtering.
-
-            * **chopped_data_features**
-                - Different panels with chopped data
-                - For e.g ADP30, we compute APD30 of all beats plotted in chopped_data:all
-                the panel with title all. Then we copmuted the mean and standard deviation (std)
-                of all those. Next we exclude those beats that are outside 1 std (default x = 1.0)
-                of the mean. This panel shows the beats that are within 1 std of the mean.
-            * **chopped_data**
-                - Left panel: This if all the beats that we were able to extract from
-                the corrected trace
-                - Right panel: This is shows the intersection of all beats plotted in chopped_data_z
-                described above.
-            * **average**
-                - These are the average of the traces in chopped_data
-            * **data.txt**
-                - This contains a short summary of analysis.
-            * **data.x where x is either mat of npy**
-                - This contains all the output data that can be loaded in python (data.npy)
-                of Matlab (data.mat)
-            * **unchopped_data.csv**
-                - This contains the unchopped traces, i.e the original trace and the corrected
-                trace ns a structured formated that are easy to view
-            * **chopped_data.csv**
-                - This contains the chopped traces, i.e the trace of each beat, the average trace etc,
-                in a structured formated that are easy to view
-            * **settings.js**
-                - Settings used to to perform the analysis. These settings
-                can be parsed to the analyze_mps script
-            * **metadata.js**
-                - Metadata stored within the mps file.
-
-            """,
-        )
-
-    def analyze_unchopped_data(self):
-
-        self.dump_data()
-
-        if self.parameters["plot"]:
-            plotter.plot_single_trace(
-                self.time_stamps,
-                self.avg,
-                self.outdir.joinpath("original_trace"),
-            )
-
-        self.remove_spikes()
-        self.filter()
-
-        if self.parameters["plot"]:
-            plotter.plot_twin_trace(
-                self.time_stamps,
-                self.time_stamps,
-                self.avg,
-                self.pacing,
-                self.outdir.joinpath("pacing"),
-            )
-
-        self.ignore_pacing()
-        self.remove_points()
-        self.background_correction()
-        self.dump_data()
-
-    def _set_choopped_data(self):
-
-        self._chopped_data = apf.chopping.chop_data(
-            self.avg, self.time_stamps, pacing=self.pacing, **self.chopping_parameters
-        )
-        if len(self._chopped_data.data) == 0:
-            self._chopped_data.data.append(self.avg)
-            self._chopped_data.times.append(self.time_stamps)
-            self._chopped_data.pacing.append(self.pacing)
-
-        for i, (t, d, p) in enumerate(
-            zip(
-                self._chopped_data.times,
-                self._chopped_data.data,
-                self._chopped_data.pacing,
-            ),
-        ):
-            self.chopped_data["time_{}".format(i)] = t
-            self.chopped_data["trace_{}".format(i)] = d
-            self.chopped_data["pacing_{}".format(i)] = p
-        self.intervals = self._chopped_data.intervals
-        self.upstroke_times = self._chopped_data.upstroke_times
-
-    def analyze_chopped_data(self):
-        self._set_choopped_data()
-
-        if self.parameters["plot"]:
-            poincare_plot(
-                self._chopped_data.data,
-                self._chopped_data.times,
-                apds=[30, 50, 70, 80, 90],
-                fname=self.outdir.joinpath("poincare_plot"),
-            )
-
-        self.compute_features()
-        self.run_ead_and_apd_analysis()
-        self.filter_chopped_data()
-        self.get_pacing_avg()
-        self.get_average_all()
-        self.get_average_1std()
-        self.plot_chopped_averages()
-        self.dump_data()
-
-    def run_ead_and_apd_analysis(self):
-        if not hasattr(self, "_chopped_data"):
-            self._set_choopped_data()
-
-        apd_analysis = analyze_apds(
-            self._chopped_data.data,
-            self._chopped_data.times,
-            plot=self.parameters["plot"],
-            max_allowed_apd_change=self.parameters["max_allowed_apd_change"],
-            fname="" if self.outdir is None else self.outdir.joinpath("apd_analysis"),
-        )
-        self.features["slope_APD80"] = apd_analysis.slope_APD80
-        self.features["slope_cAPD80"] = apd_analysis.slope_cAPD80
-        self._all_features["triangulation"] = apd_analysis.triangulation
-
-        analyze_frequencies(
-            self._chopped_data.data,
-            self._chopped_data.times,
-            plot=self.parameters["plot"],
-            time_unit=self.info.get("time_unit", "ms"),
-            fname=""
-            if self.outdir is None
-            else self.outdir.joinpath("frequency_analysis"),
-        )
-
-        self.features["num_eads"] = ead.analyze_eads(
-            self._chopped_data.data,
-            self._chopped_data.times,
-            sigma=self.parameters["ead_sigma"],
-            prominence_threshold=self.parameters["ead_prominence_threshold"],
-            fname="" if self.outdir is None else self.outdir.joinpath("EAD_analysis"),
-        )
-
     @property
-    def info_txt(self):
-        if not hasattr(self, "_features_all"):
-            self.filter_chopped_data()
-
-        info_txt = ["{0:20}\t{1:>20}".format(k, v) for k, v in self.info.items()]
+    def info_txt(self) -> str:
+        template = "{0:20}\t{1:>20}"
+        info_txt = [template.format(k, v) for k, v in self.info.items()]
 
         return "\n".join(
             np.concatenate(
                 (
                     ["All features"],
-                    self._features_all,
+                    self.features.features_all_str,
                     ["\n"],
                     ["Features within 1std"],
-                    self._features_1std,
+                    [
+                        template.format(
+                            "Included beats:",
+                            ",".join(map(str, self.features.included_indices)),
+                        ),
+                    ],
+                    self.features.features_1std_str,
                     ["\n"],
                     ["Info"],
                     info_txt,
+                    ["\nSettings"],
+                    [template.format(k, str(v)) for k, v in self.params.items()],
                 ),
             ),
         )
 
-    def compute_features(self):
-        if not hasattr(self, "_chopped_data"):
-            self._set_choopped_data()
-
-        freqs = apf.features.beating_frequency_from_peaks(
-            self._chopped_data.data,
-            self._chopped_data.times,
-            self.info.get("time_unit", "ms"),
-        )
-        self.features["beating_frequency"] = np.mean(freqs)
-
-        self._all_features.update(
-            compute_features(
-                self._chopped_data,
-                use_spline=self.parameters["use_spline"],
-                normalize=self.parameters["normalize"],
-            ),
-        )
-        for k in [30, 50, 80, 90]:
-            self._all_features[f"capd{k}"] = apf.features.corrected_apd(
-                self._all_features[f"apd{k}"],
-                60 / self.features["beating_frequency"],
-            )
-
-    def compute_mean_features(self):
-        if not hasattr(self, "_all_features"):
-            self.compute_features()
-
-        self._excluded = exclude_x_std(
-            self._all_features,
-            self.parameters["std_ex"],
-            skips=["upstroke80"],
-        )
-
-        mean_features = {}
-        self._features_1std = []
-        self._features_all = []
-        template = "{0:20}\t{1:10.1f}  +/-  {2:10.3f}"
-        for k in self._all_features.keys():
-
-            v = self._excluded.new_data[k]
-            self._features_1std.append(template.format(k, np.mean(v), np.std(v)))
-            mean_features[k] = np.mean(v)
-
-            v = self._all_features[k]
-            self._features_all.append(template.format(k, np.mean(v), np.std(v)))
-        self.features.update(mean_features)
-
-        self.features_computed = True
-
-    def filter_chopped_data(self):
-        if not self.features_computed:
-            self.compute_mean_features()
-
-        logger.debug("Plot chopped data")
-        titles = ["apd30", "apd50", "apd80", "dFdt_max", "int30", "tau75"]
-        xs = []
-        ys = []
-        for k in titles:
-            logger.debug(k)
-            x = [
-                np.subtract(xi, xi[0])
-                for xi in [
-                    t
-                    for j, t in enumerate(self._chopped_data.times)
-                    if j in self._excluded.included_indices[k]
-                ]
-            ]
-            y = [
-                d
-                for j, d in enumerate(self._chopped_data.data)
-                if j in self._excluded.included_indices[k]
-            ]
-
-            xs.append(x)
-            ys.append(y)
-
-        if self.parameters["plot"]:
-            plotter.plot_multiple_traces(
-                xs,
-                ys,
-                self.outdir.joinpath("chopped_data_features"),
-                titles,
-                ylabels=[r"$\Delta F / F$" for _ in xs],
-                deep=True,
-            )
-
-        self._xs_all = [np.subtract(xi, xi[0]) for xi in self._chopped_data.times]
-        self._ys_all = deepcopy(self._chopped_data.data)
-        self.features["num_beats"] = len(self._xs_all)
-
-    def get_average_all(self):
-        if not hasattr(self, "_xs_all"):
-            self.filter_chopped_data()
-
-        N = self.parameters["N"]
-        logger.debug("Get average of everything")
-        # Average of everything
-        if self.parameters["spike_duration"] > 0:
-            self.chopped_data["trace_all"] = average.get_subsignal_average(
-                self._chopped_data.data,
-            )
-            idx = np.argmax([len(xi) for xi in self._xs_all])
-            self.chopped_data["time_all"] = self._xs_all[idx]
-        else:
-            (
-                self.chopped_data["trace_all"],
-                self.chopped_data["time_all"],
-            ) = average.get_subsignal_average_interpolate(
-                self._chopped_data.data,
-                self._xs_all,
-                N,
-            )
-
-    def get_pacing_avg(self):
-        if not hasattr(self, "_xs_all"):
-            self.filter_chopped_data()
-
-        N = self.parameters["N"]
-
-        if self.parameters["spike_duration"] > 0:
-            idx = np.argmax([len(xi) for xi in self._xs_all])
-            pacing_avg = self._chopped_data.pacing[idx]
-
-        else:
-            pacing_avg = np.interp(
-                np.linspace(
-                    np.min(self._chopped_data.times[0]),
-                    np.max(self._chopped_data.times[0]),
-                    N,
-                ),
-                self._chopped_data.times[0],
-                self._chopped_data.pacing[0],
-            )
-        pacing_avg[pacing_avg <= 2.5] = 0.0
-        pacing_avg[pacing_avg > 2.5] = 5.0
-        self.chopped_data["pacing_all"] = pacing_avg
-        self.chopped_data["pacing_1std"] = pacing_avg
-
-    def get_average_1std(self):
-        if not hasattr(self, "_xs_all"):
-            self.filter_chopped_data()
-
-        N = self.parameters["N"]
-        # Average of everyting within 1 std
-        logger.debug("Get average of everything within 1 std")
-
-        if len(self._excluded.all_included_indices) == 0:
-            self._xs_1std, self._ys_1std = self._xs_all, self._ys_all
-        else:
-            xs_1std_ = np.array(self._chopped_data.times, dtype=object)[
-                self._excluded.all_included_indices
-            ]
-            self._xs_1std = [np.subtract(xi, xi[0]) for xi in xs_1std_]
-            self._ys_1std = np.array(self._chopped_data.data, dtype=object)[
-                self._excluded.all_included_indices
-            ]
-
-        if self.parameters["spike_duration"] > 0:
-            self.chopped_data["trace_1std"] = average.get_subsignal_average(
-                self._ys_1std,
-            )
-            self.chopped_data["time_1std"] = self._xs_1std[
-                np.argmax([len(xi) for xi in self._xs_1std])
-            ]
-        else:
-            (
-                self.chopped_data["trace_1std"],
-                self.chopped_data["time_1std"],
-            ) = average.get_subsignal_average_interpolate(
-                self._ys_1std,
-                self._xs_1std,
-                N,
-            )
-
-    def plot_chopped_averages(self):
-
-        if not self.parameters["plot"]:
+    def dump(self):
+        if self.outdir is None:
             return
-        if not hasattr(self, "_xs_1st"):
-            self.get_average_1std()
+        np.save(self.outdir.joinpath("data"), self.data)
 
-        logger.debug("Plot global chopped average")
+    def dump_all(self):
+        if self.outdir is None:
+            return
+        self.dump()
+        chopped_data_padded = utils.padding(self.chopped_data)
+        unchopped_data_padded = utils.padding(self.unchopped_data)
+        utils.to_csv(chopped_data_padded, self.outdir.joinpath("chopped_data"))
+        utils.to_csv(unchopped_data_padded, self.outdir.joinpath("unchopped_data"))
 
+        with open(self.outdir.joinpath("data.txt"), "w") as f:
+            f.write(self.info_txt)
+
+        # utils.dump_data(data, self.outdir.joinpath("data"), "mat")
+        with open(self.outdir.joinpath("metadata.json"), "w") as f:
+            json.dump(self.metadata, f, indent=4, default=utils.json_serial)
+
+        about_str = about()
+        with open(self.outdir.joinpath("REAMDE.txt"), "w") as f:
+            f.write(about_str)
+
+
+def about():
+    import datetime
+    from . import __version__
+    import scipy
+    import sys
+
+    sys_version = sys.version.replace("\n", " ")
+    return dedent(
+        f"""
+        Time
+        ----
+        These results were generated on
+        {datetime.datetime.now()} (local time)
+        {datetime.datetime.utcnow()} (UTC)
+
+        Setup
+        -----
+        The following packages
+        mps version {__version__}
+        ap_features version {apf.__version__}
+        numpy version {np.__version__}
+        scipy version {scipy.__version__}
+
+        and python version
+        {sys_version}
+        and platform {sys.platform}
+
+        Content
+        -------
+        This folder contains the following files
+
+        - apd_analysis.png
+            Figure showing plots of action potential durations
+            and corrected actions potential durations (using
+            the friderica correction formula). Top panel shows
+            bars of the APD for the different beats where the *
+            indicated if the APD for that beat is significantly different.
+            The middle panel show the APD for each each plotted as a
+            line as well as a linear fit of the APD80 and cAPD80 line.
+            The intention behind this panel is to see it there is any
+            correlation between the APD and the beat number
+            The lower panel shows where the cut is made to compute
+            the different APDs
+        - average_pacing.png
+            These are the average trace with pacing
+        - average.png
+            These are the average of the traces in chopped_data
+        - background.png
+            This plots the original trace and the background that we
+            subtract in the corrected trace.
+        - chopped_data_aligned.png
+            All beats plotted on with the time starting at zero
+        - chopped_data.csv
+            A csv file with the chopped data
+        - chopped_data.png
+            Left panel: All the beats that we were able to extract from the corrected trace
+            Right panel: The intersection of all beats where APD80 and APD30 are within 1
+            standard deviation of the mean.
+        - data.npy
+            A file containing all the results. You can load the results
+            in python as follows
+            >> import numpy as np
+            >> data = np.load('data.npy', allow_pickle=True).item()
+            data is now a python dictionary.
+        - data.txt
+            This contains a short summary of analysis.
+        - EAD_analysis.png
+            A plot of the beats containing EADs
+        - frequency_analysis.png
+            A plot of the frequencies of the different beats computed
+            as the time between peaks.
+        - metadata.json
+            Metadata stored inside the raw data
+        - original_pacing.png
+            This is the the raw trace obtained after averaging the frames
+            in the stack without any background correction or filtering
+            together with the pacing amplitude.
+        - original.png
+            This is the the raw trace obtained after averaging the frames
+            in the stack without any background correction or filtering
+        - sliced_filtered.png
+            Original trace where we have performed slicing and filtering
+        - trace.png
+            The is the corrected version of the original trace where we
+            have performed a background correction and filtering
+        - unchopped_data.csv
+            A csv file with all the unchopped data (original and corrected)
+        """,
+    )
+
+
+def analyze_unchopped_data(
+    mps_data,
+    collector,
+    mask=None,
+    analysis_window_start=0,
+    analysis_window_end=-1,
+    spike_duration=0,
+    filter_signal=False,
+    ignore_pacing=False,
+    remove_points_list=(),
+    background_correction=True,
+    **kwargs,
+) -> apf.Beats:
+
+    avg = average_intensity(mps_data.frames, mask=mask)
+    time_stamps = mps_data.time_stamps
+    pacing = mps_data.pacing
+
+    collector.info = mps_data.info
+    collector.metadata = mps_data.metadata
+
+    trace = apf.Beats(
+        y=avg,
+        t=time_stamps,
+        pacing=pacing,
+    )
+    # Original data
+    collector.register_unchopped(trace, "original")
+    if collector.plot and collector.outdir is not None:
+        trace.plot(
+            collector.outdir.joinpath("original_pacing.png"),
+            include_pacing=True,
+        )
+    # Remove spikes and filter
+    filtered_trace = trace.remove_spikes(spike_duration=spike_duration)
+
+    if filter_signal:
+        logger.info("Filter signal")
+        filtered_trace = trace.filter()
+    # Sliced data
+    sliced_filt_trace = filtered_trace.slice(analysis_window_start, analysis_window_end)
+    collector.register_unchopped(sliced_filt_trace, "sliced_filtered")
+
+    if ignore_pacing:
+        sliced_filt_trace.pacing[:] = 0
+
+    for p in remove_points_list:
+        sliced_filt_trace = sliced_filt_trace.remove_points(*p)
+
+    # Corrected data
+    background_correction_method = "full" if background_correction else "none"
+    corrected_trace: apf.Beats = sliced_filt_trace.correct_background(
+        background_correction_method,
+    )
+    collector.register_unchopped(corrected_trace, "")
+    collector.unchopped_data["background"] = np.copy(trace.background)
+    if collector.plot and collector.outdir is not None:
+        corrected_trace.plot(
+            collector.outdir.joinpath("background.png"),
+            include_background=True,
+        )
+    return corrected_trace
+
+
+def compute_all_features(
+    beats,
+    outdir=None,
+    plot=True,
+    use_spline: bool = True,
+    normalize: bool = False,
+    max_allowed_apd_change: Optional[float] = None,
+    ead_sigma: int = 3,
+    ead_prominence_threshold: float = 0.04,
+    std_ex: float = 1.0,
+    **kwargs,
+):
+    features = compute_features(beats, use_spline=use_spline, normalize=normalize)
+    apd_analysis = analyze_apds(
+        beats=beats,
+        max_allowed_apd_change=max_allowed_apd_change,
+        plot=plot,
+        fname="" if outdir is None else outdir.joinpath("apd_analysis.png"),
+    )
+    features["slope_APD80"] = apd_analysis.slope_APD80
+    features["slope_cAPD80"] = apd_analysis.slope_cAPD80
+    features["triangulation"] = apd_analysis.triangulation
+    features["num_eads"] = analyze_eads(
+        beats=beats,
+        sigma=ead_sigma,
+        prominence_threshold=ead_prominence_threshold,
+        fname="" if outdir is None else outdir.joinpath("EAD_analysis.png"),
+    )
+    excluded = exclude_x_std(
+        features,
+        std_ex,
+        use=["apd30", "apd80"],
+    )
+    mean_features = {}
+    features_1std = []
+    features_all = []
+    template = "{0:20}\t{1:10.1f}  +/-  {2:10.3f}"
+    for k in features.keys():
+        v = excluded.new_data[k]
+        features_1std.append(template.format(k, mean(v), std(v)))
+        mean_features[k] = mean(v)
+
+        v = features[k]
+        features_all.append(template.format(k, mean(v), std(v)))
+
+    return Features(
+        features=mean_features,
+        features_beats=features,
+        features_included_beats=excluded.new_data,
+        features_1std_str=features_1std,
+        features_all_str=features_all,
+        included_indices=excluded.all_included_indices,
+        included_indices_beats=excluded.included_indices,
+    )
+
+
+def mean(x):
+    if np.isscalar(x):
+        return x
+    return np.mean(x)
+
+
+def std(x):
+    if np.isscalar(x):
+        return x
+    return np.std(x)
+
+
+def analyze_chopped_data(
+    trace: apf.Beats,
+    collector: Collector,
+    chopping_threshold_factor=0.3,
+    chopping_extend_front=None,
+    chopping_extend_end=None,
+    chopping_min_window=200,
+    chopping_max_window=2000,
+    use_spline: bool = True,
+    normalize: bool = False,
+    max_allowed_apd_change: Optional[float] = None,
+    ead_sigma: int = 3,
+    ead_prominence_threshold: float = 0.04,
+    std_ex: float = 1.0,
+    N: int = 200,
+    **kwargs,
+):
+
+    chopping_parameters = dict(
+        threshold_factor=chopping_threshold_factor,
+        extend_front=chopping_extend_front,
+        extend_end=chopping_extend_end,
+        min_window=chopping_min_window,
+        max_window=chopping_max_window,
+    )
+
+    trace.chopping_options.update(chopping_parameters)
+    chopped_data = trace.chopped_data
+    collector.register_chopped_data(chopped_data)
+
+    beats = apf.beat.chopped_data_to_beats(chopped_data, parent=trace)
+
+    if collector.plot and collector.outdir is not None:
+        apf.plot.plot_beats(beats, fname=collector.outdir.joinpath("chopped_data.png"))
+        apf.plot.plot_beats(
+            beats,
+            fname=collector.outdir.joinpath("chopped_data_aligned.png"),
+            align=True,
+        )
+    fname = ""
+    if collector.plot and collector.outdir is not None:
+        collector.outdir.joinpath("frequency_analysis.png")
+    analyze_frequencies(
+        beats,
+        fname=fname,
+        plot=collector.plot,
+    )
+    collector.features = compute_all_features(
+        beats,
+        outdir=collector.outdir,
+        plot=collector.plot,
+        use_spline=use_spline,
+        normalize=normalize,
+        max_allowed_apd_change=max_allowed_apd_change,
+        ead_sigma=ead_sigma,
+        ead_prominence_threshold=ead_prominence_threshold,
+        std_ex=std_ex,
+    )
+    collector.dump()
+
+    inds = op.itemgetter(*collector.features.included_indices)
+    included_beats = inds(beats)
+    average_all = apf.beat.average_beat(beats, N=N)
+    average_1std = apf.beat.average_beat(included_beats, N=N)
+    collector.chopped_data["time_1std"] = average_1std.t
+    collector.chopped_data["trace_1std"] = average_1std.y
+    collector.chopped_data["pacing_1std"] = average_1std.pacing
+    collector.chopped_data["time_all"] = average_all.t
+    collector.chopped_data["trace_all"] = average_all.y
+    collector.chopped_data["pacing_all"] = average_all.pacing
+
+    if collector.plot and collector.outdir is not None:
         plotter.plot_multiple_traces(
-            [self._xs_all, self._xs_1std],
-            [self._ys_all, self._ys_1std],
-            self.outdir.joinpath("chopped_data"),
+            [[b.t for b in beats], [b.t for b in included_beats]],
+            [[b.y for b in beats], [b.y for b in included_beats]],
+            collector.outdir.joinpath("chopped_data.png"),
             ["all", "1 std"],
-            ylabels=[r"$\Delta F / F$" for _ in range(len(self._xs_all))],
+            ylabels=[r"$\Delta F / F$" for _ in range(len(beats))],
             deep=True,
         )
 
         plotter.plot_multiple_traces(
-            [self.chopped_data["time_all"], self.chopped_data["time_1std"]],
-            [self.chopped_data["trace_all"], self.chopped_data["trace_1std"]],
-            self.outdir.joinpath("average"),
+            [collector.chopped_data["time_all"], collector.chopped_data["time_1std"]],
+            [collector.chopped_data["trace_all"], collector.chopped_data["trace_1std"]],
+            collector.outdir.joinpath("average.png"),
             ["all", "1 std"],
-            ylabels=[r"$\Delta F / F$" for _ in range(len(self._xs_all))],
+            ylabels=[r"$\Delta F / F$" for _ in range(len(beats))],
         )
 
         plotter.plot_twin_trace(
-            self.chopped_data["time_1std"],
-            self.chopped_data["time_1std"],
-            self.chopped_data["trace_1std"],
-            self.chopped_data["pacing_1std"],
-            self.outdir.joinpath("average_pacing"),
+            collector.chopped_data["time_1std"],
+            collector.chopped_data["time_1std"],
+            collector.chopped_data["trace_1std"],
+            collector.chopped_data["pacing_1std"],
+            collector.outdir.joinpath("average_pacing.png"),
         )
 
-    def background_correction(self):
-        if self.parameters["background_correction"]:
 
-            logger.debug("Apply background correction")
+def analyze_mps_func(
+    mps_data,
+    mask=None,
+    analysis_window_start=0,
+    analysis_window_end=-1,
+    spike_duration=0,
+    filter_signal=False,
+    ignore_pacing=False,
+    remove_points_list=(),
+    chopping_threshold_factor=0.3,
+    chopping_extend_front=None,
+    chopping_extend_end=None,
+    chopping_min_window=200,
+    chopping_max_window=2000,
+    use_spline=True,
+    normalize=False,
+    outdir=None,
+    plot=False,
+    background_correction=True,
+    max_allowed_apd_change=None,
+    ead_sigma=3,
+    ead_prom=0.04,
+    std_ex: float = 1.0,
+    N=200,
+    **kwargs,
+):
 
-            bkg = apf.background.correct_background(self.time_stamps, self.avg, "full")
-            background_ = bkg.background
-            bkgplot_y = np.transpose([np.copy(self.avg), background_])
-            bkgplot_x = np.transpose([self.time_stamps, self.time_stamps])
-            self.avg = bkg.corrected
+    params = dict(
+        analysis_window_start=analysis_window_start,
+        analysis_window_end=analysis_window_end,
+        spike_duration=spike_duration,
+        filter_signal=filter_signal,
+        ignore_pacing=ignore_pacing,
+        remove_points_list=remove_points_list,
+        background_correction=background_correction,
+        use_spline=use_spline,
+        normalize=normalize,
+        max_allowed_apd_change=max_allowed_apd_change,
+        ead_sigma=ead_sigma,
+        ead_prom=ead_prom,
+        std_ex=std_ex,
+        N=N,
+        threshold_factor=chopping_threshold_factor,
+        extend_front=chopping_extend_front,
+        extend_end=chopping_extend_end,
+        min_window=chopping_min_window,
+        max_window=chopping_max_window,
+    )
 
-            logger.debug("Plot corrected trace trace")
-            if self.parameters["plot"]:
-                plotter.plot_multiple_traces(
-                    [bkgplot_x, self.time_stamps],
-                    [bkgplot_y, self.avg],
-                    self.outdir.joinpath("corrected_trace"),
-                    ylabels=["Pixel intensity", r"$\Delta F / F$"],
-                    titles=["background", "corrected"],
-                )
-        else:
-            background_ = np.zeros_like(self.avg)
+    collector = Collector(outdir=outdir, plot=plot, params=params)
 
-        self.unchopped_data["trace"] = np.copy(self.avg)
-        self.unchopped_data["time"] = np.copy(self.time_stamps)
-        self.unchopped_data["pacing"] = np.copy(self.pacing)
-        self.unchopped_data["background"] = background_
+    corrected_trace = analyze_unchopped_data(
+        mps_data=mps_data, collector=collector, mask=mask, **params
+    )
+    analyze_chopped_data(trace=corrected_trace, collector=collector, **params)
 
-    def remove_points(self):
+    collector.dump_all()
 
-        for p in self.parameters["remove_points_list"]:
-            logger.debug(f"Remove points: '{p}'")
-            t_ = np.copy(self.time_stamps)
-            self.time_stamps, self.avg = apf.filters.remove_points(
-                self.time_stamps, self.avg, *p
-            )
-            _, self.pacing = apf.filters.remove_points(t_, self.pacing, *p)
+    try:
+        import matplotlib.pyplot as plt
 
-    def ignore_pacing(self):
-        if self.parameters["ignore_pacing"]:
-            logger.debug("Ignore pacing")
-            self.pacing = np.multiply(self.pacing, 0.0)
-
-    def filter(self):
-        if self.parameters["filter"]:
-            logger.debug("Filter signal")
-            self.avg = apf.filters.filt(self.avg)
-
-    def remove_spikes(self):
-        if self.parameters["spike_duration"] == 0:
-            return
-
-        sd = self.parameters["spike_duration"]
-        logger.debug(f"Remove spikes with spike duration {sd}")
-        self.avg = apf.filters.remove_spikes(self.avg, self.pacing, sd)
-        self.time_stamps = apf.filters.remove_spikes(self.time_stamps, self.pacing, sd)
-        self.pacing = apf.filters.remove_spikes(self.pacing, self.pacing, sd)
-
-        self.unchopped_data["original_trace_no_spikes"] = np.copy(self.avg)
-        self.unchopped_data["original_times_no_spikes"] = np.copy(self.time_stamps)
-        self.unchopped_data["original_pacing_no_spikes"] = np.copy(self.pacing)
-
-    def _handle_arguments(self, kwargs):
-
-        parameters = AnalyzeMPS.default_parameters()
-        parameters.update(kwargs)
-        self.info = parameters.pop("info")
-        self.metadata = parameters.pop("metadata")
-        self.outdir = parameters["outdir"]
-        if self.outdir is not None:
-            self.outdir = Path(self.outdir)
-            self.outdir.mkdir(exist_ok=True, parents=True)
-        else:
-            parameters["plot"] = False
-        self.parameters = parameters
-
-    @staticmethod
-    def default_parameters():
-        """Default parametert for the analysis script.
-        Current default values are (with types)
-
-        .. code::
-
-            spike_duration: int = 0
-            filter: bool = True
-            ignore_pacing: bool = False
-            remove_points_list: tuple = ()
-            chopping_threshold_factor: float = 0.3
-            chopping_extend_front: Optional[float] = None
-            chopping_extend_end: Optional[float] = None
-            chopping_min_window: float = 200
-            chopping_max_window: float = 2000
-            std_ex: float = 1.0
-            use_spline: bool = True
-            normalize: bool = False
-            outdir: str = ""
-            plot: bool = False
-            bar=None
-            info=None
-            metadata=None
-            background_correction=True
-            max_allowed_apd_change=None
-            ead_sigma: float = 3
-            ead_prominence_threshold: float = 0.04
-            N=200
-
-        Returns
-        -------
-        dict
-            Dictionary with default parameters
-        """
-
-        return dict(
-            spike_duration=0,
-            filter=False,
-            ignore_pacing=False,
-            remove_points_list=(),
-            chopping_threshold_factor=0.3,
-            chopping_extend_front=None,
-            chopping_extend_end=None,
-            chopping_min_window=200,
-            chopping_max_window=2000,
-            std_ex=1.0,
-            use_spline=True,
-            normalize=False,
-            outdir=None,
-            plot=False,
-            bar=None,
-            info={},
-            metadata={},
-            background_correction=True,
-            max_allowed_apd_change=None,
-            ead_sigma=3,
-            ead_prominence_threshold=0.04,
-            N=200,
-        )
+        plt.close("all")
+    finally:
+        return collector.data
 
 
 def frame2average(frame, times=None, normalize=False, background_correction=True):
@@ -1365,7 +1260,6 @@ def local_averages(
         Verbosity. Default: INFO (=20). For more info see the logging library.
     """
 
-    logger = utils.get_logger(__name__, loglevel)
     logger.debug("Compute local averages")
     grid = utils.get_grid_settings(
         N,

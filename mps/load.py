@@ -55,7 +55,7 @@ else:
     has_tifffile = True
 
 
-logger = utils.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 valid_extensions = [
     ".nd2",

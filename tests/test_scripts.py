@@ -3,6 +3,8 @@ import subprocess as sp
 from distutils.spawn import find_executable
 from pathlib import Path
 
+import mps
+
 try:
     import matplotlib  # noqa: F401
 except ImportError:
@@ -44,7 +46,7 @@ def test_mps_phase_plot(mps_data_path):
             mps_data_path,
             "-o",
             out.as_posix(),
-        ]
+        ],
     )
     assert ret == 0
     out.unlink()
@@ -60,7 +62,7 @@ def test_mps2mp4(mps_data_path):
 
 
 @pytest.mark.skipif(missing_mpl, reason="Requires matplotlib")
-def test_mps_summary(mps_data_path):
+def test_mps_summary_script(mps_data_path):
 
     path = Path(mps_data_path)
     new_path = path.parent.joinpath("data").joinpath(path.name)
@@ -77,12 +79,24 @@ def test_mps_summary(mps_data_path):
             "summary",
             "--include-npy",
             new_path.parent.absolute().as_posix(),
-        ]
+        ],
     )
 
     assert ret == 0
 
     shutil.rmtree(new_path.parent)
+
+
+@pytest.mark.skipif(missing_mpl, reason="Requires matplotlib")
+def test_mps_summary_function(mps_data_path):
+
+    path = Path(mps_data_path)
+    new_path = path.parent.joinpath("data").joinpath(path.name)
+    another_path = path.parent.joinpath("data").joinpath(f"another_{path.name}")
+    new_path.parent.mkdir(exist_ok=True)
+    shutil.copy(path, new_path)
+    shutil.copy(path, another_path)
+    mps.scripts.summary.main(new_path.parent, include_npy=True)
 
 
 @pytest.mark.xfail(reason="Not yet implemented properly")

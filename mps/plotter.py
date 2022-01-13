@@ -30,11 +30,9 @@ SIMULA RESEARCH LABORATORY MAKES NO REPRESENTATIONS AND EXTENDS NO
 WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
 NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 """
+import logging
 
-
-from . import utils
-
-logger = utils.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 try:
     import matplotlib as mpl
