@@ -77,7 +77,7 @@ dist: clean ## builds source and wheel package
 	ls -l dist
 
 install: clean ## install on unix
-	python -m pip install ".[dev]"
+	python -m pip install "."
 
 install-windows: clean ## install on windows usig pipwin
 	python -m pip install --upgrade pip
