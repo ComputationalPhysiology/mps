@@ -448,6 +448,8 @@ def find_included_indices(data, x=None, use=None):
     for k, v in data.items():
         if not isinstance(v, Iterable) or k not in use:
             continue
+        if len(v) == 0:
+            continue
         for j, s in enumerate(v):
 
             # Include only signals within factor *
@@ -493,9 +495,13 @@ def exclude_x_std(data, x=None, use=None):
     """
     included_indices, all_included_indices = find_included_indices(data, x, use)
     new_data = {}
+    all_included_indices = np.array(all_included_indices)
+    if len(all_included_indices) == 0:
+        all_included_indices = np.arange(data["num_beats"])
+
     for k, v in data.items():
-        if isinstance(v, Iterable):
-            new_data[k] = np.array(v)[np.array(all_included_indices)].tolist()
+        if isinstance(v, Iterable) and len(v) > 0:
+            new_data[k] = np.array(v)[all_included_indices].tolist()
         else:
             new_data[k] = v
 
@@ -997,13 +1003,23 @@ def compute_all_features(
 def mean(x):
     if np.isscalar(x):
         return x
+    if len(x) == 0:
+        return np.nan
     return np.mean(x)
 
 
 def std(x):
     if np.isscalar(x):
         return x
+    if len(x) == 0:
+        return np.nan
     return np.std(x)
+
+
+def enlist(x):
+    if not isinstance(x, (list, tuple)):
+        return [x]
+    return x
 
 
 def analyze_chopped_data(
@@ -1067,7 +1083,7 @@ def analyze_chopped_data(
     collector.dump()
 
     inds = op.itemgetter(*collector.features.included_indices)
-    included_beats = inds(beats)
+    included_beats = enlist(inds(beats))
     average_all = apf.beat.average_beat(beats, N=N)
     average_1std = apf.beat.average_beat(included_beats, N=N)
     collector.chopped_data["time_1std"] = average_1std.t
@@ -1130,7 +1146,7 @@ def analyze_mps_func(
     N=200,
     **kwargs,
 ):
-
+    logger.info("Analyze MPS data")
     params = dict(
         analysis_window_start=analysis_window_start,
         analysis_window_end=analysis_window_end,
