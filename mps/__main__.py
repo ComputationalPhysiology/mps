@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-__author__ = "Henrik Finsberg (henriknf@simula.no), 2017--2021"
+__author__ = "Henrik Finsberg (henriknf@simula.no), 2017--2022"
 __maintainer__ = "Henrik Finsberg"
 __email__ = "henriknf@simula.no"
 __program_name__ = "MPS"
 __license__ = """
-c) 2001-2021 Simula Research Laboratory ALL RIGHTS RESERVED
+c) 2001-2022 Simula Research Laboratory ALL RIGHTS RESERVED
 
 END-USER LICENSE AGREEMENT
 PLEASE READ THIS DOCUMENT CAREFULLY. By installing or using this

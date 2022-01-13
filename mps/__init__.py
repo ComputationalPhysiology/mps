@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# c) 2001-2020 Simula Research Laboratory ALL RIGHTS RESERVED
+# c) 2001-2022 Simula Research Laboratory ALL RIGHTS RESERVED
 #
 # END-USER LICENSE AGREEMENT
 # PLEASE READ THIS DOCUMENT CAREFULLY. By installing or using this

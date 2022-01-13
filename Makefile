@@ -100,10 +100,10 @@ dev-windows: clean ## Developement install - windows
 installer: clean  ## make installer for unix
 	python -m pip install -r requirements.txt
 	python -m pip install pyinstaller
-	pyinstaller -F mps/__main__.py -n mps --hidden-import=imageio_ffmpeg --hidden-import=matplotlib --hidden-import=scipy.special.cython_special
+	pyinstaller -F mps/__main__.py -n mps --hidden-import=imageio_ffmpeg --hidden-import=matplotlib --hidden-import=scipy.special.cython_special --additional-hooks-dir=pyinstaller_hooks
 
 installer-windows: clean  ## make installer for windows
 	python -m pip install pipwin
 	pipwin install -r requirements.txt
 	pipwin install pyinstaller
-	pyinstaller -F mps/__main__.py -n mps --hidden-import=imageio_ffmpeg --hidden-import=matplotlib --hidden-import=scipy.special.cython_special
+	pyinstaller -F mps/__main__.py -n mps --hidden-import=imageio_ffmpeg --hidden-import=matplotlib --hidden-import=scipy.special.cython_special --additional-hooks-dir=pyinstaller_hooks
