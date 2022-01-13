@@ -355,7 +355,7 @@ def compute_features(beats: List[apf.Beat], use_spline=True, normalize=False):
 
     assert beats[0].parent is not None, "Beats must have a parent"
 
-    features = dict(
+    features: Dict[str, Any] = dict(
         apd30=np.zeros(num_beats),
         apd50=np.zeros(num_beats),
         apd80=np.zeros(num_beats),
@@ -401,11 +401,11 @@ def compute_features(beats: List[apf.Beat], use_spline=True, normalize=False):
             or np.nan
         )
 
+    features["beating_frequencies"] = beats[0].parent.beating_frequencies
     for k, v in features.items():
         features[k] = v[~np.isnan(v)]
 
     features["beating_frequency"] = beats[0].parent.beating_frequency
-    features["beating_frequencies"] = beats[0].parent.beating_frequencies
     features["num_beats"] = num_beats
     return features
 
