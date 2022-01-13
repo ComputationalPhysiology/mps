@@ -24,12 +24,12 @@
 # SIMULA RESEARCH LABORATORY MAKES NO REPRESENTATIONS AND EXTENDS NO
 # WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
 # NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
-__author__ = "Henrik Finsberg (henriknf@simula.no), 2017--2019"
-__version__ = "0.1.0"
+__author__ = "Henrik Finsberg (henriknf@simula.no), 2017--2022"
+__version__ = "2022.0.0"
 __maintainer__ = "Henrik Finsberg"
 __email__ = "henriknf@simula.no"
 __license__ = """
-c) 2001-2020 Simula Research Laboratory ALL RIGHTS RESERVED
+c) 2001-2022 Simula Research Laboratory ALL RIGHTS RESERVED
 
 END-USER LICENSE AGREEMENT
 PLEASE READ THIS DOCUMENT CAREFULLY. By installing or using this
