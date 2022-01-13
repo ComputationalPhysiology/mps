@@ -1,4 +1,8 @@
-from . import analyze, mps2mp4, phase_plot, split_pacing, summary
+from . import analyze
+from . import mps2mp4
+from . import phase_plot
+from . import split_pacing
+from . import summary
 
 _loggers = [
     split_pacing.logger,  # type:ignore

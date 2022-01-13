@@ -47,7 +47,8 @@ def mps_data_path():
         y = ca_transient(t[:-1], tstart=tstart)
 
         frames[:, :, size_beat * beat : size_beat * (beat + 1)] = np.tile(
-            y, (size_x, size_y, 1)
+            y,
+            (size_x, size_y, 1),
         )
         time_stamps[size_beat * beat : size_beat * (beat + 1)] = (
             t[:-1] * 1000 + beat * 1000

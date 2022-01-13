@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # type: ignore
 # czifile.py
-
 # Copyright (c) 2013-2017, Christoph Gohlke
 # Copyright (c) 2013-2017, The Regents of the University of California
 # Produced at the Laboratory for Fluorescence Dynamics.
@@ -30,7 +29,6 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-
 """Read image and metadata from Carl Zeiss(r) ZISRAW (CZI) files.
 
 CZI is the native image file format of the ZEN(r) software by Carl Zeiss
@@ -112,8 +110,8 @@ Examples
 array([10, 10, 10], dtype=uint8)
 
 """
-
-from __future__ import division, print_function
+from __future__ import division
+from __future__ import print_function
 
 import multiprocessing
 import os
@@ -155,7 +153,7 @@ except ImportError:
     warnings.warn(
         "ImportError: No module named '_czifile'. "
         "Decoding of JXR and JPEG encoded images will not be available. "
-        "Czifile.pyx can be obtained at http://www.lfd.uci.edu/~gohlke/"
+        "Czifile.pyx can be obtained at http://www.lfd.uci.edu/~gohlke/",
     )
     _czifile = None
 
@@ -447,7 +445,11 @@ class CziFile(object):
             max_workers = multiprocessing.cpu_count() // 2
 
         def func(
-            directory_entry, resize=resize, order=order, start=self.start, out=out
+            directory_entry,
+            resize=resize,
+            order=order,
+            start=self.start,
+            out=out,
         ):
             """Read, decode, and copy subblock data."""
             subblock = directory_entry.data_segment()
@@ -494,7 +496,7 @@ class CziFile(object):
                 str(self.shape),
                 str(self.dtype),
                 str(etree.tostring(self.metadata)),
-            )
+            ),
         )
 
 
@@ -509,7 +511,8 @@ class Segment(object):
             fh.seek(fpos)
         try:
             (self.sid, self.allocated_size, self.used_size) = struct.unpack(
-                "<16sqq", fh.read(32)
+                "<16sqq",
+                fh.read(32),
             )
         except struct.error:
             raise SegmentNotFoundError("can not read ZISRAW segment")
@@ -635,7 +638,8 @@ class SubBlockSegment(object):
         """Read ZISRAWSUBBLOCK segment data from file."""
         with fh.lock:
             (self.metadata_size, self.attachment_size, self.data_size) = struct.unpack(
-                "<iiq", fh.read(16)
+                "<iiq",
+                fh.read(16),
             )
             self.directory_entry = DirectoryEntryDV(fh)
             # fh.seek(max(240 - self.directory_entry.storage_size, 0), 1)
@@ -751,7 +755,8 @@ class DirectoryEntryDV(object):
     def read_file_position(fh):
         """Return file position of associated SubBlock segment."""
         (schema_type, file_position, dimensions_count) = struct.unpack(
-            "<2s4xq14xi", fh.read(32)
+            "<2s4xq14xi",
+            fh.read(32),
         )
         fh.seek(dimensions_count * 20, 1)
         assert schema_type == b"DV"
@@ -779,7 +784,7 @@ class DirectoryEntryDV(object):
 
         # reverse dimension_entries to match C contiguous data
         self.dimension_entries = list(
-            reversed([DimensionEntryDV1(fh) for _ in range(dimensions_count)])
+            reversed([DimensionEntryDV1(fh) for _ in range(dimensions_count)]),
         )
 
     @lazyattr
@@ -1173,7 +1178,8 @@ class EventListEntry(object):
 
     def __init__(self, fh):
         (size, self.time, self.event_type, description_size) = struct.unpack(
-            "<idii", fh.read(20)
+            "<idii",
+            fh.read(20),
         )
         description = stripnull(fh.read(description_size))
         self.description = unicode(description, "utf-8")

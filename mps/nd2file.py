@@ -22,7 +22,6 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """
 This is an Nikon ND2 (NIS Elements file format) reader. Information about the ND2 file format
 was gained from various other readers, and from ND2 files.
@@ -31,7 +30,9 @@ for 64-bit Python (otherwise the file size is limited to 2 GiB).
 There are some heuristics for parsing files, so that even broken files (i.e. due to a crashed NIS instance)
 have a possibility to open.
 """
-from __future__ import division, print_function, unicode_literals
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 
 import mmap
 import warnings
@@ -125,12 +126,12 @@ class ND2File(object):
                     "Did not find chunk map signature at the end of file. "
                     "This file might not be an ND2 file, or "
                     "the file might be damaged (software crash?) and "
-                    "cannot directly be opened with this library."
+                    "cannot directly be opened with this library.",
                 )
             else:
                 warnings.warn(
                     "The file is damaged and has no chunk map, will use "
-                    "heuristics to calculate image positions."
+                    "heuristics to calculate image positions.",
                 )
                 readahead, readback = 25, 25
                 self.opportunistic = True
@@ -149,7 +150,7 @@ class ND2File(object):
                             ]
                             for name_, chunk_begin_, chunk_end_, chunk_position_ in inner_mini_chunk_map
                             if name_.startswith(prefix)
-                        ]
+                        ],
                     )
 
                 images = parse_images(mini_chunk_map)
@@ -168,7 +169,8 @@ class ND2File(object):
                     return self.opp_intercept + num * self.opp_slope
 
                 mini_chunk_map += self.opportunistic_chunk_scanner(
-                    opportunistic_image_position(max_images - readback), 2 * readback
+                    opportunistic_image_position(max_images - readback),
+                    2 * readback,
                 )
 
                 images = parse_images(mini_chunk_map)
@@ -284,7 +286,7 @@ class ND2File(object):
 
     def _readstring(self, position, length):
         return self.mem[position : position + 2 * length].decode(
-            "utf-16"
+            "utf-16",
         )  # .encode('utf-8')
 
     def xml(self, bpos, epos):
@@ -375,7 +377,7 @@ class ND2File(object):
 
             if not found:
                 warnings.warn(
-                    "Searching for the image, this will lead to degraded performance."
+                    "Searching for the image, this will lead to degraded performance.",
                 )
                 look_before = 1 * 1024 * 1024
                 pos = max(0, self.images[num] - look_before)
@@ -383,7 +385,7 @@ class ND2File(object):
                 pos = self.mem.find(search, pos) - 16
                 warnings.warn(
                     "Was looking at %d found it at %d ... %d bytes away."
-                    % (self.images[num], pos, self.images[num] - pos)
+                    % (self.images[num], pos, self.images[num] - pos),
                 )
                 self.opp_shifts.append(pos - self.images[num])
                 self.images[num] = pos
@@ -488,7 +490,7 @@ class ND2MultiFile(ND2File):
                 intmd
                 for intmd in find_all_by_key(self.experiment, "Points")
                 if find_by_key(intmd, "dPosName") is not None
-            )
+            ),
         )[""]
 
         try:
@@ -557,7 +559,7 @@ class ND2MultiFile(ND2File):
 
     def image(self, multipoint=0, timepoint=0):
         return super(ND2MultiFile, self).image(
-            self.calc_num(multipoint=multipoint, timepoint=timepoint)
+            self.calc_num(multipoint=multipoint, timepoint=timepoint),
         )
 
     def image_singlechannel(self, multipoint=0, timepoint=0, channel=0):

@@ -3,7 +3,6 @@
 # flake8: noqa
 # -*- coding: utf-8 -*-
 # tifffile.py
-
 # Copyright (c) 2008-2018, Christoph Gohlke
 # Copyright (c) 2008-2018, The Regents of the University of California
 # Produced at the Laboratory for Fluorescence Dynamics
@@ -32,7 +31,6 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-
 """Read image and meta data from (bio) TIFF® files. Save numpy arrays as TIFF.
 
 Image and metadata can be read from TIFF, BigTIFF, OME-TIFF, STK, LSM, NIH,
@@ -354,8 +352,8 @@ Examples
 ...         image = page.asarray()
 
 """
-
-from __future__ import division, print_function
+from __future__ import division
+from __future__ import print_function
 
 import binascii
 import collections
@@ -507,7 +505,12 @@ def imsave(
 
     """
     tifargs = parse_kwargs(
-        kwargs, "append", "bigtiff", "byteorder", "software", "imagej"
+        kwargs,
+        "append",
+        "bigtiff",
+        "byteorder",
+        "software",
+        "imagej",
     )
     if data is None:
         size = product(shape) * numpy.dtype(dtype).itemsize
@@ -1039,7 +1042,7 @@ class TiffWriter(object):
                 if datadtypechar not in "B":
                     raise ValueError(
                         "ImageJ does not support data type %s "
-                        "for RGB" % datadtypechar
+                        "for RGB" % datadtypechar,
                     )
             elif photometric is None:
                 photometric = MINISBLACK
@@ -1312,7 +1315,11 @@ class TiffWriter(object):
         if datetime is None:
             datetime = self._now()
         addtag(
-            "DateTime", "s", 0, datetime.strftime("%Y:%m:%d %H:%M:%S"), writeonce=True
+            "DateTime",
+            "s",
+            0,
+            datetime.strftime("%Y:%m:%d %H:%M:%S"),
+            writeonce=True,
         )
         addtag("Compression", "H", 1, compresstag)
         if predictor:
@@ -1376,7 +1383,7 @@ class TiffWriter(object):
             )
             numtiles = product(tiles) * shape[1]
             stripbytecounts = [
-                product(tile) * shape[-1] * datadtype.itemsize
+                product(tile) * shape[-1] * datadtype.itemsize,
             ] * numtiles
             addtag(tagbytecounts, offsetformat, numtiles, stripbytecounts)
             addtag(tag_offsets, offsetformat, numtiles, [0] * numtiles)
@@ -1671,7 +1678,7 @@ class TiffWriter(object):
         self._fh.write(description)
         self._fh.seek(self._descriptionlenoffset)
         self._fh.write(
-            struct.pack(self._byteorder + self._offsetformat, len(description) + 1)
+            struct.pack(self._byteorder + self._offsetformat, len(description) + 1),
         )
         self._fh.seek(pos)
 
@@ -1931,14 +1938,19 @@ class TiffFile(object):
             typecode = self.byteorder + series.dtype.char
             if out == "memmap" and pages[0].is_memmappable:
                 result = self.filehandle.memmap_array(
-                    typecode, series.shape, series.offset
+                    typecode,
+                    series.shape,
+                    series.offset,
                 )
             else:
                 if out is not None:
                     out = create_output(out, series.shape, series.dtype)
                 self.filehandle.seek(series.offset)
                 result = self.filehandle.read_array(
-                    typecode, product(series.shape), out=out, native=True
+                    typecode,
+                    product(series.shape),
+                    out=out,
+                    native=True,
                 )
         elif len(pages) == 1:
             result = pages[0].asarray(out=out, validate=validate)
@@ -1954,7 +1966,7 @@ class TiffFile(object):
             except ValueError:
                 try:
                     warnings.warn(
-                        "failed to reshape %s to %s" % (result.shape, series.shape)
+                        "failed to reshape %s to %s" % (result.shape, series.shape),
                     )
                     # try series of expected shapes
                     result.shape = (-1,) + series.shape
@@ -2008,7 +2020,7 @@ class TiffFile(object):
                 shape = (len(self.pages),) + shape
                 axes = "I" + axes
             return [
-                TiffPageSeries(self.pages[:], shape, page.dtype, axes, stype="movie")
+                TiffPageSeries(self.pages[:], shape, page.dtype, axes, stype="movie"),
             ]
 
         self.pages.clear(False)
@@ -2035,7 +2047,7 @@ class TiffFile(object):
                 shape = (len(pages),) + shape
                 axes = "I" + axes
             result.append(
-                TiffPageSeries(pages, shape, page.dtype, axes, stype="Generic")
+                TiffPageSeries(pages, shape, page.dtype, axes, stype="Generic"),
             )
 
         return result
@@ -2075,7 +2087,7 @@ class TiffFile(object):
                     name=name,
                     stype="Shaped",
                     truncated=truncated,
-                )
+                ),
             )
 
         keyframe = axes = shape = reshape = name = None
@@ -2210,8 +2222,13 @@ class TiffFile(object):
 
         return [
             TiffPageSeries(
-                pages, shape, page.dtype, axes, stype="ImageJ", truncated=truncated
-            )
+                pages,
+                shape,
+                page.dtype,
+                axes,
+                stype="ImageJ",
+                truncated=truncated,
+            ),
         ]
 
     def _fluoview_series(self):
@@ -2233,7 +2250,7 @@ class TiffFile(object):
                 axes,
                 name=mm["ImageName"],
                 stype="FluoView",
-            )
+            ),
         ]
 
     def _mdgel_series(self):
@@ -2262,8 +2279,13 @@ class TiffFile(object):
         page = self.pages[0]
         return [
             TiffPageSeries(
-                [page], page.shape, dtype, page.axes, transform=transform, stype="MDGel"
-            )
+                [page],
+                page.shape,
+                dtype,
+                page.axes,
+                transform=transform,
+                stype="MDGel",
+            ),
         ]
 
     def _nih_series(self):
@@ -2440,8 +2462,14 @@ class TiffFile(object):
                 dtype = keyframe.dtype
                 series.append(
                     TiffPageSeries(
-                        ifds, shape, dtype, axes, parent=self, name=name, stype="OME"
-                    )
+                        ifds,
+                        shape,
+                        dtype,
+                        axes,
+                        parent=self,
+                        name=name,
+                        stype="OME",
+                    ),
                 )
         for serie in series:
             shape = list(serie.shape)
@@ -2489,7 +2517,14 @@ class TiffFile(object):
             shape = shape[:i] + pages[0].shape
             axes = axes[:i] + "CYX"
             series.append(
-                TiffPageSeries(pages, shape, dtype, axes, name=name, stype="LSMreduced")
+                TiffPageSeries(
+                    pages,
+                    shape,
+                    dtype,
+                    axes,
+                    name=name,
+                    stype="LSMreduced",
+                ),
             )
 
         return series
@@ -2599,7 +2634,7 @@ class TiffFile(object):
             setattr(self, name, value)
             return value
         raise AttributeError(
-            "'%s' object has no attribute '%s'" % (self.__class__.__name__, name)
+            "'%s' object has no attribute '%s'" % (self.__class__.__name__, name),
         )
 
     def __enter__(self):
@@ -2666,7 +2701,7 @@ class TiffFile(object):
                             % (
                                 name.upper(),
                                 pformat(m, width=width, height=detail * 12),
-                            )
+                            ),
                         )
         return "\n\n".join(info).replace("\n\n\n", "\n\n")
 
@@ -2902,7 +2937,7 @@ class TiffFile(object):
         # TODO: scanimage_artist_metadata
         try:
             result["Description"] = scanimage_description_metadata(
-                self.pages[0].description
+                self.pages[0].description,
             )
         except Exception as e:
             warnings.warn("scanimage_description_metadata failed: %s" % e)
@@ -3495,7 +3530,7 @@ class TiffPage(object):
             if self.dtype is None:
                 raise ValueError(
                     "data type not supported: %s%i"
-                    % (self.sampleformat, self.bitspersample)
+                    % (self.sampleformat, self.bitspersample),
                 )
             if self.compression not in TIFF.DECOMPESSORS:
                 raise ValueError("cannot decompress %s" % self.compression.name)
@@ -3679,7 +3714,7 @@ class TiffPage(object):
             except ValueError:
                 warnings.warn(
                     "failed to reshape from %s to %s"
-                    % (str(result.shape), str(self.shape))
+                    % (str(result.shape), str(self.shape)),
                 )
 
         if closed:
@@ -3892,7 +3927,8 @@ class TiffPage(object):
         if detail > 3:
             try:
                 info.append(
-                    "DATA\n%s" % pformat(self.asarray(), width=width, height=detail * 8)
+                    "DATA\n%s"
+                    % pformat(self.asarray(), width=width, height=detail * 8),
                 )
             except Exception:
                 pass
@@ -4040,7 +4076,7 @@ class TiffPage(object):
                         [0.0, -sy, 0.0, y + j * sy],
                         [0.0, 0.0, sz, z - k * sz],
                         [0.0, 0.0, 0.0, 1.0],
-                    ]
+                    ],
                 )
             if len(tiepoints) == 6:
                 transforms = transforms[0]
@@ -4352,7 +4388,7 @@ class TiffFrame(object):
         if name in TIFF.FRAME_ATTRS:
             return getattr(self.keyframe, name)
         raise AttributeError(
-            "'%s' object has no attribute '%s'" % (self.__class__.__name__, name)
+            "'%s' object has no attribute '%s'" % (self.__class__.__name__, name),
         )
 
     def __str__(self, detail=0):
@@ -4682,7 +4718,7 @@ class TiffSequence(object):
             _?(?:(q|l|p|a|c|t|x|y|z|ch|tp)(\d{1,4}))?
             _?(?:(q|l|p|a|c|t|x|y|z|ch|tp)(\d{1,4}))?
             _?(?:(q|l|p|a|c|t|x|y|z|ch|tp)(\d{1,4}))?
-            """
+            """,
     }
 
     class ParseError(Exception):
@@ -4743,7 +4779,7 @@ class TiffSequence(object):
                 " size: %i" % len(self.files),
                 " axes: %s" % self.axes,
                 " shape: %s" % str(self.shape),
-            ]
+            ],
         )
 
     def __len__(self):
@@ -4938,7 +4974,7 @@ class FileHandle(object):
         else:
             raise ValueError(
                 "The first parameter must be a file name, "
-                "seekable binary stream, or FileHandle"
+                "seekable binary stream, or FileHandle",
             )
 
         if self._offset:
@@ -4984,7 +5020,13 @@ class FileHandle(object):
         )
 
     def read_array(
-        self, dtype, count=-1, sep="", chunksize=2 ** 25, out=None, native=False
+        self,
+        dtype,
+        count=-1,
+        sep="",
+        chunksize=2 ** 25,
+        out=None,
+        native=False,
     ):
         """Return numpy array from file.
 
@@ -6333,7 +6375,7 @@ class TIFF(object):
     def FILE_FLAGS():
         # TiffFile and TiffPage 'is_\*' attributes
         exclude = set(
-            "reduced final memmappable contiguous tiled " "chroma_subsampled".split()
+            "reduced final memmappable contiguous tiled " "chroma_subsampled".split(),
         )
         return set(
             a[3:] for a in dir(TiffPage) if a[:3] == "is_" and a[3:] not in exclude
@@ -6343,7 +6385,7 @@ class TIFF(object):
         # TIFF file extensions
         return tuple(
             "tif tiff ome.tif lsm stk qptiff pcoraw "
-            "gel seq svs bif tf8 tf2 btf".split()
+            "gel seq svs bif tf8 tf2 btf".split(),
         )
 
     def FILEOPEN_FILTER():
@@ -7727,7 +7769,8 @@ def read_lsm_channelcolors(fh):
     result = {"Mono": False, "Colors": [], "ColorNames": []}
     pos = fh.tell()
     (size, ncolors, nnames, coffset, noffset, mono) = struct.unpack(
-        "<IIIIII", fh.read(24)
+        "<IIIIII",
+        fh.read(24),
     )
     if ncolors != nnames:
         warnings.warn("invalid LSM ChannelColors structure")
@@ -8105,7 +8148,7 @@ def imagej_metadata(data, bytecounts, byteorder):
         b"over": ("Overlays", _bytes),
     }
     metadata_types.update(  # little-endian
-        dict((k[::-1], v) for k, v in metadata_types.items())
+        dict((k[::-1], v) for k, v in metadata_types.items()),
     )
 
     if not bytecounts:
@@ -8376,7 +8419,8 @@ def pilatus_description_metadata(description):
         if line[0] not in TIFF.PILATUS_HEADER:
             try:
                 result["DateTime"] = datetime.datetime.strptime(
-                    " ".join(line), "%Y-%m-%dT%H %M %S.%f"
+                    " ".join(line),
+                    "%Y-%m-%dT%H %M %S.%f",
                 )
             except Exception:
                 result[name] = " ".join(line[1:])
@@ -8948,7 +8992,10 @@ def repeat_nd(a, repeats):
         strides.extend((i, 0))
         reshape.append(j * k)
     return numpy.lib.stride_tricks.as_strided(
-        a, shape, strides, writeable=False
+        a,
+        shape,
+        strides,
+        writeable=False,
     ).reshape(reshape)
 
 
@@ -9085,7 +9132,8 @@ def stack_pages(pages, out=None, maxworkers=1, *args, **kwargs):
     page0.parent.filehandle.lock = maxworkers > 1
 
     filecache = OpenFileCache(
-        size=max(4, maxworkers), lock=page0.parent.filehandle.lock
+        size=max(4, maxworkers),
+        lock=page0.parent.filehandle.lock,
     )
 
     def func(page, index, out=out, filecache=filecache, args=args, kwargs=kwargs):
@@ -9615,7 +9663,7 @@ def xml2dict(xml, sanitize=True, prefix=None):
             d = {
                 key: {
                     k: astype(v[0]) if len(v) == 1 else astype(v) for k, v in dd.items()
-                }
+                },
             }
         if t.attrib:
             d[key].update((at + k, astype(v)) for k, v in t.attrib.items())
@@ -9761,7 +9809,10 @@ def pformat_xml(xml):
             xml = xml.encode("utf-8")
         xml = etree.parse(io.BytesIO(xml))
         xml = etree.tostring(
-            xml, pretty_print=True, xml_declaration=True, encoding=xml.docinfo.encoding
+            xml,
+            pretty_print=True,
+            xml_declaration=True,
+            encoding=xml.docinfo.encoding,
         )
         xml = bytes2str(xml)
     except Exception:
@@ -10138,7 +10189,11 @@ def imshow(
     if figure is None:
         pyplot.rc("font", family="sans-serif", weight="normal", size=8)
         figure = pyplot.figure(
-            dpi=dpi, figsize=(10.3, 6.3), frameon=True, facecolor="1.0", edgecolor="w"
+            dpi=dpi,
+            figsize=(10.3, 6.3),
+            frameon=True,
+            facecolor="1.0",
+            edgecolor="w",
         )
         try:
             figure.canvas.manager.window.title(title)
@@ -10377,7 +10432,8 @@ def main(argv=None):
         return 0
     if not path:
         path = askopenfilename(
-            title="Select a TIFF file", filetypes=TIFF.FILEOPEN_FILTER
+            title="Select a TIFF file",
+            filetypes=TIFF.FILEOPEN_FILTER,
         )
         if not path:
             parser.error("No file specified")
@@ -10425,14 +10481,14 @@ def main(argv=None):
                         tif.asarray(series=settings.series),
                         notnone(tif.series[settings.series]._pages),
                         tif.series[settings.series],
-                    )
+                    ),
                 ]
             else:
                 images = []
                 for i, s in enumerate(tif.series[: settings.noplots]):
                     try:
                         images.append(
-                            (tif.asarray(series=i), notnone(s._pages), tif.series[i])
+                            (tif.asarray(series=i), notnone(s._pages), tif.series[i]),
                         )
                     except ValueError as e:
                         images.append((None, notnone(s.pages), None))
@@ -10470,7 +10526,7 @@ def main(argv=None):
                 if "GDAL_NODATA" in page.tags:
                     try:
                         vmin = numpy.min(
-                            img[img > float(page.tags["GDAL_NODATA"].value)]
+                            img[img > float(page.tags["GDAL_NODATA"].value)],
                         )
                     except ValueError:
                         pass

@@ -6,7 +6,8 @@ import logging
 import shutil
 from pathlib import Path
 
-from ..load import MPS, valid_extensions
+from ..load import MPS
+from ..load import valid_extensions
 
 logger = logging.getLogger(__name__)
 
