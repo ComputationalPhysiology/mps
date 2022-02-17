@@ -151,7 +151,7 @@ def load_nd2(fname: os.PathLike) -> MPSData:
     t0 = time.time()
     with ND2File(fname) as frames:
 
-        num_frames = frames.imagecount
+        num_frames: int = frames.imagecount
         metadata = frames.metadata
         images = np.zeros((frames.height, frames.width, num_frames), dtype=np.uint16)
         time_stamps = np.zeros(num_frames)
@@ -174,7 +174,7 @@ def load_nd2(fname: os.PathLike) -> MPSData:
             dt = 25.0
         else:
             dt = 10.0
-        time_stamps = np.arange(dt * num_frames, step=dt)
+        time_stamps = np.arange(0, dt * num_frames, step=dt)
 
     time_stamps -= time_stamps[0]
 
