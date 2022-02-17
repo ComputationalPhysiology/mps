@@ -267,7 +267,7 @@ def plot_apd_analysis(beats: List[apf.Beat], res: APDAnalysis, fname=""):
     for beat in beats:
         ax[2].plot(beat.t, beat.y, color="k")
     for i, (label, vals) in enumerate(res.apd_points.items()):
-        x = [v[0] for v in vals] + [v[1] for v in vals]
+        x = [v[0] for v in vals] + [v[1] for v in vals]  # type: ignore
 
         y = [beats[j].as_spline(k=3, s=0)(v[0]) for j, v in enumerate(vals)] + [
             beats[j].as_spline(k=3, s=0)(v[1]) for j, v in enumerate(vals)
