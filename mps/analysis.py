@@ -400,10 +400,10 @@ def compute_features(beats: List[apf.Beat], use_spline=True, normalize=False):
             )
             or np.nan
         )
-
     features["beating_frequencies"] = beats[0].parent.beating_frequencies
     for k, v in features.items():
         features[k] = v[~np.isnan(v)]
+        num_beats = min(len(features[k]), num_beats)
 
     features["beating_frequency"] = beats[0].parent.beating_frequency
     features["num_beats"] = num_beats
