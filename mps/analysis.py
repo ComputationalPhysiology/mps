@@ -1082,8 +1082,11 @@ def analyze_chopped_data(
     )
     collector.dump()
 
-    inds = op.itemgetter(*collector.features.included_indices)
-    included_beats = enlist(inds(beats))
+    if len(collector.features.included_indices) > 0:
+        inds = op.itemgetter(*collector.features.included_indices)
+        included_beats = enlist(inds(beats))
+    else:
+        included_beats = beats
     average_all = apf.beat.average_beat(beats, N=N)
     average_1std = apf.beat.average_beat(included_beats, N=N)
     collector.chopped_data["time_1std"] = average_1std.t
