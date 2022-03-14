@@ -42,7 +42,7 @@ To convert the data into a trace you can do
 import ap_features as apf
 
 # Compute the average over all pixels
-y = average.get_average_all(data.frames)
+y = mps.average.get_average_all(data.frames)
 # Convert it to an apf.Beats and compute features
 # using the ap_features package
 trace = apf.Beats(y=y, t=data.time_stamps, pacing=data.pacing)
