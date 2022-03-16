@@ -53,7 +53,7 @@ trace = apf.Beats(y=y, t=data.time_stamps, pacing=data.pacing)
 
 You can also get pre-built binaries for Windows, MaxOSX and Linux in case you don't want to install anything.
 
-- [Windows binaries](https://github.com/finsberg/mps/suites/4925484003/artifacts/142197688)
+- [Windows binaries](https://github.com/finsberg/mps/suites/4925484003/artifacts/142197690)
 - [MacOSX binaries](https://github.com/finsberg/mps/suites/4925484003/artifacts/142197688)
 - [Linux binaries](https://github.com/finsberg/mps/suites/4925484003/artifacts/142197689)
 
