@@ -558,7 +558,7 @@ class MPS(object):
         data["metadata"] = kwargs.get("metadata", {})
         obj = cls()
         obj._unpack(MPSData(**data))
-        return data
+        return obj
 
     def __getstate__(self):
         # Copy the object's state from self.__dict__ which contains
