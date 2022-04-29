@@ -70,7 +70,7 @@ valid_extensions = [
 ]
 
 
-@dataclass(kw_only=True)
+@dataclass
 class MPSData:
     frames: np.ndarray
     time_stamps: np.ndarray
