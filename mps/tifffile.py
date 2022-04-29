@@ -456,7 +456,7 @@ def imread(files, **kwargs):
 
 
 def imsave(
-    file, data=None, shape=None, dtype=None, bigsize=2 ** 32 - 2 ** 25, **kwargs
+    file, data=None, shape=None, dtype=None, bigsize=2**32 - 2**25, **kwargs
 ):
     """Write numpy array to TIFF file.
 
@@ -1425,7 +1425,7 @@ class TiffWriter(object):
         # the entries in an IFD must be sorted in ascending order by tag code
         tags = sorted(tags, key=lambda x: x[0])
 
-        if not (self._bigtiff or self._imagej) and (fh.tell() + datasize > 2 ** 31 - 1):
+        if not (self._bigtiff or self._imagej) and (fh.tell() + datasize > 2**31 - 1):
             raise ValueError("data too large for standard TIFF file")
 
         # if not compressed or multi-tiled, write the first IFD and then
@@ -1616,7 +1616,7 @@ class TiffWriter(object):
 
         # check if all IFDs fit in file
         pos = fh.tell()
-        if not self._bigtiff and pos + ifd.tell() * pageno > 2 ** 32 - 256:
+        if not self._bigtiff and pos + ifd.tell() * pageno > 2**32 - 256:
             if self._imagej:
                 warnings.warn("truncating ImageJ file")
                 self._truncate = True
@@ -1834,7 +1834,7 @@ class TiffFile(object):
             self.pages = TiffPages(self)
 
             if self.is_lsm and (
-                self.filehandle.size >= 2 ** 32
+                self.filehandle.size >= 2**32
                 or self.pages[0].compression != 1
                 or self.pages[1].compression != 1
             ):
@@ -2550,7 +2550,7 @@ class TiffFile(object):
         Each series and position require separate unwrapping (undocumented).
 
         """
-        if self.filehandle.size < 2 ** 32:
+        if self.filehandle.size < 2**32:
             return
 
         pages = self.pages
@@ -2592,7 +2592,7 @@ class TiffFile(object):
             dataoffsets = []
             for currentoffset in page.dataoffsets:
                 if currentoffset < previousoffset:
-                    wrap += 2 ** 32
+                    wrap += 2**32
                 dataoffsets.append(currentoffset + wrap)
                 previousoffset = currentoffset
             page.dataoffsets = tuple(dataoffsets)
@@ -3071,7 +3071,7 @@ class TiffPages(object):
                 if isinstance(page, TiffFrame):
                     pages[i] = page.offset
 
-    def _seek(self, index, maxpages=2 ** 22):
+    def _seek(self, index, maxpages=2**22):
         """Seek file to offset of specified page."""
         pages = self.pages
         if not pages:
@@ -3152,7 +3152,7 @@ class TiffPages(object):
             return pages[key]
 
         if isinstance(key, slice):
-            start, stop, _ = key.indices(2 ** 31 - 1)
+            start, stop, _ = key.indices(2**31 - 1)
             if not self.complete and max(stop, start) > len(pages):
                 self._seek(-1)
             return [self[i] for i in range(*key.indices(len(pages)))]
@@ -3231,7 +3231,7 @@ class TiffPage(object):
     bitspersample = 1
     samplesperpixel = 1
     sampleformat = 1
-    rowsperstrip = 2 ** 32 - 1
+    rowsperstrip = 2**32 - 1
     compression = 1
     planarconfig = 1
     fillorder = 1
@@ -3480,7 +3480,7 @@ class TiffPage(object):
         squeeze=True,
         lock=None,
         reopen=True,
-        maxsize=2 ** 40,
+        maxsize=2**40,
         validate=True,
     ):
         """Read image data from file and return as numpy array.
@@ -3745,7 +3745,7 @@ class TiffPage(object):
         if photometric == PHOTOMETRIC.PALETTE:
             colormap = self.colormap
             if (
-                colormap.shape[1] < 2 ** self.bitspersample
+                colormap.shape[1] < 2**self.bitspersample
                 or self.dtype.char not in "BH"
             ):
                 raise ValueError("cannot apply colormap")
@@ -5024,7 +5024,7 @@ class FileHandle(object):
         dtype,
         count=-1,
         sep="",
-        chunksize=2 ** 25,
+        chunksize=2**25,
         out=None,
         native=False,
     ):
@@ -7355,7 +7355,7 @@ def read_tags(fh, byteorder, offsetsize, tagnames, customtags=None, maxifds=None
     if customtags is None:
         customtags = {}
     if maxifds is None:
-        maxifds = 2 ** 32
+        maxifds = 2**32
 
     result = []
     unpack = struct.unpack
@@ -7633,7 +7633,7 @@ def read_uic_tag(fh, tagid, planecount, offset):
     elif dtype is str:
         # pascal string
         size = read_int()
-        if 0 <= size < 2 ** 10:
+        if 0 <= size < 2**10:
             value = struct.unpack("%is" % size, fh.read(size))[0][:-1]
             value = bytes2str(stripnull(value))
         elif offset:
@@ -7646,7 +7646,7 @@ def read_uic_tag(fh, tagid, planecount, offset):
         value = []
         for _ in range(planecount):
             size = read_int()
-            if 0 <= size < 2 ** 10:
+            if 0 <= size < 2**10:
                 string = struct.unpack("%is" % size, fh.read(size))[0][:-1]
                 string = bytes2str(stripnull(string))
                 value.append(string)
@@ -8860,7 +8860,7 @@ def unpack_rgb(data, dtype="<B", bitspersample=(5, 6, 5), rescale=True):
             o = ((dtype.itemsize * 8) // bps + 1) * bps
             if o > data.dtype.itemsize * 8:
                 t = t.astype("I")
-            t *= (2 ** o - 1) // (2 ** bps - 1)
+            t *= (2**o - 1) // (2**bps - 1)
             t //= 2 ** (o - (dtype.itemsize * 8))
         result[:, i] = t
     return result.reshape(-1)
@@ -9184,7 +9184,7 @@ def clean_offsets_counts(offsets, counts):
     return offsets[:j], counts[:j]
 
 
-def buffered_read(fh, lock, offsets, bytecounts, buffersize=2 ** 26):
+def buffered_read(fh, lock, offsets, bytecounts, buffersize=2**26):
     """Return iterator over blocks read from file."""
     length = len(offsets)
     i = 0
@@ -9429,7 +9429,7 @@ def stripascii(string):
     return string[: i + 1]
 
 
-def asbool(value, true=(b"true", u"true"), false=(b"false", u"false")):
+def asbool(value, true=(b"true", "true"), false=(b"false", "false")):
     """Return string as bool if possible, else raise TypeError.
 
     >>> asbool(b' False ')
@@ -9739,7 +9739,7 @@ def hexdump(bytestr, width=75, height=24, snipat=-2, modulo=2, ellipsis="..."):
             result.append(ellipsis)  # 'skip %i bytes' % start)
             continue
         hexstr = binascii.hexlify(bytestr)
-        strstr = re.sub(br"[^\x20-\x7f]", b".", bytestr)
+        strstr = re.sub(rb"[^\x20-\x7f]", b".", bytestr)
         for i in range(0, len(bytestr), bytesperline):
             h = hexstr[2 * i : 2 * i + bytesperline * 2]
             r = (addr % (i + start)) if height > 1 else addr
@@ -9881,7 +9881,7 @@ def snipstr(string, width=79, snipat=0.5, ellipsis="..."):
         if isinstance(string, bytes):
             ellipsis = b"..."
         else:
-            ellipsis = u"\u2026"  # does not print on win-py3.5
+            ellipsis = "\u2026"  # does not print on win-py3.5
     esize = len(ellipsis)
 
     splitlines = string.splitlines()
@@ -10146,7 +10146,7 @@ def imshow(
         elif not isinstance(bitspersample, inttypes):
             # bitspersample can be tuple, e.g. (5, 6, 5)
             bitspersample = data.dtype.itemsize * 8
-        datamax = 2 ** bitspersample
+        datamax = 2**bitspersample
         if isrgb:
             if bitspersample < 8:
                 data = data << (8 - bitspersample)

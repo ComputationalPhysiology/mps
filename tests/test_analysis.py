@@ -68,7 +68,9 @@ def test_local_averages():
     t = np.arange(0, T + dt, dt)
     y = 0.5 * np.sin(-2 * np.pi * (phi + t / period)) + 0.5
     avg = mps.analysis.local_averages(frames, times, background_correction=False)[
-        0, 0, :
+        0,
+        0,
+        :,
     ]
     assert np.linalg.norm(avg - y) / np.linalg.norm(y) < 0.05
 

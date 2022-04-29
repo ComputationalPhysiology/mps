@@ -1454,7 +1454,6 @@ if sys.version_info[0] == 2:
         """Return string from bytes."""
         return b
 
-
 else:
     basestring = str, bytes
     unicode = str
