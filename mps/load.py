@@ -70,17 +70,19 @@ valid_extensions = [
 ]
 
 
-@dataclass
+@dataclass(kw_only=True)
 class MPSData:
     frames: np.ndarray
     time_stamps: np.ndarray
-    pacing: np.ndarray
     info: Dict[str, Any]
+    pacing: Optional[np.ndarray] = None
     metadata: Optional[Dict[str, Any]] = None
 
     def __post_init__(self):
         if self.metadata is None:
             self.metadata = {}
+        if self.pacing is None:
+            self.pacing = np.zeros_like(self.time_stamps)
 
 
 def info_dictionary(time_stamps):
