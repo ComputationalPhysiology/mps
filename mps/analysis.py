@@ -701,7 +701,11 @@ class Collector:
             )
             trace.plot(fname=fname.with_suffix(".png"))
 
-    def register_chopped_data(self, chopped_data: apf.chopping.ChoppedData) -> None:
+    def register_chopped_data(
+        self,
+        chopped_data: apf.chopping.ChoppedData,
+        aligned_beats=None,
+    ) -> None:
 
         if len(chopped_data.data) == 0 and hasattr(self, "y"):
             chopped_data.data.append(np.copy(self.y))
@@ -715,9 +719,19 @@ class Collector:
                 chopped_data.pacing,
             ),
         ):
-            self.chopped_data["time_{}".format(i)] = t
-            self.chopped_data["trace_{}".format(i)] = d
-            self.chopped_data["pacing_{}".format(i)] = p
+            if aligned_beats is not None and len(aligned_beats) > i:
+                beat = aligned_beats[i]
+                alinged_t = beat.t
+                alinged_d = beat.y
+            else:
+                alinged_t = t
+                alinged_d = d
+
+            self.chopped_data[f"time_{i}"] = t
+            self.chopped_data[f"trace_{i}"] = d
+            self.chopped_data[f"pacing_{i}"] = p
+            self.chopped_data[f"aligned_time_{i}"] = alinged_t
+            self.chopped_data[f"aligned_trace_{i}"] = alinged_d
         self.intervals = chopped_data.intervals
         self.upstroke_times = chopped_data.upstroke_times
 
@@ -1050,9 +1064,9 @@ def analyze_chopped_data(
 
     trace.chopping_options.update(chopping_parameters)
     chopped_data = trace.chopped_data
-    collector.register_chopped_data(chopped_data)
-
     beats = apf.beat.chopped_data_to_beats(chopped_data, parent=trace)
+    aligned_beats = apf.beat.align_beats(beats, parent=trace)
+    collector.register_chopped_data(chopped_data, aligned_beats=aligned_beats)
 
     if collector.plot and collector.outdir is not None:
         apf.plot.plot_beats(beats, fname=collector.outdir.joinpath("chopped_data.png"))
