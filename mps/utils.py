@@ -410,7 +410,9 @@ def get_intersection(data):
         vals = list(data.values())
     else:
         vals = data
-    return list(set(vals[0]).intersection(*list(vals)))
+    if len(vals) > 0:
+        return list(set(vals[0]).intersection(*list(vals)))
+    return vals
 
 
 def normalize_frames(X, max_val=255, min_val=0, dtype=np.uint8):

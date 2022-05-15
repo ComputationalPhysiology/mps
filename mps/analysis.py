@@ -351,7 +351,7 @@ def compute_features(beats: List[apf.Beat], use_spline=True, normalize=False):
     """
     num_beats = len(beats)
     if num_beats == 0:
-        return {}
+        return {"num_beats": 0}
 
     assert beats[0].parent is not None, "Beats must have a parent"
 
@@ -971,6 +971,7 @@ def compute_all_features(
     **kwargs,
 ):
     features = compute_features(beats, use_spline=use_spline, normalize=normalize)
+
     apd_analysis = analyze_apds(
         beats=beats,
         max_allowed_apd_change=max_allowed_apd_change,
@@ -1191,7 +1192,10 @@ def analyze_mps_func(
     corrected_trace = analyze_unchopped_data(
         mps_data=mps_data, collector=collector, mask=mask, **params
     )
-    analyze_chopped_data(trace=corrected_trace, collector=collector, **params)
+    try:
+        analyze_chopped_data(trace=corrected_trace, collector=collector, **params)
+    except Exception:
+        logger.warning("Failed analyzing chopped data")
 
     collector.dump_all()
 
