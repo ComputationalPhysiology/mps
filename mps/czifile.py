@@ -291,7 +291,8 @@ class CziFile(object):
 
     @lazyattr
     def metadata(self):
-        """Return data from MetadataSegment as xml.ElementTree root Element.
+        """
+        Return data from MetadataSegment as xml.ElementTree root Element.
 
         Return None if no Metadata segment is found.
 

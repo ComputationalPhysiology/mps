@@ -103,7 +103,7 @@ def plot(
                 # Find the value that is most distant from the mean and remove it
                 idx = np.argmax(np.abs(np.subtract(data[k], np.mean(data[k]))))
                 nremoved[k] += 1
-                data[k].pop(idx)
+                data[k] = np.delete(data[k], idx)
 
         keys = [
             "apd30s",

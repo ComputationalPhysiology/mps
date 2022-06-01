@@ -248,6 +248,11 @@ def analyze(
     )
 
 
+# Helper function for standalone console scripts
+def run_analyze():
+    typer.run(analyze)
+
+
 @app.command(help=scripts.summary.__doc__)
 def summary(
     folder: str = typer.Argument(..., help="The folder to be analyzed"),
@@ -290,6 +295,11 @@ def summary(
     )
 
 
+# Helper function for standalone console scripts
+def run_summary():
+    typer.run(summary)
+
+
 @app.command(help=scripts.mps2mp4.__doc__)
 def mps2mp4(
     path: str = typer.Argument(..., help="Path to the mps file"),
@@ -310,6 +320,11 @@ def mps2mp4(
     ),
 ):
     scripts.mps2mp4.main(path=path, outfile=outfile, synch=synch)
+
+
+# Helper function for standalone console scripts
+def run_mps2mp4():
+    typer.run(mps2mp4)
 
 
 @app.command(help=scripts.mps2mp4.__doc__)
@@ -394,7 +409,14 @@ try:
         )
 
 except ImportError:
-    pass
+
+    def motion():
+        raise ImportError("Motion tracking software is not installed")
+
+
+# Helper function for standalone console scripts
+def run_motion():
+    typer.run(motion)
 
 
 try:

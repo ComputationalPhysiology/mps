@@ -60,16 +60,17 @@ test: ## run tests quickly with the default Python
 	python -m pytest --cov=mps tests
 
 docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/mps.rst
-	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ mps
-	pandoc README.md -o docs/readme.rst
+	rm -f docs/source/mps.rst
+	rm -f docs/source/modules.rst
+	sphinx-apidoc -o docs/source mps/ mps/tifffile.py mps/czifile.py mps/nd2file.py
+	cp CONTRIBUTING.md docs/source/.
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
-	$(BROWSER) docs/_build/html/index.html
 
-servedocs: docs ## compile the docs watching for changes
-	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
+
+show: ## show docs
+	open docs/build/html/index.html
+
 
 dist: clean ## builds source and wheel package
 	python setup.py sdist
