@@ -1,0 +1,1717 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>mps package &#8212; cardiac-mps  documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mps.scripts package" href="mps.scripts.html" />
+    <link rel="prev" title="mps" href="modules.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="_static/logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">cardiac-mps  documentation</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="install.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="demo.html">
+   Demo
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="mps_analyze.html">
+     Command line interface -
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       mps-analyze
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="mps_summary.html">
+     Command line interface -
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       mps-summary
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="binary_executables.html">
+     Binary executables
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="CONTRIBUTING.html">
+   Contributing
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="modules.html">
+   mps
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 current active has-children">
+    <a class="current reference internal" href="#">
+     mps package
+    </a>
+    <input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="mps.scripts.html">
+       mps.scripts package
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            <a href="https://www.simula.no/research/projects/department-computational-physiology">Computational Physiology at Simula</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/ComputationalPhysiology/mps"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/ComputationalPhysiology/mps/issues/new?title=Issue%20on%20page%20%2Fmps.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="_sources/mps.rst.txt"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.rst</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> cardiac-mps
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#subpackages">
+   Subpackages
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#submodules">
+   Submodules
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-mps.analysis">
+   mps.analysis module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-mps.average">
+   mps.average module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-mps.load">
+   mps.load module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-mps.plotter">
+   mps.plotter module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-mps.utils">
+   mps.utils module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-mps">
+   Module contents
+  </a>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>mps package</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> cardiac-mps </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#subpackages">
+   Subpackages
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#submodules">
+   Submodules
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-mps.analysis">
+   mps.analysis module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-mps.average">
+   mps.average module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-mps.load">
+   mps.load module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-mps.plotter">
+   mps.plotter module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-mps.utils">
+   mps.utils module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-mps">
+   Module contents
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <section id="mps-package">
+<h1>mps package<a class="headerlink" href="#mps-package" title="Permalink to this headline">#</a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">#</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mps.scripts.html">mps.scripts package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mps.scripts.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mps.scripts.html#module-mps.scripts.analyze">mps.scripts.analyze module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mps.scripts.html#module-mps.scripts.mps2mp4">mps.scripts.mps2mp4 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mps.scripts.html#module-mps.scripts.phase_plot">mps.scripts.phase_plot module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mps.scripts.html#module-mps.scripts.split_pacing">mps.scripts.split_pacing module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mps.scripts.html#module-mps.scripts.summary">mps.scripts.summary module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mps.scripts.html#module-mps.scripts">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">#</a></h2>
+</section>
+<section id="module-mps.analysis">
+<span id="mps-analysis-module"></span><h2>mps.analysis module<a class="headerlink" href="#module-mps.analysis" title="Permalink to this headline">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mps.analysis.APDAnalysis">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">APDAnalysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apd_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_significant</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">triangulation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope_APD80</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope_cAPD80</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">const_APD80</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">const_cAPD80</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apd_dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mps.analysis.APDAnalysis" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.APDAnalysis.apd_dt">
+<span class="sig-name descname"><span class="pre">apd_dt</span></span><a class="headerlink" href="#mps.analysis.APDAnalysis.apd_dt" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 9</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.APDAnalysis.apd_points">
+<span class="sig-name descname"><span class="pre">apd_points</span></span><a class="headerlink" href="#mps.analysis.APDAnalysis.apd_points" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.APDAnalysis.apds">
+<span class="sig-name descname"><span class="pre">apds</span></span><a class="headerlink" href="#mps.analysis.APDAnalysis.apds" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.APDAnalysis.capds">
+<span class="sig-name descname"><span class="pre">capds</span></span><a class="headerlink" href="#mps.analysis.APDAnalysis.capds" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.APDAnalysis.const_APD80">
+<span class="sig-name descname"><span class="pre">const_APD80</span></span><a class="headerlink" href="#mps.analysis.APDAnalysis.const_APD80" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 7</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.APDAnalysis.const_cAPD80">
+<span class="sig-name descname"><span class="pre">const_cAPD80</span></span><a class="headerlink" href="#mps.analysis.APDAnalysis.const_cAPD80" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 8</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.APDAnalysis.is_significant">
+<span class="sig-name descname"><span class="pre">is_significant</span></span><a class="headerlink" href="#mps.analysis.APDAnalysis.is_significant" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.APDAnalysis.slope_APD80">
+<span class="sig-name descname"><span class="pre">slope_APD80</span></span><a class="headerlink" href="#mps.analysis.APDAnalysis.slope_APD80" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.APDAnalysis.slope_cAPD80">
+<span class="sig-name descname"><span class="pre">slope_cAPD80</span></span><a class="headerlink" href="#mps.analysis.APDAnalysis.slope_cAPD80" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 6</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.APDAnalysis.triangulation">
+<span class="sig-name descname"><span class="pre">triangulation</span></span><a class="headerlink" href="#mps.analysis.APDAnalysis.triangulation" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mps.analysis.Collector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">Collector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#Collector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.Collector" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.analysis.Collector.data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#mps.analysis.Collector.data" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mps.analysis.Collector.dump">
+<span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#Collector.dump"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.Collector.dump" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mps.analysis.Collector.dump_all">
+<span class="sig-name descname"><span class="pre">dump_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#Collector.dump_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.Collector.dump_all" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.analysis.Collector.info">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mps.analysis.Collector.info" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.analysis.Collector.info_txt">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">info_txt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mps.analysis.Collector.info_txt" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.analysis.Collector.metadata">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mps.analysis.Collector.metadata" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mps.analysis.Collector.register_chopped_data">
+<span class="sig-name descname"><span class="pre">register_chopped_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chopped_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ap_features.chopping.ChoppedData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aligned_beats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/mps/analysis.html#Collector.register_chopped_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.Collector.register_chopped_data" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mps.analysis.Collector.register_unchopped">
+<span class="sig-name descname"><span class="pre">register_unchopped</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ap_features.beat.Beats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/mps/analysis.html#Collector.register_unchopped"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.Collector.register_unchopped" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mps.analysis.ExcludedData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">ExcludedData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">included_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_included_indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mps.analysis.ExcludedData" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.ExcludedData.all_included_indices">
+<span class="sig-name descname"><span class="pre">all_included_indices</span></span><a class="headerlink" href="#mps.analysis.ExcludedData.all_included_indices" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.ExcludedData.included_indices">
+<span class="sig-name descname"><span class="pre">included_indices</span></span><a class="headerlink" href="#mps.analysis.ExcludedData.included_indices" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.ExcludedData.new_data">
+<span class="sig-name descname"><span class="pre">new_data</span></span><a class="headerlink" href="#mps.analysis.ExcludedData.new_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mps.analysis.Features">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">Features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features_beats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features_included_beats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features_1std_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features_all_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">included_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">included_indices_beats</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mps.analysis.Features" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.Features.features">
+<span class="sig-name descname"><span class="pre">features</span></span><a class="headerlink" href="#mps.analysis.Features.features" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.Features.features_1std_str">
+<span class="sig-name descname"><span class="pre">features_1std_str</span></span><a class="headerlink" href="#mps.analysis.Features.features_1std_str" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.Features.features_all_str">
+<span class="sig-name descname"><span class="pre">features_all_str</span></span><a class="headerlink" href="#mps.analysis.Features.features_all_str" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.Features.features_beats">
+<span class="sig-name descname"><span class="pre">features_beats</span></span><a class="headerlink" href="#mps.analysis.Features.features_beats" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.Features.features_included_beats">
+<span class="sig-name descname"><span class="pre">features_included_beats</span></span><a class="headerlink" href="#mps.analysis.Features.features_included_beats" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.Features.included_indices">
+<span class="sig-name descname"><span class="pre">included_indices</span></span><a class="headerlink" href="#mps.analysis.Features.included_indices" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.Features.included_indices_beats">
+<span class="sig-name descname"><span class="pre">included_indices_beats</span></span><a class="headerlink" href="#mps.analysis.Features.included_indices_beats" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 6</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.about">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">about</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#about"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.about" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.active_pixel_mask">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">active_pixel_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#active_pixel_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.active_pixel_mask" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.analyze_apds">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">analyze_apds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ap_features.beat.Beat</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_allowed_apd_change</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mps.analysis.APDAnalysis" title="mps.analysis.APDAnalysis"><span class="pre">mps.analysis.APDAnalysis</span></a></span></span><a class="reference internal" href="_modules/mps/analysis.html#analyze_apds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.analyze_apds" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.analyze_chopped_data">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">analyze_chopped_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ap_features.beat.Beats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mps.analysis.Collector" title="mps.analysis.Collector"><span class="pre">mps.analysis.Collector</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">chopping_threshold_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chopping_extend_front</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chopping_extend_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chopping_min_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chopping_max_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_spline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_allowed_apd_change</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ead_sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ead_prominence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.04</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std_ex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#analyze_chopped_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.analyze_chopped_data" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.analyze_eads">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">analyze_eads</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ap_features.beat.Beat</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prominence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/mps/analysis.html#analyze_eads"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.analyze_eads" title="Permalink to this definition">#</a></dt>
+<dd><p>Loop over all beats and check for EADs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>beats</strong> (<em>List</em><em>[</em><em>apf.Beat</em><em>]</em>) – List of beats</p></li>
+<li><p><strong>sigma</strong> (<em>float</em>) – Standard deviation in the gaussian smoothing kernal used for
+EAD detection. Default: 3.0</p></li>
+<li><p><strong>prominence_threshold</strong> (<em>float</em>) – How prominent a peak should be in order to be
+characterized as an EAD. This value shold be
+between 0 and 1, with a greater value being
+more prominent. Defaulta: 0.04</p></li>
+<li><p><strong>plot</strong> (<em>bool</em>) – If True we plot the beats with the potential EAD marked
+as a red dot. Default: True</p></li>
+<li><p><strong>fname</strong> (<em>str</em>) – Path to file that you want to save the plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The number of EADs</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.analyze_frequencies">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">analyze_frequencies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ms'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/mps/analysis.html#analyze_frequencies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.analyze_frequencies" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.analyze_local_average">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">analyze_local_average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#analyze_local_average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.analyze_local_average" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.analyze_mps_func">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">analyze_mps_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mps_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_window_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_window_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spike_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_pacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_points_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chopping_threshold_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chopping_extend_front</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chopping_extend_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chopping_min_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chopping_max_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_spline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_allowed_apd_change</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ead_sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ead_prom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.04</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std_ex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#analyze_mps_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.analyze_mps_func" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.analyze_unchopped_data">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">analyze_unchopped_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mps_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_window_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_window_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spike_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_pacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_points_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ap_features.beat.Beats</span></span></span><a class="reference internal" href="_modules/mps/analysis.html#analyze_unchopped_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.analyze_unchopped_data" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.average_intensity">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">average_intensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">averaging_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'spatial'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#average_intensity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.average_intensity" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the average_intensity of the frame stack.
+The available keyword arguments depends on the averaging_type
+chosen</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The frame stack (size <span class="math notranslate nohighlight">\(M  imes N  imes T\)</span>)</p></li>
+<li><p><strong>averaging_type</strong> (<em>str</em>) – How you want to average the frame stack. Possible values
+are [‘all’, ‘temporal’, ‘spatial’, ‘global’]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.baseline_intensity">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">baseline_intensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglevel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#baseline_intensity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.baseline_intensity" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the baseline intensity in local windows</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frames</strong> (<em>np.ndarray</em>) – The image sequence on the form (nx, ny, T) where nx
+and ny are repspectively the number of pixels in the
+x and y direction and T are the number of frames.</p></li>
+<li><p><strong>times</strong> (<em>np.ndarray</em><em> or </em><em>list</em>) – An array of time stamps.</p></li>
+<li><p><strong>N</strong> (<em>int</em>) – Maximum number of grid points. The axis with the greatest number
+of pixels will be partitioned into a coarser grid of size n. The
+other axis will be scaled so that each grid point is approximately
+square.</p></li>
+<li><p><strong>x_start</strong> (<em>int</em>) – Index where to start in x-direction</p></li>
+<li><p><strong>x_end</strong> (<em>int</em>) – Index where to end in x-direction</p></li>
+<li><p><strong>y_start</strong> (<em>int</em>) – Index where to start in y-direction</p></li>
+<li><p><strong>y_end</strong> (<em>int</em>) – Index where to end in y-direction</p></li>
+<li><p><strong>backround_correction</strong> (<em>bool</em>) – If you want to apply background correction. You typically want
+to allways do this except in the case when you only have
+a single beat. Default: True.</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em>) – If True, normalize all averages to have values between 0 and 1, if
+False keep the original values. Default: False</p></li>
+<li><p><strong>loglevel</strong> (<em>int</em>) – Verbosity. Default: INFO (=20). For more info see the logging library.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.compute_all_features">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">compute_all_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_spline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_allowed_apd_change</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ead_sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ead_prominence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.04</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std_ex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#compute_all_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.compute_all_features" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.compute_features">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">compute_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ap_features.beat.Beat</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_spline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#compute_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.compute_features" title="Permalink to this definition">#</a></dt>
+<dd><p>Analyze signals. Compute all features and
+include only the relevant beats</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>beats</strong> (<em>List</em><em>[</em><em>apf.Beat</em><em>]</em>) – List of beats</p></li>
+<li><p><strong>use_spline</strong> (<em>bool</em>) – Use spline interpolation
+(Default : True)</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em>) – If true normalize signal first, so that max value is 1.0,
+and min value is zero before performing the computation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>data</strong> – A dictionary with the following structure</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>In some cases, all the beats are not necessary representative
+for the underlying signal, for example if there is a lot of noise
+present. In this case it would be more robust compute the features by
+only including those beats that are closest to the average signals.
+Suppose we have <span class="math notranslate nohighlight">\(N\)</span> sub-signals, <span class="math notranslate nohighlight">\(z_1, z_2, \cdots, z_N\)</span>,
+each representing one beat. Further let <span class="math notranslate nohighlight">\(f\)</span> denote a function
+which takes a sub-signal as input and output some of the properties,
+e.g <span class="math notranslate nohighlight">\(f= \mathrm{APD}30\)</span>. Define</p>
+<div class="math notranslate nohighlight">
+\[\bar{f} = \frac{1}{N}\sum_{i = 1}^N f(z_i),\]</div>
+<p>to be the average value of a given feature <span class="math notranslate nohighlight">\(f\)</span> of all
+sub-signals, and</p>
+<div class="math notranslate nohighlight">
+\[\sigma (f) = \sqrt{\frac{1}{N-1}\sum_{i = 1}^N
+\left(f(z_i) - \bar{f} \right)^2},\]</div>
+<p>be the standard deviation. Now, let <span class="math notranslate nohighlight">\(\mathcal{D}\)</span>
+be the set of all sub-signals that are within 1 standard deviation
+of the mean, i.e</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{D} = \{ z : | f(z) - \bar{f} | &lt; \sigma(f) \}.\]</div>
+<p>Then a more robust estimate of the average value of <span class="math notranslate nohighlight">\(f\)</span>
+(than <span class="math notranslate nohighlight">\(\bar{f}\)</span>) is</p>
+<div class="math notranslate nohighlight">
+\[f_{\mathcal{D}} = \frac{1}{|\mathcal{D}|}\sum_{z \in
+\mathcal{D}}^N f(z).\]</div>
+<p>If the set <span class="math notranslate nohighlight">\(\mathcal{D}\)</span> is empty, there can be two reasons
+for this, namely the signal is very noisy, or the standard deviation
+is very small. We assume the latter, and will in these cases only
+return <span class="math notranslate nohighlight">\(\bar{f}\)</span>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.enlist">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">enlist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#enlist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.enlist" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.exclude_x_std">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">exclude_x_std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#exclude_x_std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.exclude_x_std" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a list of values return a list of all
+values that are within x factor of the mean.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em>) – A dictionary of lists of values, e.g a list of apd30</p></li>
+<li><p><strong>x</strong> (<em>float</em>) – The number of standard deviations to be
+included, ex x = 1.0. If none is provided
+everything will be included</p></li>
+<li><p><strong>use</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of features to use</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>new_data</strong> (<em>dict</em>) – A dictionary with new lists containing only those elements
+that are within <span class="math notranslate nohighlight">\(x\)</span> std of the mean</p></li>
+<li><p><strong>included_indice</strong> (<em>dict</em>) – Indices included for each (key, value) pair.</p></li>
+<li><p><strong>means</strong> (<em>array</em>) – The mean of the elements in <code class="docutils literal notranslate"><span class="pre">new_data</span></code></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.find_included_indices">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">find_included_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#find_included_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.find_included_indices" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a list of values return a list of all
+values that are within x factor of the mean.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em>) – A dictionary of lists of values, e.g a list of apd30</p></li>
+<li><p><strong>x</strong> (<em>float</em>) – The number of standard deviations to be
+included, ex x = 1.0. If none is provided
+everything will be included</p></li>
+<li><p><strong>use</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of features to use</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of indices or each beat and list of common indices</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple[Dict[str, List[int]], List[int]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.frame2average">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">frame2average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#frame2average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.frame2average" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute average pixel intensity of the frames</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frames</strong> (<em>np.ndarray</em>) – The frames</p></li>
+<li><p><strong>times</strong> (<em>np.ndarray</em>) – The time stamps</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em>) – In true normalize average so that it takes value
+between zero and one. Default: True</p></li>
+<li><p><strong>background_correction</strong> (<em>bool</em>) – If true, apply backround correction to the average.
+You don’t want to do this if you only have a single beat.
+Default: True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>trace</strong> – The average trace</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.local_averages">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">local_averages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglevel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#local_averages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.local_averages" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the local averages</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frames</strong> (<em>np.ndarray</em>) – The image sequence on the form (nx, ny, T) where nx
+and ny are repspectively the number of pixels in the
+x and y direction and T are the number of frames.</p></li>
+<li><p><strong>times</strong> (<em>np.ndarray</em><em> or </em><em>list</em>) – An array of time stamps.</p></li>
+<li><p><strong>N</strong> (<em>int</em>) – Maximum number of grid points. The axis with the greatest number
+of pixels will be partitioned into a coarser grid of size n. The
+other axis will be scaled so that each grid point is approximately
+square.</p></li>
+<li><p><strong>x_start</strong> (<em>int</em>) – Index where to start in x-direction</p></li>
+<li><p><strong>x_end</strong> (<em>int</em>) – Index where to end in x-direction</p></li>
+<li><p><strong>y_start</strong> (<em>int</em>) – Index where to start in y-direction</p></li>
+<li><p><strong>y_end</strong> (<em>int</em>) – Index where to end in y-direction</p></li>
+<li><p><strong>backround_correction</strong> (<em>bool</em>) – If you want to apply background correction. You typically want
+to allways do this except in the case when you only have
+a single beat. Default: True.</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em>) – If True, normalize all averages to have values between 0 and 1, if
+False keep the original values. Default: False</p></li>
+<li><p><strong>loglevel</strong> (<em>int</em>) – Verbosity. Default: INFO (=20). For more info see the logging library.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.mean">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.mean" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mps.analysis.mps_prevalence">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">mps_prevalence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prevalence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tissue_covered_area</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_beating</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_tissue</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mps.analysis.mps_prevalence" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.mps_prevalence.is_beating">
+<span class="sig-name descname"><span class="pre">is_beating</span></span><a class="headerlink" href="#mps.analysis.mps_prevalence.is_beating" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.mps_prevalence.is_tissue">
+<span class="sig-name descname"><span class="pre">is_tissue</span></span><a class="headerlink" href="#mps.analysis.mps_prevalence.is_tissue" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.mps_prevalence.prevalence">
+<span class="sig-name descname"><span class="pre">prevalence</span></span><a class="headerlink" href="#mps.analysis.mps_prevalence.prevalence" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.analysis.mps_prevalence.tissue_covered_area">
+<span class="sig-name descname"><span class="pre">tissue_covered_area</span></span><a class="headerlink" href="#mps.analysis.mps_prevalence.tissue_covered_area" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.plot_apd_analysis">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">plot_apd_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ap_features.beat.Beat</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mps.analysis.APDAnalysis" title="mps.analysis.APDAnalysis"><span class="pre">mps.analysis.APDAnalysis</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#plot_apd_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.plot_apd_analysis" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.plot_ead">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">plot_ead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peak_inds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#plot_ead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.plot_ead" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.prevalence">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">prevalence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mps_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#prevalence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.prevalence" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the prevalence, i.e the percentage of living
+cells in the recording</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mps_data</strong> (<a class="reference internal" href="#mps.load.MPS" title="mps.load.MPS"><em>mps.load.MPS</em></a>) – The data</p></li>
+<li><p><strong>snr_factor</strong> (<em>float</em>) – Factor multiplied with the global signal to noise ratio (snr),
+to determine wether a region is noise or not. If a local region
+has a larger values than snr_factor * global snr it will be
+classied as noise. Default: 1.5</p></li>
+<li><p><strong>N</strong> (<em>int</em>) – Size of grid along the major axis (minor axis will
+be scaled proportionally). Default: 50</p></li>
+<li><p><strong>frequency_threshold</strong> (<em>float</em>) – Percentage (between 0 and 1) of how far from the global
+frequency a local signal can be before it is classified
+as non-beating.
+Default: 0.2</p></li>
+<li><p><strong>baseline_threshold</strong> (<em>float</em>) – Percentage (between 0 and 1) of how far from the min and
+max values of the baseline intensities of the beating regions
+that should define the rage for baseline intensity of tissue
+Default: 0.1</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>mps_prevalence</strong> (<em>namedtuple</em>) – A named tuple with the following fields</p></li>
+<li><p><strong>prevalence</strong> (<em>float</em>) – percentage of tissue that is beating</p></li>
+<li><p><strong>tissue_covered_area</strong> (<em>float</em>) – percentage of area in the image that is
+classified as tissue</p></li>
+<li><p><strong>is_beating</strong> (<em>array</em>) – boolean array who’s true values are classied
+as beating regions</p></li>
+<li><p><strong>is_tissue</strong> (<em>array</em>) – boolean array who’s true values are classied
+as regions with tissue</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.snr">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">snr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#snr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.snr" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.analysis.std">
+<span class="sig-prename descclassname"><span class="pre">mps.analysis.</span></span><span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/analysis.html#std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.analysis.std" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-mps.average">
+<span id="mps-average-module"></span><h2>mps.average module<a class="headerlink" href="#module-mps.average" title="Permalink to this headline">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mps.average.AveragingType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mps.average.</span></span><span class="sig-name descname"><span class="pre">AveragingType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/average.html#AveragingType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.average.AveragingType" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.average.AveragingType.global_">
+<span class="sig-name descname"><span class="pre">global_</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'global'</span></em><a class="headerlink" href="#mps.average.AveragingType.global_" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.average.AveragingType.spatial">
+<span class="sig-name descname"><span class="pre">spatial</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'spatial'</span></em><a class="headerlink" href="#mps.average.AveragingType.spatial" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.average.AveragingType.temporal">
+<span class="sig-name descname"><span class="pre">temporal</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'temporal'</span></em><a class="headerlink" href="#mps.average.AveragingType.temporal" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.average.get_average_all">
+<span class="sig-prename descclassname"><span class="pre">mps.average.</span></span><span class="sig-name descname"><span class="pre">get_average_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/average.html#get_average_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.average.get_average_all" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the global average of a frame stack, i.e</p>
+<div class="math notranslate nohighlight">
+\[y = \begin{pmatrix} y^1, y^2, \cdots , y^T \end{pmatrix}\]</div>
+<p>with</p>
+<div class="math notranslate nohighlight">
+\[y^i = \mathrm{avg}_{\mathrm{all}}(\mathbf{X}^i )
+= \bar{X}^i = \frac{1}{MN} \sum_{m,n} x_{m,n}^i\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>X</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The frame stack (size <span class="math notranslate nohighlight">\(M \times N \times T\)</span>)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>average</strong> – The average vector of length <span class="math notranslate nohighlight">\(T\)</span></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.average.get_spatial_average">
+<span class="sig-prename descclassname"><span class="pre">mps.average.</span></span><span class="sig-name descname"><span class="pre">get_spatial_average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/average.html#get_spatial_average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.average.get_spatial_average" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the spatial average</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The frame stack (size <span class="math notranslate nohighlight">\(M \times N \times T\)</span>)</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>average</strong> – The average vector of length <span class="math notranslate nohighlight">\(T\)</span></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If we assume that the important pixels are those pixels with a high
+pixel value, then we can simply select those pixel with the highest
+pixels values. Formally, for each frame <span class="math notranslate nohighlight">\(i\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{D} = \{ (m,n) : x_{m,n} &gt; f(\mathbf{X}^i) \}\]</div>
+<p>then,</p>
+<div class="math notranslate nohighlight">
+\[y^i = \mathrm{avg}_{\mathrm{spatial}, f}(\mathbf{X}^i )
+= \frac{1}{|\mathcal{D}|} \sum_{(m,n) \in \mathcal{D}} x_{m,n}^i\]</div>
+<p>where <span class="math notranslate nohighlight">\(|\mathcal{D}|\)</span> is the number of pixels in
+<span class="math notranslate nohighlight">\(\mathcal{D}\)</span>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.average.get_temporal_average">
+<span class="sig-prename descclassname"><span class="pre">mps.average.</span></span><span class="sig-name descname"><span class="pre">get_temporal_average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/average.html#get_temporal_average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.average.get_temporal_average" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the temporal average</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The frame stack (size <span class="math notranslate nohighlight">\(M \times N \times T\)</span>)</p></li>
+<li><p><strong>bound</strong> (<em>str</em>) – Make average of pixels larger than the bound.
+Choices (‘median’, ‘mean’). Default . ‘median’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>average</strong> – The average vector of length <span class="math notranslate nohighlight">\(T\)</span></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If we assume that pixels that represents noise have pixel values,
+that do not vary much throughout the frame stack compared to signals
+that represents the actualt signals, we can try to include only
+those pixels that have a certain variation compared to all the
+other pixels.
+Let</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\sigma(\mathcal{X}) = \begin{pmatrix}
+\sigma(X)_{1,1} &amp; \sigma(X)_{1,2} &amp; \cdots &amp; \sigma(X)_{1,N} \\
+\sigma(X)_{2,1} &amp; \sigma(X)_{2,2} &amp; \cdots &amp; \sigma(X)_{2,N} \\
+\vdots  &amp; \vdots &amp; \vdots &amp; \vdots \\
+\sigma(X)_{M,1} &amp; \sigma(X)_{M,2} &amp; \cdots &amp; \sigma(X)_{M,N}
+\end{pmatrix}\end{split}\]</div>
+<p>be the <span class="math notranslate nohighlight">\(M \times N\)</span> matrix with each coordinate beeing
+the temporal standard deviation.
+Now, for a given fuctional <span class="math notranslate nohighlight">\(f\)</span> let</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{D} = \{ (m,n) : \sigma(X)_{m,n}
+&gt; f(\sigma(\mathcal{X})) \}\]</div>
+<p>be the set of pixel coordinates selecting pixels based on the rule
+<span class="math notranslate nohighlight">\(f\)</span>.
+Then</p>
+<div class="math notranslate nohighlight">
+\[y^i = \mathrm{avg}_{\mathrm{temporal}, f}(\mathbf{X}^i )
+= \frac{1}{|\mathcal{D}|} \sum_{(m,n) \in \mathcal{D}} x_{m,n}^i\]</div>
+<p>where <span class="math notranslate nohighlight">\(|\mathcal{D}|\)</span> is the number of pixels in $mathcal{D}$.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.average.masked_average">
+<span class="sig-prename descclassname"><span class="pre">mps.average.</span></span><span class="sig-name descname"><span class="pre">masked_average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/average.html#masked_average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.average.masked_average" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-mps.load">
+<span id="mps-load-module"></span><h2>mps.load module<a class="headerlink" href="#module-mps.load" title="Permalink to this headline">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mps.load.MPS">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mps.load.</span></span><span class="sig-name descname"><span class="pre">MPS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/load.html#MPS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.load.MPS" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Create instant of class for analysing MPS data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) – Path to the file</p></li>
+<li><p><strong>parameters</strong> (<em>dict</em>) – Additional parameters, see
+<cite>MPS.default_parameters</cite></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.load.MPS.framerate">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">framerate</span></span><a class="headerlink" href="#mps.load.MPS.framerate" title="Permalink to this definition">#</a></dt>
+<dd><p>Return number of frames per second</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.load.MPS.frames">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">frames</span></span><a class="headerlink" href="#mps.load.MPS.frames" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mps.load.MPS.from_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/load.html#MPS.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.load.MPS.from_dict" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.load.MPS.info">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">info</span></span><a class="headerlink" href="#mps.load.MPS.info" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.load.MPS.metadata">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">metadata</span></span><a class="headerlink" href="#mps.load.MPS.metadata" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.load.MPS.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#mps.load.MPS.name" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.load.MPS.original_time_stamps">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">original_time_stamps</span></span><a class="headerlink" href="#mps.load.MPS.original_time_stamps" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.load.MPS.pacing">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pacing</span></span><a class="headerlink" href="#mps.load.MPS.pacing" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.load.MPS.pacing_frequency">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pacing_frequency</span></span><a class="headerlink" href="#mps.load.MPS.pacing_frequency" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the pacing frequency in Hertz</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The pacing frequency</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mps.load.MPSData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mps.load.</span></span><span class="sig-name descname"><span class="pre">MPSData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_stamps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pacing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/load.html#MPSData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.load.MPSData" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.load.MPSData.frames">
+<span class="sig-name descname"><span class="pre">frames</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#mps.load.MPSData.frames" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.load.MPSData.info">
+<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mps.load.MPSData.info" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.load.MPSData.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mps.load.MPSData.metadata" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.load.MPSData.pacing">
+<span class="sig-name descname"><span class="pre">pacing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mps.load.MPSData.pacing" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.load.MPSData.time_stamps">
+<span class="sig-name descname"><span class="pre">time_stamps</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#mps.load.MPSData.time_stamps" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.load.get_single_frame">
+<span class="sig-prename descclassname"><span class="pre">mps.load.</span></span><span class="sig-name descname"><span class="pre">get_single_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">os.PathLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/mps/load.html#get_single_frame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.load.get_single_frame" title="Permalink to this definition">#</a></dt>
+<dd><p>Get a single frame from a czi or nd2 file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path to the file</p></li>
+<li><p><strong>index</strong> (<em>int</em>) – The index of the frame (Default: 0)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>frame</strong> – The frame</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.load.info_dictionary">
+<span class="sig-prename descclassname"><span class="pre">mps.load.</span></span><span class="sig-name descname"><span class="pre">info_dictionary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_stamps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/load.html#info_dictionary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.load.info_dictionary" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.load.load_czi">
+<span class="sig-prename descclassname"><span class="pre">mps.load.</span></span><span class="sig-name descname"><span class="pre">load_czi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/load.html#load_czi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.load.load_czi" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.load.load_file">
+<span class="sig-prename descclassname"><span class="pre">mps.load.</span></span><span class="sig-name descname"><span class="pre">load_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/load.html#load_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.load.load_file" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.load.load_movie">
+<span class="sig-prename descclassname"><span class="pre">mps.load.</span></span><span class="sig-name descname"><span class="pre">load_movie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">os.PathLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mps.load.MPSData" title="mps.load.MPSData"><span class="pre">mps.load.MPSData</span></a></span></span><a class="reference internal" href="_modules/mps/load.html#load_movie"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.load.load_movie" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.load.load_nd2">
+<span class="sig-prename descclassname"><span class="pre">mps.load.</span></span><span class="sig-name descname"><span class="pre">load_nd2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">os.PathLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mps.load.MPSData" title="mps.load.MPSData"><span class="pre">mps.load.MPSData</span></a></span></span><a class="reference internal" href="_modules/mps/load.html#load_nd2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.load.load_nd2" title="Permalink to this definition">#</a></dt>
+<dd><p>Load ND2 file (Nikon image file)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nd2file</strong> (<em>str</em>) – Path to the file</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>I</strong> (<em>array</em>) – The images</p></li>
+<li><p><strong>attributes</strong> (<em>dict</em>) – Dictionary with metadata</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.load.load_stk">
+<span class="sig-prename descclassname"><span class="pre">mps.load.</span></span><span class="sig-name descname"><span class="pre">load_stk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">os.PathLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mps.load.MPSData" title="mps.load.MPSData"><span class="pre">mps.load.MPSData</span></a></span></span><a class="reference internal" href="_modules/mps/load.html#load_stk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.load.load_stk" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.load.load_tiff">
+<span class="sig-prename descclassname"><span class="pre">mps.load.</span></span><span class="sig-name descname"><span class="pre">load_tiff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/load.html#load_tiff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.load.load_tiff" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.load.load_tiff_timestamps">
+<span class="sig-prename descclassname"><span class="pre">mps.load.</span></span><span class="sig-name descname"><span class="pre">load_tiff_timestamps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/load.html#load_tiff_timestamps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.load.load_tiff_timestamps" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.load.load_zip">
+<span class="sig-prename descclassname"><span class="pre">mps.load.</span></span><span class="sig-name descname"><span class="pre">load_zip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">os.PathLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mps.load.MPSData" title="mps.load.MPSData"><span class="pre">mps.load.MPSData</span></a></span></span><a class="reference internal" href="_modules/mps/load.html#load_zip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.load.load_zip" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.load.time2isoformat">
+<span class="sig-prename descclassname"><span class="pre">mps.load.</span></span><span class="sig-name descname"><span class="pre">time2isoformat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/load.html#time2isoformat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.load.time2isoformat" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-mps.plotter">
+<span id="mps-plotter-module"></span><h2>mps.plotter module<a class="headerlink" href="#module-mps.plotter" title="Permalink to this headline">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.plotter.phase_plots">
+<span class="sig-prename descclassname"><span class="pre">mps.plotter.</span></span><span class="sig-name descname"><span class="pre">phase_plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calcium</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/plotter.html#phase_plots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.plotter.phase_plots" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.plotter.plot_multiple_traces">
+<span class="sig-prename descclassname"><span class="pre">mps.plotter.</span></span><span class="sig-name descname"><span class="pre">plot_multiple_traces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">titles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/plotter.html#plot_multiple_traces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.plotter.plot_multiple_traces" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.plotter.plot_single_trace">
+<span class="sig-prename descclassname"><span class="pre">mps.plotter.</span></span><span class="sig-name descname"><span class="pre">plot_single_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Pixel</span> <span class="pre">intensity'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/plotter.html#plot_single_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.plotter.plot_single_trace" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.plotter.plot_twin_trace">
+<span class="sig-prename descclassname"><span class="pre">mps.plotter.</span></span><span class="sig-name descname"><span class="pre">plot_twin_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/plotter.html#plot_twin_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.plotter.plot_twin_trace" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.plotter.plot_window">
+<span class="sig-prename descclassname"><span class="pre">mps.plotter.</span></span><span class="sig-name descname"><span class="pre">plot_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/plotter.html#plot_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.plotter.plot_window" title="Permalink to this definition">#</a></dt>
+<dd><p>If you can to take average over a smaller region
+you can use this function to plot a frame at the
+given frame</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>local</strong> (<em>array</em>) – Return list of indice to plot as frame
+[startx, endx, starty, endy]</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – Image number</p></li>
+<li><p><strong>fname</strong> (<em>str:</em>) – Name of figure to save</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.plotter.set_mpl_options">
+<span class="sig-prename descclassname"><span class="pre">mps.plotter.</span></span><span class="sig-name descname"><span class="pre">set_mpl_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/plotter.html#set_mpl_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.plotter.set_mpl_options" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-mps.utils">
+<span id="mps-utils-module"></span><h2>mps.utils module<a class="headerlink" href="#module-mps.utils" title="Permalink to this headline">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.utils.collect_data">
+<span class="sig-prename descclassname"><span class="pre">mps.utils.</span></span><span class="sig-name descname"><span class="pre">collect_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calcium_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/utils.html#collect_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.utils.collect_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Collect voltage and calcium data togther so that it can be used
+in the inversion.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.utils.dump_data">
+<span class="sig-prename descclassname"><span class="pre">mps.utils.</span></span><span class="sig-name descname"><span class="pre">dump_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fileformat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'npy'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/utils.html#dump_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.utils.dump_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Dump data to a file with given file format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em><em> or </em><em>array</em>) – The data you want to dum</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – Path to the data (without extension)</p></li>
+<li><p><strong>fileformat</strong> (<em>str</em>) – File format. Either ‘npy’, ‘yml’, ‘csv’ or ‘mat’.
+Deafult: ‘npy’</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.utils.find_num_beats">
+<span class="sig-prename descclassname"><span class="pre">mps.utils.</span></span><span class="sig-name descname"><span class="pre">find_num_beats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/utils.html#find_num_beats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.utils.find_num_beats" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.utils.frames2mp4">
+<span class="sig-prename descclassname"><span class="pre">mps.utils.</span></span><span class="sig-name descname"><span class="pre">frames2mp4</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">framerate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/utils.html#frames2mp4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.utils.frames2mp4" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.utils.get_data_from_dict">
+<span class="sig-prename descclassname"><span class="pre">mps.utils.</span></span><span class="sig-name descname"><span class="pre">get_data_from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">set_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/utils.html#get_data_from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.utils.get_data_from_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Copy data from one dictionary to another</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.utils.get_grid_settings">
+<span class="sig-prename descclassname"><span class="pre">mps.utils.</span></span><span class="sig-name descname"><span class="pre">get_grid_settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/utils.html#get_grid_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.utils.get_grid_settings" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.utils.get_intersection">
+<span class="sig-prename descclassname"><span class="pre">mps.utils.</span></span><span class="sig-name descname"><span class="pre">get_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/utils.html#get_intersection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.utils.get_intersection" title="Permalink to this definition">#</a></dt>
+<dd><p>Get intersection of all values in
+a dictionary</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.utils.get_space_step">
+<span class="sig-prename descclassname"><span class="pre">mps.utils.</span></span><span class="sig-name descname"><span class="pre">get_space_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_end</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/utils.html#get_space_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.utils.get_space_step" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mps.utils.grid_settings">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mps.utils.</span></span><span class="sig-name descname"><span class="pre">grid_settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ny</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_end</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mps.utils.grid_settings" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.utils.grid_settings.dx">
+<span class="sig-name descname"><span class="pre">dx</span></span><a class="headerlink" href="#mps.utils.grid_settings.dx" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.utils.grid_settings.dy">
+<span class="sig-name descname"><span class="pre">dy</span></span><a class="headerlink" href="#mps.utils.grid_settings.dy" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.utils.grid_settings.nx">
+<span class="sig-name descname"><span class="pre">nx</span></span><a class="headerlink" href="#mps.utils.grid_settings.nx" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.utils.grid_settings.ny">
+<span class="sig-name descname"><span class="pre">ny</span></span><a class="headerlink" href="#mps.utils.grid_settings.ny" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.utils.grid_settings.x_end">
+<span class="sig-name descname"><span class="pre">x_end</span></span><a class="headerlink" href="#mps.utils.grid_settings.x_end" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 6</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.utils.grid_settings.x_start">
+<span class="sig-name descname"><span class="pre">x_start</span></span><a class="headerlink" href="#mps.utils.grid_settings.x_start" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.utils.grid_settings.y_end">
+<span class="sig-name descname"><span class="pre">y_end</span></span><a class="headerlink" href="#mps.utils.grid_settings.y_end" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 7</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mps.utils.grid_settings.y_start">
+<span class="sig-name descname"><span class="pre">y_start</span></span><a class="headerlink" href="#mps.utils.grid_settings.y_start" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.utils.json_serial">
+<span class="sig-prename descclassname"><span class="pre">mps.utils.</span></span><span class="sig-name descname"><span class="pre">json_serial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/utils.html#json_serial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.utils.json_serial" title="Permalink to this definition">#</a></dt>
+<dd><p>JSON serializer for objects not serializable by default json code</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.utils.loadmat">
+<span class="sig-prename descclassname"><span class="pre">mps.utils.</span></span><span class="sig-name descname"><span class="pre">loadmat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/utils.html#loadmat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.utils.loadmat" title="Permalink to this definition">#</a></dt>
+<dd><p>Short summary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>type</em>) – Description of parameter <cite>filename</cite>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Description of returned object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>type</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.utils.merge_pdfs">
+<span class="sig-prename descclassname"><span class="pre">mps.utils.</span></span><span class="sig-name descname"><span class="pre">merge_pdfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cleanup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/utils.html#merge_pdfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.utils.merge_pdfs" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a list of paths to pdfs, merge these together and save
+the results in a new file</p>
+<dl class="simple">
+<dt>lst<span class="classifier">list</span></dt><dd><p>List with paths to existing pdfs</p>
+</dd>
+<dt>fname<span class="classifier">str</span></dt><dd><p>Name of the output file where you want to save the
+merged pdf.</p>
+</dd>
+<dt>cleanup<span class="classifier">bool</span></dt><dd><p>If True, delete the files in the list provided.
+Default: True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.utils.namedtuple2dict">
+<span class="sig-prename descclassname"><span class="pre">mps.utils.</span></span><span class="sig-name descname"><span class="pre">namedtuple2dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/utils.html#namedtuple2dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.utils.namedtuple2dict" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.utils.normalize_frames">
+<span class="sig-prename descclassname"><span class="pre">mps.utils.</span></span><span class="sig-name descname"><span class="pre">normalize_frames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_val=255</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_val=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.uint8'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/utils.html#normalize_frames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.utils.normalize_frames" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.utils.padding">
+<span class="sig-prename descclassname"><span class="pre">mps.utils.</span></span><span class="sig-name descname"><span class="pre">padding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/utils.html#padding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.utils.padding" title="Permalink to this definition">#</a></dt>
+<dd><p>Make sure all traces are of the same lenght and
+fill in extra values if neccessary</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.utils.to_csv">
+<span class="sig-prename descclassname"><span class="pre">mps.utils.</span></span><span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/utils.html#to_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.utils.to_csv" title="Permalink to this definition">#</a></dt>
+<dd><p>FIXME</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mps.utils.to_txt">
+<span class="sig-prename descclassname"><span class="pre">mps.utils.</span></span><span class="sig-name descname"><span class="pre">to_txt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">';'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%10.6g'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/utils.html#to_txt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.utils.to_txt" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-mps">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-mps" title="Permalink to this headline">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mps.MPS">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mps.</span></span><span class="sig-name descname"><span class="pre">MPS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/load.html#MPS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.MPS" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Create instant of class for analysing MPS data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) – Path to the file</p></li>
+<li><p><strong>parameters</strong> (<em>dict</em>) – Additional parameters, see
+<cite>MPS.default_parameters</cite></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.MPS.framerate">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">framerate</span></span><a class="headerlink" href="#mps.MPS.framerate" title="Permalink to this definition">#</a></dt>
+<dd><p>Return number of frames per second</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.MPS.frames">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">frames</span></span><a class="headerlink" href="#mps.MPS.frames" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mps.MPS.from_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mps/load.html#MPS.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mps.MPS.from_dict" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.MPS.info">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">info</span></span><a class="headerlink" href="#mps.MPS.info" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.MPS.metadata">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">metadata</span></span><a class="headerlink" href="#mps.MPS.metadata" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.MPS.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#mps.MPS.name" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.MPS.original_time_stamps">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">original_time_stamps</span></span><a class="headerlink" href="#mps.MPS.original_time_stamps" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.MPS.pacing">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pacing</span></span><a class="headerlink" href="#mps.MPS.pacing" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mps.MPS.pacing_frequency">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pacing_frequency</span></span><a class="headerlink" href="#mps.MPS.pacing_frequency" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the pacing frequency in Hertz</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The pacing frequency</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="modules.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">mps</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="mps.scripts.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mps.scripts package</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Simula Research Laboratory<br/>
+  
+      &copy; Copyright 2022, Simula Research Laboratory.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>

@@ -1,0 +1,858 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mps.utils &#8212; cardiac-mps  documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="../../_static/logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">cardiac-mps  documentation</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../install.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../demo.html">
+   Demo
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../mps_analyze.html">
+     Command line interface -
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       mps-analyze
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../mps_summary.html">
+     Command line interface -
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       mps-summary
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../binary_executables.html">
+     Binary executables
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../CONTRIBUTING.html">
+   Contributing
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../modules.html">
+   mps
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../mps.html">
+     mps package
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../mps.scripts.html">
+       mps.scripts package
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            <a href="https://www.simula.no/research/projects/department-computational-physiology">Computational Physiology at Simula</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/ComputationalPhysiology/mps"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/ComputationalPhysiology/mps/issues/new?title=Issue%20on%20page%20%2F_modules/mps/utils.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1></h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <h1>Source code for mps.utils</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Henrik Finsberg (henriknf@simula.no), 2017--2020&quot;</span>
+<span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">&quot;Henrik Finsberg&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;henriknf@simula.no&quot;</span>
+<span class="n">__license__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">c) 2001-2020 Simula Research Laboratory ALL RIGHTS RESERVED</span>
+
+<span class="s2">END-USER LICENSE AGREEMENT</span>
+<span class="s2">PLEASE READ THIS DOCUMENT CAREFULLY. By installing or using this</span>
+<span class="s2">software you agree with the terms and conditions of this license</span>
+<span class="s2">agreement. If you do not accept the terms of this license agreement</span>
+<span class="s2">you may not install or use this software.</span>
+
+<span class="s2">Permission to use, copy, modify and distribute any part of this</span>
+<span class="s2">software for non-profit educational and research purposes, without</span>
+<span class="s2">fee, and without a written agreement is hereby granted, provided</span>
+<span class="s2">that the above copyright notice, and this license agreement in its</span>
+<span class="s2">entirety appear in all copies. Those desiring to use this software</span>
+<span class="s2">for commercial purposes should contact Simula Research Laboratory AS:</span>
+<span class="s2">post@simula.no</span>
+
+<span class="s2">IN NO EVENT SHALL SIMULA RESEARCH LABORATORY BE LIABLE TO ANY PARTY</span>
+<span class="s2">FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES,</span>
+<span class="s2">INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE</span>
+<span class="s2">&quot;MPS&quot; EVEN IF SIMULA RESEARCH LABORATORY HAS BEEN ADVISED</span>
+<span class="s2">OF THE POSSIBILITY OF SUCH DAMAGE. THE SOFTWARE PROVIDED HEREIN IS</span>
+<span class="s2">ON AN &quot;AS IS&quot; BASIS, AND SIMULA RESEARCH LABORATORY HAS NO OBLIGATION</span>
+<span class="s2">TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.</span>
+<span class="s2">SIMULA RESEARCH LABORATORY MAKES NO REPRESENTATIONS AND EXTENDS NO</span>
+<span class="s2">WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT</span>
+<span class="s2">NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1"># Suppress scipy warning</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.io</span> <span class="k">as</span> <span class="nn">sio</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="n">action</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;^internal gelsd&quot;</span><span class="p">)</span>
+
+<span class="n">grid_settings</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span>
+    <span class="s2">&quot;grid_settings&quot;</span><span class="p">,</span>
+    <span class="p">(</span><span class="s2">&quot;nx, ny, dx, dy, x_start,&quot;</span> <span class="s2">&quot; y_start, x_end, y_end&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_space_step"><a class="viewcode-back" href="../../mps.html#mps.utils.get_space_step">[docs]</a><span class="k">def</span> <span class="nf">get_space_step</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">x_start</span><span class="p">,</span> <span class="n">x_end</span><span class="p">,</span> <span class="n">y_start</span><span class="p">,</span> <span class="n">y_end</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">frames</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;frames&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x_end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">frames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Need to provide x_end or frames&quot;</span><span class="p">)</span>
+        <span class="n">x_end</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">frames</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">y_end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">frames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Need to provide y_end or frames&quot;</span><span class="p">)</span>
+        <span class="n">y_end</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">frames</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">max_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">x_end</span> <span class="o">-</span> <span class="n">x_start</span><span class="p">,</span> <span class="n">y_end</span> <span class="o">-</span> <span class="n">y_start</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_length</span> <span class="o">/</span> <span class="n">N</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="merge_pdfs"><a class="viewcode-back" href="../../mps.html#mps.utils.merge_pdfs">[docs]</a><span class="k">def</span> <span class="nf">merge_pdfs</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">cleanup</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a list of paths to pdfs, merge these together and save</span>
+<span class="sd">    the results in a new file</span>
+
+<span class="sd">    lst : list</span>
+<span class="sd">        List with paths to existing pdfs</span>
+<span class="sd">    fname : str</span>
+<span class="sd">        Name of the output file where you want to save the</span>
+<span class="sd">        merged pdf.</span>
+<span class="sd">    cleanup : bool</span>
+<span class="sd">        If True, delete the files in the list provided.</span>
+<span class="sd">        Default: True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">from</span> <span class="nn">PyPDF2</span> <span class="kn">import</span> <span class="n">PdfFileReader</span><span class="p">,</span> <span class="n">PdfFileWriter</span>
+
+    <span class="n">pdf_writer</span> <span class="o">=</span> <span class="n">PdfFileWriter</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Read </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2"> does not exist&quot;</span>
+        <span class="n">pdf_reader</span> <span class="o">=</span> <span class="n">PdfFileReader</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pdf_reader</span><span class="o">.</span><span class="n">getNumPages</span><span class="p">()):</span>
+            <span class="n">pdf_writer</span><span class="o">.</span><span class="n">addPage</span><span class="p">(</span><span class="n">pdf_reader</span><span class="o">.</span><span class="n">getPage</span><span class="p">(</span><span class="n">page</span><span class="p">))</span>
+
+    <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">:</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">)</span>
+    <span class="n">fname</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+        <span class="n">pdf_writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">cleanup</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Delete </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="get_grid_settings"><a class="viewcode-back" href="../../mps.html#mps.utils.get_grid_settings">[docs]</a><span class="k">def</span> <span class="nf">get_grid_settings</span><span class="p">(</span>
+    <span class="n">N</span><span class="p">,</span> <span class="n">x_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">x_end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y_end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="k">if</span> <span class="n">x_end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">frames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Need to provide x_end or frames&quot;</span><span class="p">)</span>
+        <span class="n">x_end</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">frames</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">y_end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">frames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Need to provide y_end or frames&quot;</span><span class="p">)</span>
+        <span class="n">y_end</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">frames</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">get_space_step</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">x_start</span><span class="p">,</span> <span class="n">x_end</span><span class="p">,</span> <span class="n">y_start</span><span class="p">,</span> <span class="n">y_end</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="n">frames</span><span class="p">)</span>
+
+    <span class="n">nx</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">x_end</span> <span class="o">-</span> <span class="n">x_start</span><span class="p">)</span> <span class="o">/</span> <span class="n">dx</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">ny</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">y_end</span> <span class="o">-</span> <span class="n">y_start</span><span class="p">)</span> <span class="o">/</span> <span class="n">dy</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">grid_settings</span><span class="p">(</span>
+        <span class="n">nx</span><span class="o">=</span><span class="n">nx</span><span class="p">,</span>
+        <span class="n">ny</span><span class="o">=</span><span class="n">ny</span><span class="p">,</span>
+        <span class="n">dx</span><span class="o">=</span><span class="n">dx</span><span class="p">,</span>
+        <span class="n">dy</span><span class="o">=</span><span class="n">dy</span><span class="p">,</span>
+        <span class="n">x_start</span><span class="o">=</span><span class="n">x_start</span><span class="p">,</span>
+        <span class="n">y_start</span><span class="o">=</span><span class="n">y_start</span><span class="p">,</span>
+        <span class="n">x_end</span><span class="o">=</span><span class="n">x_end</span><span class="p">,</span>
+        <span class="n">y_end</span><span class="o">=</span><span class="n">y_end</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="namedtuple2dict"><a class="viewcode-back" href="../../mps.html#mps.utils.namedtuple2dict">[docs]</a><span class="k">def</span> <span class="nf">namedtuple2dict</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">attr</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">attr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">]</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="get_data_from_dict"><a class="viewcode-back" href="../../mps.html#mps.utils.get_data_from_dict">[docs]</a><span class="k">def</span> <span class="nf">get_data_from_dict</span><span class="p">(</span><span class="n">set_data</span><span class="p">,</span> <span class="n">set_key</span><span class="p">,</span> <span class="n">get_data</span><span class="p">,</span> <span class="n">get_key</span><span class="p">,</span> <span class="n">get_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Copy data from one dictionary to another&quot;&quot;&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">set_data</span><span class="p">[</span><span class="n">set_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_data</span><span class="p">[</span><span class="n">get_key</span><span class="p">]</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Could not found key </span><span class="si">{}</span><span class="s2"> in </span><span class="si">{}</span><span class="s2"> data&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">get_key</span><span class="p">,</span> <span class="n">get_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="n">msg</span></div>
+
+
+<div class="viewcode-block" id="find_num_beats"><a class="viewcode-back" href="../../mps.html#mps.utils.find_num_beats">[docs]</a><span class="k">def</span> <span class="nf">find_num_beats</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;trace_</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;chopped_data&quot;</span><span class="p">]:</span>
+            <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">n</span></div>
+
+
+<div class="viewcode-block" id="collect_data"><a class="viewcode-back" href="../../mps.html#mps.utils.collect_data">[docs]</a><span class="k">def</span> <span class="nf">collect_data</span><span class="p">(</span><span class="n">voltage_data</span><span class="p">,</span> <span class="n">calcium_data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Collect voltage and calcium data togther so that it can be used</span>
+<span class="sd">    in the inversion.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="s2">&quot;pacing&quot;</span> <span class="ow">in</span> <span class="n">voltage_data</span><span class="p">[</span><span class="s2">&quot;unchopped_data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="ow">and</span> <span class="s2">&quot;pacing&quot;</span> <span class="ow">in</span> <span class="n">calcium_data</span><span class="p">[</span><span class="s2">&quot;unchopped_data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="p">):</span>
+
+        <span class="n">synch_data</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">synch_data</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Keys for the features</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;apd30&quot;</span><span class="p">,</span> <span class="s2">&quot;apd50&quot;</span><span class="p">,</span> <span class="s2">&quot;apd80&quot;</span><span class="p">,</span> <span class="s2">&quot;dFdt_max&quot;</span><span class="p">,</span> <span class="s2">&quot;int30&quot;</span><span class="p">]</span>
+    <span class="n">voltage_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;APD_V_30&quot;</span><span class="p">,</span> <span class="s2">&quot;APD_V_50&quot;</span><span class="p">,</span> <span class="s2">&quot;APD_V_80&quot;</span><span class="p">,</span> <span class="s2">&quot;dVdt_max&quot;</span><span class="p">,</span> <span class="s2">&quot;int30V&quot;</span><span class="p">]</span>
+    <span class="n">calcium_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;APD_Ca_30&quot;</span><span class="p">,</span> <span class="s2">&quot;APD_Ca_50&quot;</span><span class="p">,</span> <span class="s2">&quot;APD_Ca_80&quot;</span><span class="p">,</span> <span class="s2">&quot;dCadt_max&quot;</span><span class="p">,</span> <span class="s2">&quot;int30Ca&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">synch_data</span><span class="p">:</span>
+        <span class="c1"># First we check that the pacing info is the same</span>
+        <span class="c1"># for voltage and calcium</span>
+
+        <span class="n">pacing_voltage</span> <span class="o">=</span> <span class="n">voltage_data</span><span class="p">[</span><span class="s2">&quot;chopped_data&quot;</span><span class="p">][</span><span class="s2">&quot;pacing_1std&quot;</span><span class="p">]</span>
+        <span class="n">pacing_calcium</span> <span class="o">=</span> <span class="n">calcium_data</span><span class="p">[</span><span class="s2">&quot;chopped_data&quot;</span><span class="p">][</span><span class="s2">&quot;pacing_1std&quot;</span><span class="p">]</span>
+
+        <span class="n">min_len</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pacing_calcium</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">pacing_voltage</span><span class="p">))</span>
+        <span class="n">pacing_calcium</span> <span class="o">=</span> <span class="n">pacing_calcium</span><span class="p">[</span><span class="o">-</span><span class="n">min_len</span><span class="p">:]</span>
+        <span class="n">pacing_voltage</span> <span class="o">=</span> <span class="n">pacing_voltage</span><span class="p">[</span><span class="o">-</span><span class="n">min_len</span><span class="p">:]</span>
+        <span class="c1"># Check that the pacing traces are alinged</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pacing_voltage</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pacing_calcium</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Pacing traces are not aligned.&quot;</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;pacing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">voltage_data</span><span class="p">[</span><span class="s2">&quot;chopped_data&quot;</span><span class="p">][</span><span class="s2">&quot;time_1std&quot;</span><span class="p">]))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;pacing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pacing_voltage</span>
+
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;attributes_V&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">voltage_data</span><span class="p">[</span><span class="s2">&quot;attributes&quot;</span><span class="p">]</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;attributes_Ca&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calcium_data</span><span class="p">[</span><span class="s2">&quot;attributes&quot;</span><span class="p">]</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;chopping_parameters_V&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">voltage_data</span><span class="p">[</span><span class="s2">&quot;chopping_parameters&quot;</span><span class="p">]</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;chopping_parameters_Ca&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calcium_data</span><span class="p">[</span><span class="s2">&quot;chopping_parameters&quot;</span><span class="p">]</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;t_V&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">voltage_data</span><span class="p">[</span><span class="s2">&quot;chopped_data&quot;</span><span class="p">][</span><span class="s2">&quot;time_1std&quot;</span><span class="p">]</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;t_Ca&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calcium_data</span><span class="p">[</span><span class="s2">&quot;chopped_data&quot;</span><span class="p">][</span><span class="s2">&quot;time_1std&quot;</span><span class="p">]</span>
+
+    <span class="n">n_V</span> <span class="o">=</span> <span class="n">find_num_beats</span><span class="p">(</span><span class="n">voltage_data</span><span class="p">)</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;chopped_data_V&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">chopped_data</span><span class="o">=</span><span class="p">[</span><span class="n">voltage_data</span><span class="p">[</span><span class="s2">&quot;chopped_data&quot;</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;trace_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_V</span><span class="p">)],</span>
+        <span class="n">chopped_times</span><span class="o">=</span><span class="p">[</span><span class="n">voltage_data</span><span class="p">[</span><span class="s2">&quot;chopped_data&quot;</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;time_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_V</span><span class="p">)],</span>
+    <span class="p">)</span>
+    <span class="n">n_Ca</span> <span class="o">=</span> <span class="n">find_num_beats</span><span class="p">(</span><span class="n">calcium_data</span><span class="p">)</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;chopped_data_Ca&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">chopped_data</span><span class="o">=</span><span class="p">[</span><span class="n">calcium_data</span><span class="p">[</span><span class="s2">&quot;chopped_data&quot;</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;trace_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_Ca</span><span class="p">)],</span>
+        <span class="n">chopped_times</span><span class="o">=</span><span class="p">[</span><span class="n">calcium_data</span><span class="p">[</span><span class="s2">&quot;chopped_data&quot;</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;time_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_Ca</span><span class="p">)],</span>
+    <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">voltage_data</span><span class="p">[</span><span class="s2">&quot;chopped_data&quot;</span><span class="p">][</span><span class="s2">&quot;trace_1std&quot;</span><span class="p">]</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Ca&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calcium_data</span><span class="p">[</span><span class="s2">&quot;chopped_data&quot;</span><span class="p">][</span><span class="s2">&quot;trace_1std&quot;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="c1"># Make backwards compatible</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">voltage_data</span><span class="p">[</span><span class="s2">&quot;chopped_data&quot;</span><span class="p">][</span><span class="s2">&quot;avg_1std&quot;</span><span class="p">]</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Ca&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calcium_data</span><span class="p">[</span><span class="s2">&quot;chopped_data&quot;</span><span class="p">][</span><span class="s2">&quot;avg_1std&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Collect features</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Collect features&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ck</span><span class="p">,</span> <span class="n">vk</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">calcium_keys</span><span class="p">,</span> <span class="n">voltage_keys</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Key </span><span class="si">{}</span><span class="s2"> - Voltage: </span><span class="si">{}</span><span class="s2">, Calcium: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">vk</span><span class="p">,</span> <span class="n">ck</span><span class="p">))</span>
+        <span class="c1"># Voltage</span>
+        <span class="n">exit_code</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">get_data_from_dict</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span>
+            <span class="n">vk</span><span class="p">,</span>
+            <span class="n">voltage_data</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">],</span>
+            <span class="n">k</span><span class="p">,</span>
+            <span class="s2">&quot;voltage&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">exit_code</span><span class="p">:</span>
+            <span class="c1"># Backward compatible</span>
+            <span class="n">exit_code</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_data_from_dict</span><span class="p">(</span>
+                <span class="n">data</span><span class="p">,</span>
+                <span class="n">vk</span><span class="p">,</span>
+                <span class="n">voltage_data</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">],</span>
+                <span class="n">k</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
+                <span class="s2">&quot;voltage&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">exit_code</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="c1"># Calcium</span>
+        <span class="n">exit_code</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">get_data_from_dict</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span>
+            <span class="n">ck</span><span class="p">,</span>
+            <span class="n">calcium_data</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">],</span>
+            <span class="n">k</span><span class="p">,</span>
+            <span class="s2">&quot;calcium&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">exit_code</span><span class="p">:</span>
+            <span class="c1"># Backward compatible</span>
+            <span class="n">exit_code</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_data_from_dict</span><span class="p">(</span>
+                <span class="n">data</span><span class="p">,</span>
+                <span class="n">ck</span><span class="p">,</span>
+                <span class="n">calcium_data</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">],</span>
+                <span class="n">k</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
+                <span class="s2">&quot;calcium&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">exit_code</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="to_csv"><a class="viewcode-back" href="../../mps.html#mps.utils.to_csv">[docs]</a><span class="k">def</span> <span class="nf">to_csv</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    FIXME</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+    <span class="kn">import</span> <span class="nn">csv</span>
+
+    <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.csv&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="s2">&quot;excel&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">header</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">w</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">w</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Saved to </span><span class="si">{}</span><span class="s2">.csv&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="json_serial"><a class="viewcode-back" href="../../mps.html#mps.utils.json_serial">[docs]</a><span class="k">def</span> <span class="nf">json_serial</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;JSON serializer for objects not serializable by default json code&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Type </span><span class="si">%s</span><span class="s2"> not serializable&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="to_txt"><a class="viewcode-back" href="../../mps.html#mps.utils.to_txt">[docs]</a><span class="k">def</span> <span class="nf">to_txt</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">header_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%10.6g</span><span class="s2">&quot;</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">header_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">delimiter</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[(</span><span class="s2">&quot;{:&gt;&quot;</span> <span class="o">+</span> <span class="n">fmt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;s}&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">header_list</span><span class="p">],</span>
+        <span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dump_data"><a class="viewcode-back" href="../../mps.html#mps.utils.dump_data">[docs]</a><span class="k">def</span> <span class="nf">dump_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">fileformat</span><span class="o">=</span><span class="s2">&quot;npy&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dump data to a file with given file format</span>
+
+<span class="sd">    Arguments</span>
+<span class="sd">    ---------</span>
+<span class="sd">    data : dict or array</span>
+<span class="sd">        The data you want to dum</span>
+<span class="sd">    path : str</span>
+<span class="sd">        Path to the data (without extension)</span>
+<span class="sd">    fileformat : str</span>
+<span class="sd">        File format. Either &#39;npy&#39;, &#39;yml&#39;, &#39;csv&#39; or &#39;mat&#39;.</span>
+<span class="sd">        Deafult: &#39;npy&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">err</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">fileformat</span> <span class="o">==</span> <span class="s2">&quot;mat&quot;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">savemat</span>
+
+        <span class="n">savemat</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">fileformat</span> <span class="o">==</span> <span class="s2">&quot;npy&quot;</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">fileformat</span> <span class="o">==</span> <span class="s2">&quot;csv&quot;</span><span class="p">:</span>
+
+        <span class="kn">import</span> <span class="nn">csv</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+                <span class="n">w</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+
+                <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                        <span class="k">for</span> <span class="n">k1</span><span class="p">,</span> <span class="n">v1</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                            <span class="n">write</span><span class="p">(</span><span class="n">k1</span><span class="p">,</span> <span class="n">v1</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                        <span class="n">w</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="n">k</span><span class="p">])</span>
+                        <span class="n">w</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                            <span class="n">w</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="n">k</span><span class="p">])</span>
+                            <span class="n">w</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">w</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">w</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">])</span>
+
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">write</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;I/O error: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exc</span><span class="p">))</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unknown fileformat </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fileformat</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Data dumped to </span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">fileformat</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="get_intersection"><a class="viewcode-back" href="../../mps.html#mps.utils.get_intersection">[docs]</a><span class="k">def</span> <span class="nf">get_intersection</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get intersection of all values in</span>
+<span class="sd">    a dictionary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="o">*</span><span class="nb">list</span><span class="p">(</span><span class="n">vals</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">vals</span></div>
+
+
+<div class="viewcode-block" id="normalize_frames"><a class="viewcode-back" href="../../mps.html#mps.utils.normalize_frames">[docs]</a><span class="k">def</span> <span class="nf">normalize_frames</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">max_val</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">min_val</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">):</span>
+    <span class="n">x_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="p">((</span><span class="n">X</span> <span class="o">-</span> <span class="n">x_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">-</span> <span class="n">x_min</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">max_val</span> <span class="o">-</span> <span class="n">min_val</span><span class="p">)</span> <span class="o">+</span> <span class="n">min_val</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="padding"><a class="viewcode-back" href="../../mps.html#mps.utils.padding">[docs]</a><span class="k">def</span> <span class="nf">padding</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make sure all traces are of the same lenght and</span>
+<span class="sd">    fill in extra values if neccessary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+    <span class="n">padded_data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">padded_data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">v</span><span class="p">,</span> <span class="n">fill_value</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">))))</span>
+
+    <span class="k">return</span> <span class="n">padded_data</span></div>
+
+
+<div class="viewcode-block" id="frames2mp4"><a class="viewcode-back" href="../../mps.html#mps.utils.frames2mp4">[docs]</a><span class="k">def</span> <span class="nf">frames2mp4</span><span class="p">(</span><span class="n">frames</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">framerate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">imageio</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s1">&#39;&quot;imageio&quot; not found. Please install imageio in order to&#39;</span>
+            <span class="s1">&#39;save frames to mp4 file: &quot;pip install imageio&quot;&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">framerate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Assume one second in total</span>
+            <span class="n">framerate</span> <span class="o">=</span> <span class="n">frames</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">mp4path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.mp4&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">path</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">imageio</span><span class="o">.</span><span class="n">mimwrite</span><span class="p">(</span><span class="n">mp4path</span><span class="p">,</span> <span class="n">normalize_frames</span><span class="p">(</span><span class="n">frames</span><span class="p">),</span> <span class="n">fps</span><span class="o">=</span><span class="n">framerate</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+            <span class="n">imageio</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">ffmpeg</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
+            <span class="n">imageio</span><span class="o">.</span><span class="n">mimwrite</span><span class="p">(</span><span class="n">mp4path</span><span class="p">,</span> <span class="n">normalize_frames</span><span class="p">(</span><span class="n">frames</span><span class="p">),</span> <span class="n">fps</span><span class="o">=</span><span class="n">framerate</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Video saved to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mp4path</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="loadmat"><a class="viewcode-back" href="../../mps.html#mps.utils.loadmat">[docs]</a><span class="k">def</span> <span class="nf">loadmat</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Short summary.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : type</span>
+<span class="sd">        Description of parameter `filename`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    type</span>
+<span class="sd">        Description of returned object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    this function should be called instead of direct sio.loadmat</span>
+<span class="sd">    as it cures the problem of not properly recovering python dictionaries</span>
+<span class="sd">    from mat files. It calls the function check keys to cure all entries</span>
+<span class="sd">    which are still mat-objects</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_check_keys</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        checks if entries in dictionary are mat-objects. If yes</span>
+<span class="sd">        todict is called to change them to nested dictionaries</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">sio</span><span class="o">.</span><span class="n">matlab</span><span class="o">.</span><span class="n">mio5_params</span><span class="o">.</span><span class="n">mat_struct</span><span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_todict</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">d</span>
+
+    <span class="k">def</span> <span class="nf">_todict</span><span class="p">(</span><span class="n">matobj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A recursive function which constructs from matobjects nested dictionaries</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">strg</span> <span class="ow">in</span> <span class="n">matobj</span><span class="o">.</span><span class="n">_fieldnames</span><span class="p">:</span>
+            <span class="n">elem</span> <span class="o">=</span> <span class="n">matobj</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">strg</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">sio</span><span class="o">.</span><span class="n">matlab</span><span class="o">.</span><span class="n">mio5_params</span><span class="o">.</span><span class="n">mat_struct</span><span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">strg</span><span class="p">]</span> <span class="o">=</span> <span class="n">_todict</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">strg</span><span class="p">]</span> <span class="o">=</span> <span class="n">_tolist</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">strg</span><span class="p">]</span> <span class="o">=</span> <span class="n">elem</span>
+        <span class="k">return</span> <span class="n">d</span>
+
+    <span class="k">def</span> <span class="nf">_tolist</span><span class="p">(</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A recursive function which constructs lists from cellarrays</span>
+<span class="sd">        (which are loaded as numpy ndarrays), recursing into the elements</span>
+<span class="sd">        if they contain matobjects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">elem_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">sub_elem</span> <span class="ow">in</span> <span class="n">ndarray</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sub_elem</span><span class="p">,</span> <span class="n">sio</span><span class="o">.</span><span class="n">matlab</span><span class="o">.</span><span class="n">mio5_params</span><span class="o">.</span><span class="n">mat_struct</span><span class="p">):</span>
+                <span class="n">elem_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_todict</span><span class="p">(</span><span class="n">sub_elem</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sub_elem</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="n">elem_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_tolist</span><span class="p">(</span><span class="n">sub_elem</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">elem_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sub_elem</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">elem_list</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">sio</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">struct_as_record</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">squeeze_me</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_check_keys</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+</pre></div>
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Simula Research Laboratory<br/>
+  
+      &copy; Copyright 2022, Simula Research Laboratory.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>

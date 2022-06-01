@@ -1,0 +1,974 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mps.load &#8212; cardiac-mps  documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="../../_static/logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">cardiac-mps  documentation</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../install.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../demo.html">
+   Demo
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../mps_analyze.html">
+     Command line interface -
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       mps-analyze
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../mps_summary.html">
+     Command line interface -
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       mps-summary
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../binary_executables.html">
+     Binary executables
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../CONTRIBUTING.html">
+   Contributing
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../modules.html">
+   mps
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../mps.html">
+     mps package
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../mps.scripts.html">
+       mps.scripts package
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            <a href="https://www.simula.no/research/projects/department-computational-physiology">Computational Physiology at Simula</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/ComputationalPhysiology/mps"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/ComputationalPhysiology/mps/issues/new?title=Issue%20on%20page%20%2F_modules/mps/load.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1></h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <h1>Source code for mps.load</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Henrik Finsberg (henriknf@simula.no), 2017--2019&quot;</span>
+<span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">&quot;Henrik Finsberg&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;henriknf@simula.no&quot;</span>
+<span class="n">__license__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">c) 2001-2020 Simula Research Laboratory ALL RIGHTS RESERVED</span>
+
+<span class="s2">END-USER LICENSE AGREEMENT</span>
+<span class="s2">PLEASE READ THIS DOCUMENT CAREFULLY. By installing or using this</span>
+<span class="s2">software you agree with the terms and conditions of this license</span>
+<span class="s2">agreement. If you do not accept the terms of this license agreement</span>
+<span class="s2">you may not install or use this software.</span>
+
+<span class="s2">Permission to use, copy, modify and distribute any part of this</span>
+<span class="s2">software for non-profit educational and research purposes, without</span>
+<span class="s2">fee, and without a written agreement is hereby granted, provided</span>
+<span class="s2">that the above copyright notice, and this license agreement in its</span>
+<span class="s2">entirety appear in all copies. Those desiring to use this software</span>
+<span class="s2">for commercial purposes should contact Simula Research Laboratory AS:</span>
+<span class="s2">post@simula.no</span>
+
+<span class="s2">IN NO EVENT SHALL SIMULA RESEARCH LABORATORY BE LIABLE TO ANY PARTY</span>
+<span class="s2">FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES,</span>
+<span class="s2">INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE</span>
+<span class="s2">&quot;MPS&quot; EVEN IF SIMULA RESEARCH LABORATORY HAS BEEN ADVISED</span>
+<span class="s2">OF THE POSSIBILITY OF SUCH DAMAGE. THE SOFTWARE PROVIDED HEREIN IS</span>
+<span class="s2">ON AN &quot;AS IS&quot; BASIS, AND SIMULA RESEARCH LABORATORY HAS NO OBLIGATION</span>
+<span class="s2">TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.</span>
+<span class="s2">SIMULA RESEARCH LABORATORY MAKES NO REPRESENTATIONS AND EXTENDS NO</span>
+<span class="s2">WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT</span>
+<span class="s2">NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS</span>
+<span class="s2">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">ThreadPoolExecutor</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">import</span> <span class="nn">ap_features</span> <span class="k">as</span> <span class="nn">apf</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">czifile</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">.nd2file</span> <span class="kn">import</span> <span class="n">ND2File</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">tifffile</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">has_tifffile</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">has_tifffile</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">valid_extensions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;.nd2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;.czi&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;.tif&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;.tiff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;.stk&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;.avi&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;.mp4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;.mpeg&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;.mov&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="MPSData"><a class="viewcode-back" href="../../mps.html#mps.load.MPSData">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">MPSData</span><span class="p">:</span>
+    <span class="n">frames</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">time_stamps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="n">pacing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pacing</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pacing</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="info_dictionary"><a class="viewcode-back" href="../../mps.html#mps.load.info_dictionary">[docs]</a><span class="k">def</span> <span class="nf">info_dictionary</span><span class="p">(</span><span class="n">time_stamps</span><span class="p">):</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">time_stamps</span><span class="p">))</span>
+    <span class="n">time_unit</span> <span class="o">=</span> <span class="n">apf</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">time_unit</span><span class="p">(</span><span class="n">time_stamps</span><span class="p">)</span>
+
+    <span class="n">info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">num_frames</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">time_stamps</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">time_unit</span><span class="o">=</span><span class="n">time_unit</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">info</span></div>
+
+
+<div class="viewcode-block" id="get_single_frame"><a class="viewcode-back" href="../../mps.html#mps.load.get_single_frame">[docs]</a><span class="k">def</span> <span class="nf">get_single_frame</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get a single frame from a czi or nd2 file.</span>
+
+<span class="sd">    Arguments</span>
+<span class="sd">    ---------</span>
+<span class="sd">    path : str</span>
+<span class="sd">        Path to the file</span>
+<span class="sd">    index : int</span>
+<span class="sd">        The index of the frame (Default: 0)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    frame : numpy.ndarray</span>
+<span class="sd">        The frame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">path</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.nd2&quot;</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">ND2File</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">frames</span><span class="p">:</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">frames</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+
+    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.czi&quot;</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">czifile</span><span class="o">.</span><span class="n">CziFile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+            <span class="n">frames</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">asarray</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">frames</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">index</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.tif&quot;</span><span class="p">,</span> <span class="s2">&quot;.stk&quot;</span><span class="p">,</span> <span class="s2">&quot;.tiff&quot;</span><span class="p">]:</span>
+        <span class="k">with</span> <span class="n">tifffile</span><span class="o">.</span><span class="n">TiffFile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">frames</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">asarray</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">frames</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unkown extension </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">frame</span></div>
+
+
+<div class="viewcode-block" id="load_nd2"><a class="viewcode-back" href="../../mps.html#mps.load.load_nd2">[docs]</a><span class="k">def</span> <span class="nf">load_nd2</span><span class="p">(</span><span class="n">fname</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MPSData</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load ND2 file (Nikon image file)</span>
+
+<span class="sd">    Arguments</span>
+<span class="sd">    ---------</span>
+<span class="sd">    nd2file : str</span>
+<span class="sd">        Path to the file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    I : array</span>
+<span class="sd">        The images</span>
+<span class="sd">    attributes : dict</span>
+<span class="sd">        Dictionary with metadata</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Load nd2 file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
+    <span class="n">max_workers</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">ND2File</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">as</span> <span class="n">frames</span><span class="p">:</span>
+
+        <span class="n">num_frames</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">frames</span><span class="o">.</span><span class="n">imagecount</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">frames</span><span class="o">.</span><span class="n">metadata</span>
+        <span class="n">images</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">frames</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">frames</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">num_frames</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span>
+        <span class="n">time_stamps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_frames</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+            <span class="c1"># print(t)</span>
+            <span class="n">images</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">frames</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+            <span class="n">time_stamps</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">frames</span><span class="o">.</span><span class="n">get_time</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+            <span class="n">executor</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_frames</span><span class="p">))</span>
+
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loaded </span><span class="si">{}</span><span class="s2"> frames in </span><span class="si">{}</span><span class="s2"> seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">num_frames</span><span class="p">,</span> <span class="n">t1</span> <span class="o">-</span> <span class="n">t0</span><span class="p">))</span>
+    <span class="c1"># Let time start at zero</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">time_stamps</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="c1"># Then there is something wrong with the file</span>
+        <span class="c1"># Assume standard framrate</span>
+        <span class="k">if</span> <span class="s2">&quot;BF&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>  <span class="c1"># BrightField</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="mf">25.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="mf">10.0</span>
+        <span class="n">time_stamps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">num_frames</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+
+    <span class="n">time_stamps</span> <span class="o">-=</span> <span class="n">time_stamps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Make sure time is in milliseconds</span>
+    <span class="n">time_unit</span> <span class="o">=</span> <span class="n">apf</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">time_unit</span><span class="p">(</span><span class="n">time_stamps</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">time_unit</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+        <span class="n">time_stamps</span> <span class="o">*=</span> <span class="mi">1000</span>
+
+    <span class="n">info</span> <span class="o">=</span> <span class="n">info_dictionary</span><span class="p">(</span><span class="n">time_stamps</span><span class="p">)</span>
+    <span class="n">info</span><span class="p">[</span><span class="s2">&quot;um_per_pixel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;ImageMetadataSeqLV|0&quot;</span><span class="p">][</span><span class="s2">&quot;SLxPictureMetadata&quot;</span><span class="p">][</span>
+        <span class="s2">&quot;dCalibration&quot;</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;um_per_pixel&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="c1"># We need to get this info in another way</span>
+
+        <span class="c1"># This is not correct</span>
+        <span class="n">dic</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;ImageMetadataSeqLV|0&quot;</span><span class="p">][</span><span class="s2">&quot;SLxPictureMetadata&quot;</span><span class="p">][</span><span class="s2">&quot;sPicturePlanes&quot;</span><span class="p">][</span>
+            <span class="s2">&quot;sSampleSetting&quot;</span>
+        <span class="p">][</span><span class="s2">&quot;a0&quot;</span><span class="p">][</span><span class="s2">&quot;pCameraSetting&quot;</span><span class="p">][</span><span class="s2">&quot;FormatQuality&quot;</span><span class="p">][</span><span class="s2">&quot;fmtDesc&quot;</span><span class="p">]</span>
+        <span class="c1"># pixels = [dic[&#39;sizeSensorPixels&#39;][i] for i in [&quot;cx&quot;, &quot;cy&quot;]]</span>
+        <span class="c1"># microns = [dic[&#39;sizeSensorMicrons&#39;][i] for i in [&quot;cx&quot;, &quot;cy&quot;]]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;Could not find calcibration factor to convert &quot;</span>
+                <span class="s2">&quot;from pixels to micrometers. Use 0.325 &quot;</span>
+                <span class="s2">&quot;micrometers per pixel&quot;</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="c1"># Scale with the binning</span>
+        <span class="n">binning</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;dBinningX&quot;</span><span class="p">]</span>
+
+        <span class="c1"># microns_per_pixel = np.divide(microns, pixels)</span>
+        <span class="n">info</span><span class="p">[</span><span class="s2">&quot;um_per_pixel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.325</span> <span class="o">*</span> <span class="n">binning</span>
+
+    <span class="n">info</span><span class="p">[</span><span class="s2">&quot;size_x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">info</span><span class="p">[</span><span class="s2">&quot;size_y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="s2">&quot;CustomData|MyoPacer&quot;</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
+        <span class="n">pacing</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;CustomData|MyoPacer&quot;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="s2">&quot;CustomData|PXI1Slot2/port0/line6&quot;</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
+        <span class="n">pacing</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;CustomData|PXI1Slot2/port0/line6&quot;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pacing</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time_stamps</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">MPSData</span><span class="p">(</span>
+        <span class="n">frames</span><span class="o">=</span><span class="n">images</span><span class="p">,</span>
+        <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span>
+        <span class="n">time_stamps</span><span class="o">=</span><span class="n">time_stamps</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+        <span class="n">pacing</span><span class="o">=</span><span class="n">pacing</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_czi"><a class="viewcode-back" href="../../mps.html#mps.load.load_czi">[docs]</a><span class="k">def</span> <span class="nf">load_czi</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+
+    <span class="k">with</span> <span class="n">czifile</span><span class="o">.</span><span class="n">CziFile</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">images</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">asarray</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">czifile</span><span class="o">.</span><span class="n">elem2dict</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+
+        <span class="n">time_stamps</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">pacing_triggers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">attachment_directory</span><span class="p">:</span>
+
+            <span class="n">d</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">data_segment</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">czifile</span><span class="o">.</span><span class="n">TimeStamps</span><span class="p">):</span>
+                <span class="n">time_stamps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">czifile</span><span class="o">.</span><span class="n">EventList</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">events</span><span class="p">:</span>
+                    <span class="n">pacing_triggers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+
+    <span class="n">time_stamps</span> <span class="o">-=</span> <span class="n">time_stamps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Make sure time is in milliseconds</span>
+    <span class="n">time_unit</span> <span class="o">=</span> <span class="n">apf</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">time_unit</span><span class="p">(</span><span class="n">time_stamps</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">time_unit</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+        <span class="n">time_stamps</span> <span class="o">*=</span> <span class="mi">1000</span>
+
+    <span class="n">info</span> <span class="o">=</span> <span class="n">info_dictionary</span><span class="p">(</span><span class="n">time_stamps</span><span class="p">)</span>
+    <span class="n">info</span><span class="p">[</span><span class="s2">&quot;um_per_pixel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">float</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;Metadata&quot;</span><span class="p">][</span><span class="s2">&quot;Scaling&quot;</span><span class="p">][</span><span class="s2">&quot;Items&quot;</span><span class="p">][</span><span class="s2">&quot;Distance&quot;</span><span class="p">][</span><span class="s2">&quot;Value&quot;</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1e6</span>
+    <span class="p">)</span>
+    <span class="n">info</span><span class="p">[</span><span class="s2">&quot;size_x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">info</span><span class="p">[</span><span class="s2">&quot;size_y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">MPSData</span><span class="p">(</span>
+        <span class="n">frames</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">time_stamps</span><span class="o">=</span><span class="n">time_stamps</span><span class="p">,</span>
+        <span class="n">pacing</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time_stamps</span><span class="p">)),</span>
+        <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_zip"><a class="viewcode-back" href="../../mps.html#mps.load.load_zip">[docs]</a><span class="k">def</span> <span class="nf">load_zip</span><span class="p">(</span><span class="n">fname</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MPSData</span><span class="p">:</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">xmltodict</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Please install xmltodict - pip install xmltodict&quot;</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+        <span class="n">metaname</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">namelist</span><span class="p">()</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;meta.xml&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">with</span> <span class="n">f</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">metaname</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="n">xmltodict</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">fid</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;OME&quot;</span><span class="p">][</span><span class="s2">&quot;Image&quot;</span><span class="p">][</span><span class="s2">&quot;Pixels&quot;</span><span class="p">][</span><span class="s2">&quot;@Type&quot;</span><span class="p">])</span>
+        <span class="n">size_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;OME&quot;</span><span class="p">][</span><span class="s2">&quot;Image&quot;</span><span class="p">][</span><span class="s2">&quot;Pixels&quot;</span><span class="p">][</span><span class="s2">&quot;@SizeX&quot;</span><span class="p">])</span>
+        <span class="n">size_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;OME&quot;</span><span class="p">][</span><span class="s2">&quot;Image&quot;</span><span class="p">][</span><span class="s2">&quot;Pixels&quot;</span><span class="p">][</span><span class="s2">&quot;@SizeY&quot;</span><span class="p">])</span>
+
+        <span class="n">time_stamps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;@DeltaT&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;OME&quot;</span><span class="p">][</span><span class="s2">&quot;Image&quot;</span><span class="p">][</span><span class="s2">&quot;Pixels&quot;</span><span class="p">][</span><span class="s2">&quot;Plane&quot;</span><span class="p">]],</span>
+        <span class="p">)</span>
+        <span class="c1"># Normalize so that they start at zero</span>
+        <span class="n">time_stamps</span> <span class="o">-=</span> <span class="n">time_stamps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">info_dictionary</span><span class="p">(</span><span class="n">time_stamps</span><span class="p">)</span>
+
+        <span class="n">info</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="o">**</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">size_x</span><span class="o">=</span><span class="n">size_x</span><span class="p">,</span>
+                <span class="n">size_y</span><span class="o">=</span><span class="n">size_y</span><span class="p">,</span>
+                <span class="n">um_per_pixel</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span>
+                    <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;OME&quot;</span><span class="p">][</span><span class="s2">&quot;Image&quot;</span><span class="p">][</span><span class="s2">&quot;Pixels&quot;</span><span class="p">][</span><span class="s2">&quot;@PhysicalSizeY&quot;</span><span class="p">],</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">frames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">size_x</span><span class="p">,</span> <span class="n">size_y</span><span class="p">,</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;num_frames&quot;</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">namelist</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">filename</span> <span class="o">==</span> <span class="n">metaname</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">filename</span><span class="p">))</span>
+            <span class="k">except</span> <span class="n">io</span><span class="o">.</span><span class="n">UnsupportedOperation</span><span class="p">:</span>
+                <span class="n">full_path</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
+
+            <span class="n">frames</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="k">return</span> <span class="n">MPSData</span><span class="p">(</span>
+            <span class="n">frames</span><span class="o">=</span><span class="n">frames</span><span class="p">,</span>
+            <span class="n">time_stamps</span><span class="o">=</span><span class="n">time_stamps</span><span class="p">,</span>
+            <span class="n">pacing</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time_stamps</span><span class="p">)),</span>
+            <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_stk"><a class="viewcode-back" href="../../mps.html#mps.load.load_stk">[docs]</a><span class="k">def</span> <span class="nf">load_stk</span><span class="p">(</span><span class="n">fname</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MPSData</span><span class="p">:</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_tifffile</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;tifffile is not installed. Please install &quot;</span>
+                <span class="s2">&quot;that if you want to load stk files. python -m&quot;</span>
+                <span class="s2">&quot; pip install tiffile&quot;</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">tifffile</span><span class="o">.</span><span class="n">TiffFile</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">stk_metadata</span>
+        <span class="n">frames</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">asarray</span><span class="p">()</span>
+
+    <span class="n">time_stamps</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;TimeCreated&quot;</span><span class="p">]</span>
+    <span class="n">time_stamps</span> <span class="o">-=</span> <span class="n">time_stamps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">info</span> <span class="o">=</span> <span class="n">info_dictionary</span><span class="p">(</span><span class="n">time_stamps</span><span class="p">)</span>
+
+    <span class="n">info</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+        <span class="o">**</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">size_x</span><span class="o">=</span><span class="n">frames</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;XCalibration&quot;</span><span class="p">],</span>
+            <span class="n">size_y</span><span class="o">=</span><span class="n">frames</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;YCalibration&quot;</span><span class="p">],</span>
+            <span class="n">um_per_pixel</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span>
+                <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;YCalibration&quot;</span><span class="p">],</span>  <span class="c1"># Different in x- and y direction</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">MPSData</span><span class="p">(</span>
+        <span class="n">frames</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">frames</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">time_stamps</span><span class="o">=</span><span class="n">time_stamps</span><span class="p">,</span>
+        <span class="n">pacing</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time_stamps</span><span class="p">)),</span>
+        <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_movie"><a class="viewcode-back" href="../../mps.html#mps.load.load_movie">[docs]</a><span class="k">def</span> <span class="nf">load_movie</span><span class="p">(</span><span class="n">fname</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MPSData</span><span class="p">:</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">imageio</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+            <span class="p">(</span><span class="s2">&quot;Cannot load movie file. &quot;</span><span class="p">),</span>
+            <span class="s2">&quot;Please install imageio - pip install imageio&quot;</span><span class="p">,</span>
+        <span class="p">)</span> <span class="kn">from</span> <span class="nn">ex</span>
+
+    <span class="n">reader</span> <span class="o">=</span> <span class="n">imageio</span><span class="o">.</span><span class="n">get_reader</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">get_meta_data</span><span class="p">()</span>
+    <span class="n">num_frames</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">count_frames</span><span class="p">()</span>
+    <span class="n">fps</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">get_meta_data</span><span class="p">()[</span><span class="s2">&quot;fps&quot;</span><span class="p">]</span>
+    <span class="c1"># Duration in milliseconds</span>
+    <span class="n">duration</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">num_frames</span> <span class="o">/</span> <span class="n">fps</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">/</span> <span class="n">fps</span>
+    <span class="n">time_stamps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">reader</span><span class="o">.</span><span class="n">iter_data</span><span class="p">()))</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+    <span class="c1"># Convert to grayscale</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">frames</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="k">if</span> <span class="n">frames</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">num_frames</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">frames</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">frames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">num_frames</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">num_frames</span><span class="o">=</span><span class="n">num_frames</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+        <span class="n">time_unit</span><span class="o">=</span><span class="s2">&quot;ms&quot;</span><span class="p">,</span>
+        <span class="n">size_x</span><span class="o">=</span><span class="n">frames</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">size_y</span><span class="o">=</span><span class="n">frames</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">MPSData</span><span class="p">(</span>
+        <span class="n">frames</span><span class="o">=</span><span class="n">frames</span><span class="p">,</span>
+        <span class="n">time_stamps</span><span class="o">=</span><span class="n">time_stamps</span><span class="p">,</span>
+        <span class="n">pacing</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time_stamps</span><span class="p">)),</span>
+        <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="time2isoformat"><a class="viewcode-back" href="../../mps.html#mps.load.time2isoformat">[docs]</a><span class="k">def</span> <span class="nf">time2isoformat</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">datetime</span>
+
+    <span class="n">date</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">date</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">date</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">date</span><span class="p">[</span><span class="mi">6</span><span class="p">:]</span><span class="si">}</span><span class="s2">T</span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_tiff_timestamps"><a class="viewcode-back" href="../../mps.html#mps.load.load_tiff_timestamps">[docs]</a><span class="k">def</span> <span class="nf">load_tiff_timestamps</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">tifffile</span>
+
+    <span class="n">num_pages</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">pages</span><span class="o">.</span><span class="n">pages</span><span class="p">)</span>
+    <span class="n">get_page_timstamp</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">time2isoformat</span><span class="p">(</span>
+        <span class="n">tifffile</span><span class="o">.</span><span class="n">tifffile</span><span class="o">.</span><span class="n">metaseries_description_metadata</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">pages</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">description</span><span class="p">)[</span>
+            <span class="s2">&quot;PlaneInfo&quot;</span>
+        <span class="p">][</span><span class="s2">&quot;acquisition-time-local&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span>
+        <span class="nb">map</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">get_page_timstamp</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">(),</span>
+            <span class="nb">map</span><span class="p">(</span><span class="n">get_page_timstamp</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_pages</span><span class="p">)),</span>
+        <span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_tiff"><a class="viewcode-back" href="../../mps.html#mps.load.load_tiff">[docs]</a><span class="k">def</span> <span class="nf">load_tiff</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_tifffile</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;tifffile is not installed. Please install &quot;</span>
+                <span class="s2">&quot;that if you want to load stk files. python -m&quot;</span>
+                <span class="s2">&quot; pip install tiffile&quot;</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">tifffile</span><span class="o">.</span><span class="n">TiffFile</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">metaseries_metadata</span>
+        <span class="n">frames</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">asarray</span><span class="p">()</span>
+        <span class="n">time_stamps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">load_tiff_timestamps</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="mi">1000</span><span class="p">)</span>
+
+    <span class="n">info</span> <span class="o">=</span> <span class="n">info_dictionary</span><span class="p">(</span><span class="n">time_stamps</span><span class="p">)</span>
+
+    <span class="n">info</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+        <span class="o">**</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">size_x</span><span class="o">=</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;PlaneInfo&quot;</span><span class="p">][</span><span class="s2">&quot;pixel-size-x&quot;</span><span class="p">],</span>
+            <span class="n">size_y</span><span class="o">=</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;PlaneInfo&quot;</span><span class="p">][</span><span class="s2">&quot;pixel-size-y&quot;</span><span class="p">],</span>
+            <span class="n">um_per_pixel</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span>
+                <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;PlaneInfo&quot;</span><span class="p">][</span>
+                    <span class="s2">&quot;spatial-calibration-y&quot;</span>
+                <span class="p">],</span>  <span class="c1"># Different in x- and y direction</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">MPSData</span><span class="p">(</span>
+        <span class="n">frames</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">frames</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">time_stamps</span><span class="o">=</span><span class="n">time_stamps</span><span class="p">,</span>
+        <span class="n">pacing</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time_stamps</span><span class="p">)),</span>
+        <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_file"><a class="viewcode-back" href="../../mps.html#mps.load.load_file">[docs]</a><span class="k">def</span> <span class="nf">load_file</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ext</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.czi&quot;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">load_czi</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.nd2&quot;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">load_nd2</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.zip&quot;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">load_zip</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.stk&quot;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">load_stk</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.tiff&quot;</span><span class="p">,</span> <span class="s2">&quot;.tif&quot;</span><span class="p">]:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">load_tiff</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.npy&quot;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">MPSData</span><span class="p">(</span><span class="o">**</span><span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Try to load with imageio</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">load_movie</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="MPS"><a class="viewcode-back" href="../../mps.html#mps.load.MPS">[docs]</a><span class="k">class</span> <span class="nc">MPS</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create instant of class for analysing MPS data</span>
+
+<span class="sd">    Arguments</span>
+<span class="sd">    --------</span>
+<span class="sd">    fname : str</span>
+<span class="sd">        Path to the file</span>
+<span class="sd">    parameters : dict</span>
+<span class="sd">        Additional parameters, see</span>
+<span class="sd">        `MPS.default_parameters`</span>
+
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="n">loglevel</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span> <span class="k">if</span> <span class="n">verbose</span> <span class="k">else</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">loglevel</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fname</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fname</span> <span class="o">=</span> <span class="s2">&quot;Unknown&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ext</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Check extension</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+        <span class="n">folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
+        <span class="c1"># Find the correct extension</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">f</span><span class="p">)):</span>
+                <span class="n">name_</span><span class="p">,</span> <span class="n">ext_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">name_</span> <span class="o">==</span> <span class="n">fname</span><span class="p">:</span>
+                    <span class="n">ext</span> <span class="o">=</span> <span class="n">ext_</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ext</span> <span class="o">=</span> <span class="n">ext</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">load_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ext</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_unpack</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MPS.from_dict"><a class="viewcode-back" href="../../mps.html#mps.load.MPS.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">required_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;frames&quot;</span><span class="p">,</span> <span class="s2">&quot;time_stamps&quot;</span><span class="p">,</span> <span class="s2">&quot;info&quot;</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">required_fields</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> is not provided&quot;</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">field</span><span class="p">]</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;pacing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pacing&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;time_stamps&quot;</span><span class="p">]))</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_unpack</span><span class="p">(</span><span class="n">MPSData</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Copy the object&#39;s state from self.__dict__ which contains</span>
+        <span class="c1"># all our instance attributes. Always use the dict.copy()</span>
+        <span class="c1"># method to avoid modifying the original state.</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">state</span>
+
+    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">{self.__class__.__name__}</span><span class="s2">&quot;</span> <span class="s2">&quot;(</span><span class="si">{self._fname}</span><span class="s2">)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fname</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">frames</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">info</span>
+
+    <span class="k">def</span> <span class="nf">_unpack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_stamps</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">time_stamps</span>
+
+        <span class="c1"># Set dt, num_frames and time_unit</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">framerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return number of frames per second</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fps</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="mf">1e-3</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;time_unit&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ms&quot;</span> <span class="k">else</span> <span class="mf">1.0</span>
+            <span class="n">time_increment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">factor</span>
+            <span class="n">fps</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">time_increment</span><span class="p">)</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">fps</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pacing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">pacing</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pacing_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the pacing frequency in Hertz</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            The pacing frequency</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">.analysis</span> <span class="kn">import</span> <span class="n">find_pacing_period</span>
+
+        <span class="n">period</span> <span class="o">=</span> <span class="n">find_pacing_period</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pacing</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">period</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="n">factor</span> <span class="o">=</span> <span class="mf">1000.0</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;time_unit&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ms&quot;</span> <span class="k">else</span> <span class="mf">1.0</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">((</span><span class="n">period</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span> <span class="o">/</span> <span class="n">factor</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">metadata</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">original_time_stamps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">time_stamps</span></div>
+</pre></div>
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Simula Research Laboratory<br/>
+  
+      &copy; Copyright 2022, Simula Research Laboratory.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>
