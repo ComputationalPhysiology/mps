@@ -57,7 +57,7 @@ black: ## Run mypy
 	python -m black mps tests
 
 test: ## run tests quickly with the default Python
-	python -m pytest --cov=mps tests
+	python -m pytest
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/source/mps.rst

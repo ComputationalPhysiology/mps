@@ -1,8 +1,0 @@
-ap_features
-imageio
-imageio-ffmpeg
-matplotlib
-numpy
-scipy
-tifffile
-xmltodict

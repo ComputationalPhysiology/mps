@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-]
         python-version: [3.8, 3.9, "3.10"]
 
     steps:
@@ -19,33 +19,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          make dev
+          python3 -m pip install -e ".[test]"
       - name: Run pre-commit hooks
         run: |
           pre-commit run --all
       - name: Test with pytest
         run: |
-          make test
-
-  test-windows:
-    runs-on: windows-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: [3.8, 3.9, "3.10"]
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: |
-          make dev
-      - name: Run pre-commit hooks
-        run: |
-          pre-commit run --all
-      - name: Test with pytest
-        run: |
-          make test
+          python3 -m pytest
