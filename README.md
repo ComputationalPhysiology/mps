@@ -1,4 +1,3 @@
-![CI](https://github.com/finsberg/mps/workflows/CI/badge.svg)
 [![CI](https://github.com/ComputationalPhysiology/mps/actions/workflows/main.yml/badge.svg)](https://github.com/ComputationalPhysiology/mps/actions/workflows/main.yml)
 [![PyPI version](https://badge.fury.io/py/cardiac-mps.svg)](https://badge.fury.io/py/cardiac-mps)
 [![codecov](https://codecov.io/gh/ComputationalPhysiology/mps/branch/master/graph/badge.svg?token=V5DOQ1PUVF)](https://codecov.io/gh/ComputationalPhysiology/mps)
@@ -14,17 +13,12 @@ The analysis scripts are heavily based on [ap_features](https://github.com/Compu
 
 ## Installation
 
-To install the package you can clone the repository and install from source
+To install the package you can simply di
 ```
-cd mps
-python -m pip install "."
+python -m pip install cardiac-mps
 ```
-or install directly from github
-```
-python -m pip install git+https://github.com/finsberg/mps.git
-```
-Developers should install some extra dependencies including a pre-commit hook.
-Execute `make dev` or consult the `dev` target in the [Makefile](Makefile).
+
+For more options see <https://computationalphysiology.github.io/mps/install.html>
 
 ## Usage
 
@@ -34,7 +28,7 @@ Once installed you can use the command line script from the terminal.
 
 In the following demo I have the `mps` packaged installed in a [virtual environment](https://realpython.com/python-virtual-environments-a-primer/) which is first activated. Then it shows how to run the analysis script on a single file.
 
-![_](docs/usage.gif)
+![_](https://github.com/ComputationalPhysiology/mps/blob/master/docs/source/_static/usage.gif)
 
 ### Python API
 The most useful features of this package it to read imaging data which can be done as follow
@@ -57,24 +51,13 @@ trace = apf.Beats(y=y, t=data.time_stamps, pacing=data.pacing)
 
 
 
-
-
-
 ## Documentation
 
-If you run
+https://computationalphysiology.github.io/mps
 
-```
-make docs
-```
+## Contributing
 
-you will generate documentation that can be viewed in the browser.
-Here you should be able to read about how the program is working.
-
-## If you find a bug?
-
-If the scripts behave in an unexpected manner, or you encounter any bugs, please submit this as an issue.
-Click on the issue tab (on the top of this page). Write a descriptive title and paste in the output from your console.
+See <https://computationalphysiology.github.io/mps/CONTRIBUTING.html>
 
 
 ## Contact

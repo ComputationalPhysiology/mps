@@ -3,7 +3,7 @@ name: CI
 on: [push]
 
 jobs:
-  test-unix:
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
