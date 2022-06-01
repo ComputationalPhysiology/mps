@@ -23,7 +23,7 @@ The source code can be found at `<https://github.com/ComputationalPhysiology/mps
 
 License
 -------
-``cardiac-mps`` is licensed under the X.
+``cardiac-mps`` is licensed under the GNU LGPL, version 2.1 or (at your option) any later version.
 ``cardiac-mps`` is Copyright (2011-2022) by the authors and Simula Research Laboratory.
 
 Authors
