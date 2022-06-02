@@ -101,6 +101,11 @@
   </label>
   <ul>
    <li class="toctree-l2">
+    <a class="reference internal" href="../../../python_api.html">
+     Python API
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../../../mps_analyze.html">
      Command line interface -
      <code class="docutils literal notranslate">
@@ -116,6 +121,26 @@
      <code class="docutils literal notranslate">
       <span class="pre">
        mps-summary
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../mps2mp4.html">
+     Command line interface -
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       mps2mp4
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../mps_motion.html">
+     Command line interface -
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       mps-motion
       </span>
      </code>
     </a>
@@ -434,8 +459,8 @@ title="Open an issue"
     <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
         <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Finished analyzing MPS data. Data stored in </span><span class="si">{</span><span class="n">outdir</span><span class="si">}</span><span class="s2">. &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Total elapsed time: </span><span class="si">{</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="si">}</span><span class="s2"> seconds&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Finished analyzing MPS data. Data stored folder &#39;</span><span class="si">{</span><span class="n">outdir</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Total elapsed time: </span><span class="si">{</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span>
         <span class="p">),</span>
     <span class="p">)</span></div>
 

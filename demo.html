@@ -34,7 +34,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Command line interface - mps-analyze" href="mps_analyze.html" />
+    <link rel="next" title="Python API" href="python_api.html" />
     <link rel="prev" title="Installation" href="install.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
@@ -104,6 +104,11 @@
   </label>
   <ul>
    <li class="toctree-l2">
+    <a class="reference internal" href="python_api.html">
+     Python API
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="mps_analyze.html">
      Command line interface -
      <code class="docutils literal notranslate">
@@ -119,6 +124,26 @@
      <code class="docutils literal notranslate">
       <span class="pre">
        mps-summary
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="mps2mp4.html">
+     Command line interface -
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       mps2mp4
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="mps_motion.html">
+     Command line interface -
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       mps-motion
       </span>
      </code>
     </a>
@@ -344,8 +369,8 @@ title="Print to PDF"
     <nav id="bd-toc-nav" aria-label="Page">
         <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#content">
-   Content
+  <a class="reference internal nav-link" href="#command-line-interface-cli">
+   Command line interface (CLI)
   </a>
  </li>
 </ul>
@@ -368,8 +393,8 @@ title="Print to PDF"
                         <nav aria-label="Page">
                             <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#content">
-   Content
+  <a class="reference internal nav-link" href="#command-line-interface-cli">
+   Command line interface (CLI)
   </a>
  </li>
 </ul>
@@ -384,13 +409,30 @@ title="Print to PDF"
                 
   <section id="demo">
 <h1>Demo<a class="headerlink" href="#demo" title="Permalink to this headline">#</a></h1>
-<p>Here you will find a selection of demos</p>
-<section id="content">
-<h2>Content<a class="headerlink" href="#content" title="Permalink to this headline">#</a></h2>
+<p>Here you will find a selection of demos. In the first demo</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="python_api.html">Python API</a></li>
+</ul>
+</div>
+<section id="command-line-interface-cli">
+<h2>Command line interface (CLI)<a class="headerlink" href="#command-line-interface-cli" title="Permalink to this headline">#</a></h2>
+<p>There are several command line scripts available.
+You can list the available commands from the terminal using</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mps
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python3 -m mps
+</pre></div>
+</div>
+<p>Click on the different links below to explore some of the commands in more detail</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="mps_analyze.html">Command line interface - <code class="docutils literal notranslate"><span class="pre">mps-analyze</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="mps_summary.html">Command line interface - <code class="docutils literal notranslate"><span class="pre">mps-summary</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="mps2mp4.html">Command line interface - <code class="docutils literal notranslate"><span class="pre">mps2mp4</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="mps_motion.html">Command line interface - <code class="docutils literal notranslate"><span class="pre">mps-motion</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="binary_executables.html">Pre-built binaries</a></li>
 </ul>
 </div>
@@ -412,10 +454,10 @@ title="Print to PDF"
             <p class="prev-next-title">Installation</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="mps_analyze.html" title="next page">
+    <a class='right-next' id="next-link" href="python_api.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Command line interface - <code class="docutils literal notranslate"><span class="pre">mps-analyze</span></code></p>
+        <p class="prev-next-title">Python API</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

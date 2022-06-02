@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Installation &#8212; cardiac-mps  documentation</title>
+    <title>Python API &#8212; cardiac-mps  documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -34,8 +34,8 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Demo" href="demo.html" />
-    <link rel="prev" title="Cardiac MPS" href="index.html" />
+    <link rel="next" title="Command line interface - mps-analyze" href="mps_analyze.html" />
+    <link rel="prev" title="Demo" href="demo.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -88,23 +88,23 @@
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
         <ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
+ <li class="toctree-l1">
+  <a class="reference internal" href="install.html">
    Installation
   </a>
  </li>
- <li class="toctree-l1 has-children">
+ <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="demo.html">
    Demo
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
   <label for="toctree-checkbox-1">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="python_api.html">
+  <ul class="current">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
      Python API
     </a>
    </li>
@@ -281,7 +281,7 @@ title="Source repository"
       </li>
       
       <li>
-        <a href="https://github.com/ComputationalPhysiology/mps/issues/new?title=Issue%20on%20page%20%2Finstall.html&body=Your%20issue%20content%20here."
+        <a href="https://github.com/ComputationalPhysiology/mps/issues/new?title=Issue%20on%20page%20%2Fpython_api.html&body=Your%20issue%20content%20here."
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -309,7 +309,7 @@ title="Open an issue"
   <div class="menu-dropdown__content">
     <ul>
       <li>
-        <a href="_sources/install.md.txt"
+        <a href="_sources/python_api.md.txt"
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -369,13 +369,23 @@ title="Print to PDF"
     <nav id="bd-toc-nav" aria-label="Page">
         <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#install-from-source">
-   Install from source
+  <a class="reference internal nav-link" href="#reading-a-file">
+   Reading a file
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#development-installation">
-   Development installation
+  <a class="reference internal nav-link" href="#accessing-info-about-the-file">
+   Accessing info about the file
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#imaging-data">
+   Imaging data
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#analyzing-imaging-data">
+   Analyzing imaging data
   </a>
  </li>
 </ul>
@@ -387,7 +397,7 @@ title="Print to PDF"
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Installation</h1>
+                <h1>Python API</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -398,13 +408,23 @@ title="Print to PDF"
                         <nav aria-label="Page">
                             <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#install-from-source">
-   Install from source
+  <a class="reference internal nav-link" href="#reading-a-file">
+   Reading a file
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#development-installation">
-   Development installation
+  <a class="reference internal nav-link" href="#accessing-info-about-the-file">
+   Accessing info about the file
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#imaging-data">
+   Imaging data
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#analyzing-imaging-data">
+   Analyzing imaging data
   </a>
  </li>
 </ul>
@@ -417,36 +437,71 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">#</a></h1>
-<p>You can install <code class="docutils literal notranslate"><span class="pre">cardiac-mps</span></code> with pip</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">cardiac</span><span class="o">-</span><span class="n">mps</span>
+  <section id="python-api">
+<h1>Python API<a class="headerlink" href="#python-api" title="Permalink to this headline">#</a></h1>
+<section id="reading-a-file">
+<h2>Reading a file<a class="headerlink" href="#reading-a-file" title="Permalink to this headline">#</a></h2>
+<p>The most useful features of this package it to read imaging data which can be done as follow</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mps</span>
+<span class="c1"># Object containing the frames, time stamps and metadata</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">mps</span><span class="o">.</span><span class="n">MPS</span><span class="p">(</span><span class="s2">&quot;file.nd2&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<section id="install-from-source">
-<h2>Install from source<a class="headerlink" href="#install-from-source" title="Permalink to this headline">#</a></h2>
-<p>If you want the latest version or you want to develop <code class="docutils literal notranslate"><span class="pre">cardiac-mps</span></code> you can install the code on the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ComputationalPhysiology</span><span class="o">/</span><span class="n">mps</span><span class="o">.</span><span class="n">git</span><span class="nd">@master</span>
+<p>The package supports numerous types of formats including <code class="docutils literal notranslate"><span class="pre">.nd2</span></code>, <code class="docutils literal notranslate"><span class="pre">.czi</span></code> and <code class="docutils literal notranslate"><span class="pre">.tif</span></code>.</p>
+</section>
+<section id="accessing-info-about-the-file">
+<h2>Accessing info about the file<a class="headerlink" href="#accessing-info-about-the-file" title="Permalink to this headline">#</a></h2>
+<p>You can print some general info about the dataset by accessing the <code class="docutils literal notranslate"><span class="pre">.info</span></code> attribute</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
+<span class="go">{&#39;num_frames&#39;: 591, &#39;dt&#39;: 10.007577876721394, &#39;time_unit&#39;: &#39;ms&#39;, &#39;um_per_pixel&#39;: 2.589535590385804, &#39;size_x&#39;: 415, &#39;size_y&#39;: 154}</span>
 </pre></div>
 </div>
-<p>or clone the repository and install it from there</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="nd">@github</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="n">ComputationalPhysiology</span><span class="o">/</span><span class="n">mps</span><span class="o">.</span><span class="n">git</span>
-<span class="n">cd</span> <span class="n">mps</span>
-<span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">.</span>
+<p>Most of fields here are self-explanatory. <code class="docutils literal notranslate"><span class="pre">num_frames</span></code> is the number of frames in the image stack, <code class="docutils literal notranslate"><span class="pre">dt</span></code> is the average time difference between two successive frames, <code class="docutils literal notranslate"><span class="pre">time_unit</span></code> is the unit of time (either <code class="docutils literal notranslate"><span class="pre">'ms'</span></code> or <code class="docutils literal notranslate"><span class="pre">'s'</span></code>), <code class="docutils literal notranslate"><span class="pre">um_per_pixel</span></code> is a factor to convert from pixel unit to micro meters. Finally <code class="docutils literal notranslate"><span class="pre">size_x</span></code> and <code class="docutils literal notranslate"><span class="pre">size_y</span></code> is the number of pixels in the x- and y direction.</p>
+<p>There is also another attribute called <code class="docutils literal notranslate"><span class="pre">.metadata</span></code> that contains all the metadata that is possible to extract from the file</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+
+<span class="go">{&#39;ImageTextInfoLV&#39;: {&#39;SLxImageTextInfo&#39;: {&#39;TextInfoItem_0&#39;: &#39;&#39;, &#39;TextInfoItem_1&#39;: &#39;&#39;, &#39;TextInfoItem_2&#39;: &#39;&#39;, &#39;TextInfoItem_3&#39;: &#39;&#39;, &#39;TextInfoItem_4&#39;: &#39;&#39;, &#39;TextInfoItem_5&#39;: &#39;Metadata:\r\nDimensions: T(591) x λ(1)\r\nCamera Name: Flash4.0, SN:001336\r\nNumerical Aperture: 0.3\r\nRefractive Index: 1\r\n Name: Red_VC\r\n Component Count: 1\r\n Modality: Widefield Fluorescence\r\n Camera Settings:   Exposure: 10 ms\r\n  Binning: 4x4\r\n  Scan Mode: Fast\r\n Microscope Settings:</span>
+<span class="gp">...</span>
 </pre></div>
 </div>
 </section>
-<section id="development-installation">
-<h2>Development installation<a class="headerlink" href="#development-installation" title="Permalink to this headline">#</a></h2>
-<p>Developers should use editable install and install the development requirements using the following command</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="s2">&quot;.[dev]&quot;</span>
+<section id="imaging-data">
+<h2>Imaging data<a class="headerlink" href="#imaging-data" title="Permalink to this headline">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">data.frames</span></code> gives you access to the frames which are numpy arrays. You can verify that the shape of the frames matches the sizes from the info dictionary</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">(415, 154, 591)</span>
 </pre></div>
 </div>
-<p>It is also recommended to install the <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> hook that comes with the package</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pre</span><span class="o">-</span><span class="n">commit</span> <span class="n">install</span>
+<p>You can also check the data type</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+<span class="go">dtype(&#39;uint16&#39;)</span>
 </pre></div>
 </div>
-<p>Note that linters and formatters will run in the CI system.</p>
+<p>The time stamps are stored as an attribute called <code class="docutils literal notranslate"><span class="pre">.time_stamps</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">time_stamps</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">(591, )</span>
+</pre></div>
+</div>
+<p>Finally, in some cases pacing amplitude is also available in the metadata, and this can be accessed from the attribute <code class="docutils literal notranslate"><span class="pre">.pacing</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">pacing</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">(591, )</span>
+</pre></div>
+</div>
+<p>If pacing information is not available then <code class="docutils literal notranslate"><span class="pre">data.pacing</span></code> will only contain zeros.</p>
+</section>
+<section id="analyzing-imaging-data">
+<h2>Analyzing imaging data<a class="headerlink" href="#analyzing-imaging-data" title="Permalink to this headline">#</a></h2>
+<p>To convert the data into a trace you can use the library <a class="reference external" href="https://computationalphysiology.github.io/ap_features"><code class="docutils literal notranslate"><span class="pre">ap_features</span></code></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ap_features</span> <span class="k">as</span> <span class="nn">apf</span>
+
+<span class="c1"># Compute the average over all pixels</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">mps</span><span class="o">.</span><span class="n">average</span><span class="o">.</span><span class="n">get_average_all</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">frames</span><span class="p">)</span>
+<span class="c1"># Convert it to an apf.Beats and compute features</span>
+<span class="c1"># using the ap_features package</span>
+<span class="n">trace</span> <span class="o">=</span> <span class="n">apf</span><span class="o">.</span><span class="n">Beats</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">,</span> <span class="n">pacing</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">pacing</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See the documentation of <code class="docutils literal notranslate"><span class="pre">ap_features</span></code> to learn more about how to analyze a trace.</p>
 </section>
 </section>
 
@@ -458,17 +513,17 @@ title="Print to PDF"
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="index.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="demo.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Cardiac MPS</p>
+            <p class="prev-next-title">Demo</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="demo.html" title="next page">
+    <a class='right-next' id="next-link" href="mps_analyze.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Demo</p>
+        <p class="prev-next-title">Command line interface - <code class="docutils literal notranslate"><span class="pre">mps-analyze</span></code></p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

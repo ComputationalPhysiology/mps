@@ -35,7 +35,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Command line interface - mps-summary" href="mps_summary.html" />
-    <link rel="prev" title="Demo" href="demo.html" />
+    <link rel="prev" title="Python API" href="python_api.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -103,6 +103,11 @@
    </i>
   </label>
   <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="python_api.html">
+     Python API
+    </a>
+   </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      Command line interface -
@@ -119,6 +124,26 @@
      <code class="docutils literal notranslate">
       <span class="pre">
        mps-summary
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="mps2mp4.html">
+     Command line interface -
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       mps2mp4
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="mps_motion.html">
+     Command line interface -
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       mps-motion
       </span>
      </code>
     </a>
@@ -347,7 +372,104 @@ title="Print to PDF"
                 
   <section id="command-line-interface-mps-analyze">
 <h1>Command line interface - <code class="docutils literal notranslate"><span class="pre">mps-analyze</span></code><a class="headerlink" href="#command-line-interface-mps-analyze" title="Permalink to this headline">#</a></h1>
-<p>TBW</p>
+<p>If you have an imaging file you might want to run a number of different analysis operations on it. The <code class="docutils literal notranslate"><span class="pre">mps-analyze</span></code> script takes as input an imaging file and output a folder with figures and spreadsheets.</p>
+<p>Say that we have a file <code class="docutils literal notranslate"><span class="pre">file.nd2</span></code>. Then we can analyze it using the command</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mps</span><span class="o">-</span><span class="n">analyze</span> <span class="n">file</span><span class="o">.</span><span class="n">nd2</span>
+</pre></div>
+</div>
+<p>The script will display some info in the terminal</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">2022</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">01</span> <span class="mi">15</span><span class="p">:</span><span class="mi">31</span><span class="p">:</span><span class="mi">34</span><span class="p">,</span><span class="mi">135</span> <span class="o">-</span> <span class="n">mps</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">analyze</span> <span class="o">-</span> <span class="n">INFO</span> <span class="o">-</span> <span class="n">Run</span> <span class="n">analysis</span> <span class="n">script</span>
+<span class="mi">2022</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">01</span> <span class="mi">15</span><span class="p">:</span><span class="mi">31</span><span class="p">:</span><span class="mi">34</span><span class="p">,</span><span class="mi">138</span> <span class="o">-</span> <span class="n">mps</span><span class="o">.</span><span class="n">load</span> <span class="o">-</span> <span class="n">INFO</span> <span class="o">-</span> <span class="n">Load</span> <span class="n">nd2</span> <span class="n">file</span> <span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">henriknf</span><span class="o">/</span><span class="n">file</span><span class="o">.</span><span class="n">nd2</span>
+<span class="mi">2022</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">01</span> <span class="mi">15</span><span class="p">:</span><span class="mi">31</span><span class="p">:</span><span class="mi">34</span><span class="p">,</span><span class="mi">309</span> <span class="o">-</span> <span class="n">mps</span><span class="o">.</span><span class="n">load</span> <span class="o">-</span> <span class="n">INFO</span> <span class="o">-</span> <span class="n">Loaded</span> <span class="mi">591</span> <span class="n">frames</span> <span class="ow">in</span> <span class="mf">0.17</span> <span class="n">seconds</span>
+<span class="mi">2022</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">01</span> <span class="mi">15</span><span class="p">:</span><span class="mi">31</span><span class="p">:</span><span class="mi">37</span><span class="p">,</span><span class="mi">174</span> <span class="o">-</span> <span class="n">mps</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">analyze</span> <span class="o">-</span> <span class="n">INFO</span> <span class="o">-</span> <span class="n">Finished</span> <span class="n">analyzing</span> <span class="n">MPS</span> <span class="n">data</span><span class="o">.</span> <span class="n">Data</span> <span class="n">stored</span> <span class="n">folder</span> <span class="s1">&#39;file&#39;</span><span class="o">.</span>
+<span class="n">Total</span> <span class="n">elapsed</span> <span class="n">time</span><span class="p">:</span> <span class="mf">3.04</span> <span class="n">seconds</span>
+</pre></div>
+</div>
+<p>and a new folder called <code class="docutils literal notranslate"><span class="pre">file</span></code> contains the following files</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>file
+├── EAD_analysis.png
+├── README.txt
+├── apd_analysis.png
+├── average.png
+├── average_pacing.png
+├── background.png
+├── chopped_data.csv
+├── chopped_data.png
+├── chopped_data_aligned.png
+├── data.npy
+├── data.txt
+├── metadata.json
+├── original.png
+├── original_pacing.png
+├── settings.json
+├── sliced_filtered.png
+├── trace.png
+└── unchopped_data.csv
+</pre></div>
+</div>
+<p>The file called <code class="docutils literal notranslate"><span class="pre">README.txt</span></code> contains a description of all the files in the folder.
+For easy reference we also provide this description below</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">apd_analysis.png</span></code>
+Figure showing plots of action potential durations
+and corrected actions potential durations (using
+the friderica correction formula). Top panel shows
+bars of the APD for the different beats where the *
+indicated if the APD for that beat is significantly different.
+The middle panel show the APD for each each plotted as a
+line as well as a linear fit of the APD80 and cAPD80 line.
+The intention behind this panel is to see it there is any
+correlation between the APD and the beat number
+The lower panel shows where the cut is made to compute
+the different APDs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">average_pacing.png</span></code>
+These are the average trace with pacing</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">average.png</span></code>
+These are the average of the traces in chopped_data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">background.png</span></code>
+This plots the original trace and the background that we
+subtract in the corrected trace.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">chopped_data_aligned.png</span></code>
+All beats plotted on with the time starting at zero</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">chopped_data.csv</span></code>
+A csv file with the chopped data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">chopped_data.png</span></code>
+Left panel: All the beats that we were able to extract from the corrected trace
+Right panel: The intersection of all beats where APD80 and APD30 are within 1
+standard deviation of the mean.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data.npy</span></code>
+A file containing all the results. You can load the results
+in python as follows</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;data.npy&#39;</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>data is now a python dictionary.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data.txt</span></code>
+This contains a short summary of analysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EAD_analysis.png</span></code>
+A plot of the beats containing EADs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">frequency_analysis.png</span></code>
+A plot of the frequencies of the different beats computed
+as the time between peaks.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">metadata.json</span></code>
+Metadata stored inside the raw data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">original_pacing.png</span></code>
+This is the the raw trace obtained after averaging the frames
+in the stack without any background correction or filtering
+together with the pacing amplitude.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">original.png</span></code>
+This is the the raw trace obtained after averaging the frames
+in the stack without any background correction or filtering</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sliced_filtered.png</span></code>
+Original trace where we have performed slicing and filtering</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trace.png</span></code>
+The is the corrected version of the original trace where we
+have performed a background correction and filtering</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unchopped_data.csv</span></code>
+A csv file with all the unchopped data (original and corrected)</p></li>
+</ul>
 </section>
 
 
@@ -358,11 +480,11 @@ title="Print to PDF"
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="demo.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="python_api.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Demo</p>
+            <p class="prev-next-title">Python API</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="mps_summary.html" title="next page">

@@ -101,6 +101,11 @@
   </label>
   <ul>
    <li class="toctree-l2">
+    <a class="reference internal" href="../../python_api.html">
+     Python API
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../../mps_analyze.html">
      Command line interface -
      <code class="docutils literal notranslate">
@@ -116,6 +121,26 @@
      <code class="docutils literal notranslate">
       <span class="pre">
        mps-summary
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../mps2mp4.html">
+     Command line interface -
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       mps2mp4
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../mps_motion.html">
+     Command line interface -
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       mps-motion
       </span>
      </code>
     </a>
@@ -1098,7 +1123,7 @@ title="Open an issue"
             <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">json_serial</span><span class="p">)</span>
 
         <span class="n">about_str</span> <span class="o">=</span> <span class="n">about</span><span class="p">()</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;REAMDE.txt&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;README.txt&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">about_str</span><span class="p">)</span></div></div>
 
 

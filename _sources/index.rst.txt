@@ -7,9 +7,6 @@ Cardiac MPS
 ===========
 
 
-Content
--------
-
 .. toctree::
    :maxdepth: 1
 
