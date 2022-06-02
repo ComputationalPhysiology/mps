@@ -25,7 +25,8 @@ jobs:
         ssh-agent -a $SSH_AUTH_SOCK > /dev/null
         ssh-add - <<< "${{ secrets.MOTION_TRACKING }}"
         python -m pip install --upgrade pip
-        python -m pip install git+https://github.com/ComputationalPhysiology/mps_motion_tracking.git
+        git clone git@github.com:ComputationalPhysiology/mps_motion_tracking.git
+        cd mps_motion_tracking && python -m pip install .[all] && cd ..
     - name: pyinstaller
       run: |
         make installer
@@ -57,7 +58,8 @@ jobs:
         ssh-agent -a $SSH_AUTH_SOCK > /dev/null
         ssh-add - <<< "${{ secrets.MOTION_TRACKING }}"
         python -m pip install --upgrade pip
-        python -m pip install git+https://github.com/ComputationalPhysiology/mps_motion_tracking.git
+        git clone git@github.com:ComputationalPhysiology/mps_motion_tracking.git
+        cd mps_motion_tracking && python -m pip install .[all] && cd ..
     - name: pyinstaller
       run: |
         make installer-windows
