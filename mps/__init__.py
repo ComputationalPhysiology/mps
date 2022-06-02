@@ -56,6 +56,13 @@ SIMULA RESEARCH LABORATORY MAKES NO REPRESENTATIONS AND EXTENDS NO
 WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
 NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 """
+import sys
+
+if getattr(sys, "frozen", False):
+    # We are running within pyinstaller
+    import matplotlib
+
+    matplotlib.use("Agg")
 
 
 import logging as _logging
