@@ -415,7 +415,31 @@ title="Print to PDF"
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">mps</span> <span class="n">motion</span> <span class="n">file</span><span class="o">.</span><span class="n">nd2</span>
 </pre></div>
 </div>
-<p>in order to run the motion analysis.</p>
+<p>or simply</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mps</span><span class="o">-</span><span class="n">motion</span> <span class="n">file</span><span class="o">.</span><span class="n">nd2</span>
+</pre></div>
+</div>
+<p>in order to run the motion analysis. As before you can do</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mps</span><span class="o">-</span><span class="n">motion</span> <span class="o">--</span><span class="n">help</span>
+</pre></div>
+</div>
+<p>to see all the available options. The script will produce a folder called <code class="docutils literal notranslate"><span class="pre">motion</span></code> containing the following files</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>motion
+├── features.csv
+├── results.csv
+├── settings.json
+├── u_norm.png
+└── v_norm.png
+</pre></div>
+</div>
+<p>Here</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">settings.json</span></code> are the settings used for the motion analysis</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">u_norm.png</span></code> is a plot of the displacement norm averaged over the entire chip as a function of time.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">v_norm.png</span></code> is a plot of the velocity norm averaged over the entire chip as a function of time.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">results.csv</span></code> is a spreadsheet containing the traces</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">features.csv</span></code> is a spreadsheet containing some features of each individual trace.</p></li>
+</ul>
 </section>
 </section>
 

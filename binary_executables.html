@@ -421,9 +421,9 @@ title="Print to PDF"
 <h1>Pre-built binaries<a class="headerlink" href="#pre-built-binaries" title="Permalink to this headline">#</a></h1>
 <p>You can also get pre-built binaries for Windows, MaxOSX and Linux in case you don’t want to install anything.</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/finsberg/mps/suites/4925484003/artifacts/142197690">Windows binaries</a></p></li>
-<li><p><a class="reference external" href="https://github.com/finsberg/mps/suites/4925484003/artifacts/142197688">MacOSX binaries</a></p></li>
-<li><p><a class="reference external" href="https://github.com/finsberg/mps/suites/4925484003/artifacts/142197689">Linux binaries</a></p></li>
+<li><p><a class="reference external" href="https://github.com/ComputationalPhysiology/mps/suites/6762503775/artifacts/258613709">Windows binaries</a></p></li>
+<li><p><a class="reference external" href="https://github.com/ComputationalPhysiology/mps/suites/6762503775/artifacts/258613705">MacOSX binaries</a></p></li>
+<li><p><a class="reference external" href="https://github.com/ComputationalPhysiology/mps/suites/6762503775/artifacts/258613707">Linux (ubuntu) binaries</a></p></li>
 </ul>
 <p>The binary is called <code class="docutils literal notranslate"><span class="pre">mps</span></code> (with a <code class="docutils literal notranslate"><span class="pre">.exe</span></code> extension if you are running on Windows)
 Note that the binaries ships with python, so to don’t even need to install python to run the binaries.
@@ -448,7 +448,8 @@ On unix you also need to make the file executable:</p>
 </pre></div>
 </div>
 <p>you should get the following output</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">__main__</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">COMMAND</span> <span class="p">[</span><span class="n">ARGS</span><span class="p">]</span><span class="o">...</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">mps</span> <span class="o">--</span><span class="n">help</span>
+<span class="n">Usage</span><span class="p">:</span> <span class="n">mps</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">COMMAND</span> <span class="p">[</span><span class="n">ARGS</span><span class="p">]</span><span class="o">...</span>
 
 <span class="n">Options</span><span class="p">:</span>
   <span class="o">--</span><span class="n">version</span>                       <span class="n">Show</span> <span class="n">version</span>
@@ -458,11 +459,11 @@ On unix you also need to make the file executable:</p>
   <span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">completion</span> <span class="p">[</span><span class="n">bash</span><span class="o">|</span><span class="n">zsh</span><span class="o">|</span><span class="n">fish</span><span class="o">|</span><span class="n">powershell</span><span class="o">|</span><span class="n">pwsh</span><span class="p">]</span>
                                   <span class="n">Show</span> <span class="n">completion</span> <span class="k">for</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">shell</span><span class="p">,</span> <span class="n">to</span>
                                   <span class="n">copy</span> <span class="n">it</span> <span class="ow">or</span> <span class="n">customize</span> <span class="n">the</span> <span class="n">installation</span><span class="o">.</span>
-
   <span class="o">--</span><span class="n">help</span>                          <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
 
 <span class="n">Commands</span><span class="p">:</span>
   <span class="n">analyze</span>       <span class="n">Analyze</span> <span class="n">flourecense</span> <span class="n">data</span>
+  <span class="n">motion</span>        <span class="n">Estimate</span> <span class="n">motion</span> <span class="ow">in</span> <span class="n">stack</span> <span class="n">of</span> <span class="n">images</span>
   <span class="n">mps2mp4</span>       <span class="n">Create</span> <span class="n">movie</span> <span class="n">of</span> <span class="n">data</span> <span class="n">file</span>
   <span class="n">phase</span><span class="o">-</span><span class="n">plot</span>    <span class="n">Create</span> <span class="n">movie</span> <span class="n">of</span> <span class="n">data</span> <span class="n">file</span>
   <span class="n">split</span><span class="o">-</span><span class="n">pacing</span>  <span class="n">Run</span> <span class="n">script</span> <span class="n">on</span> <span class="n">a</span> <span class="n">folder</span> <span class="k">with</span> <span class="n">files</span> <span class="ow">and</span> <span class="n">this</span> <span class="n">will</span> <span class="n">copy</span> <span class="n">the</span><span class="o">...</span>

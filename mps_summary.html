@@ -372,7 +372,20 @@ title="Print to PDF"
                 
   <section id="command-line-interface-mps-summary">
 <h1>Command line interface - <code class="docutils literal notranslate"><span class="pre">mps-summary</span></code><a class="headerlink" href="#command-line-interface-mps-summary" title="Permalink to this headline">#</a></h1>
-<p>TBW</p>
+<p>If you have a folder containing several imaging files, then you can run <code class="docutils literal notranslate"><span class="pre">mps-summary</span></code> to get one figure with all the traces and one spreadsheet with some summary statistics.</p>
+<p>Say that we have a folder called <code class="docutils literal notranslate"><span class="pre">folder</span></code> containing several imaging files. Then you can run the command</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mps</span><span class="o">-</span><span class="n">summary</span> <span class="n">folder</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">mps</span> <span class="n">summary</span> <span class="n">folder</span>
+</pre></div>
+</div>
+<p>and it will produce two new files called <code class="docutils literal notranslate"><span class="pre">mps_summary.csv</span></code> and <code class="docutils literal notranslate"><span class="pre">mps_summary.pdf</span></code> inside the folder.</p>
+<p>You can also list all the possible option using the command</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mps</span><span class="o">-</span><span class="n">summary</span> <span class="o">--</span><span class="n">help</span>
+</pre></div>
+</div>
 </section>
 
 

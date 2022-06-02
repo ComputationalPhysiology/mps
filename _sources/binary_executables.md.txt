@@ -2,9 +2,9 @@
 
 You can also get pre-built binaries for Windows, MaxOSX and Linux in case you don't want to install anything.
 
-- [Windows binaries](https://github.com/finsberg/mps/suites/4925484003/artifacts/142197690)
-- [MacOSX binaries](https://github.com/finsberg/mps/suites/4925484003/artifacts/142197688)
-- [Linux binaries](https://github.com/finsberg/mps/suites/4925484003/artifacts/142197689)
+- [Windows binaries](https://github.com/ComputationalPhysiology/mps/suites/6762503775/artifacts/258613709)
+- [MacOSX binaries](https://github.com/ComputationalPhysiology/mps/suites/6762503775/artifacts/258613705)
+- [Linux (ubuntu) binaries](https://github.com/ComputationalPhysiology/mps/suites/6762503775/artifacts/258613707)
 
 
 The binary is called `mps` (with a `.exe` extension if you are running on Windows)
@@ -35,7 +35,8 @@ or on Windows
 you should get the following output
 
 ```
-Usage: __main__.py [OPTIONS] COMMAND [ARGS]...
+./mps --help
+Usage: mps [OPTIONS] COMMAND [ARGS]...
 
 Options:
   --version                       Show version
@@ -45,11 +46,11 @@ Options:
   --show-completion [bash|zsh|fish|powershell|pwsh]
                                   Show completion for the specified shell, to
                                   copy it or customize the installation.
-
   --help                          Show this message and exit.
 
 Commands:
   analyze       Analyze flourecense data
+  motion        Estimate motion in stack of images
   mps2mp4       Create movie of data file
   phase-plot    Create movie of data file
   split-pacing  Run script on a folder with files and this will copy the...
