@@ -365,6 +365,19 @@ try:
             mt.FLOW_ALGORITHMS.farneback,
             help="The algorithm used to estimate motion",
         ),
+        reference_frame: str = typer.Option(
+            "0",
+            "--reference-frame",
+            "-rf",
+            help=dedent(
+                """
+        Which frame should be the reference frame when computing the
+        displacements. This can either be a number indicating the
+        timepoint, or the value 'mean', 'median', 'max' or 'mean'.
+        Default: '0' (i.e the first frame)
+        """,
+            ),
+        ),
         outdir: Optional[str] = typer.Option(
             None,
             "--outdir",
@@ -433,6 +446,7 @@ try:
         cli_motion.main(
             filename=filename,
             algorithm=algorithm,
+            reference_frame=reference_frame,
             outdir=outdir,
             scale=scale,
             apply_filter=apply_filter,
