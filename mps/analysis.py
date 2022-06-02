@@ -799,7 +799,7 @@ class Collector:
             json.dump(self.metadata, f, indent=4, default=utils.json_serial)
 
         about_str = about()
-        with open(self.outdir.joinpath("REAMDE.txt"), "w") as f:
+        with open(self.outdir.joinpath("README.txt"), "w") as f:
             f.write(about_str)
 
 

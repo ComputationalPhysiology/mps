@@ -378,7 +378,7 @@ try:
             ),
         ),
         scale: float = typer.Option(
-            0.3,
+            0.5,
             help=dedent(
                 """
             Rescale data before running motion track. This is useful if the spatial resoltion
@@ -386,32 +386,67 @@ try:
             """,
             ),
         ),
-        verbose: bool = typer.Option(False, "--verbose", "-v", help="More verbose"),
-        overwrite: bool = typer.Option(
+        apply_filter: bool = typer.Option(
             True,
             help=dedent(
                 """
-            If True, overwrite existing data if outdir
-            allready exist. If False, then the olddata will
-            be copied to a subdirectory with version number
-            of the software. If version number is not found
-            it will be saved to a folder called "old".""",
+            If True, set pixels with max displacement lower than the mean maximum displacement
+            to zero. This will prevent non-tissue pixels to be included, which is especially
+            error prone for velocity estimations, by default True.""",
             ),
         ),
+        spacing: int = typer.Option(
+            5,
+            help=dedent(
+                """Spacing between frames in velocity computations, by default 5.
+            """,
+            ),
+        ),
+        compute_xy_components: bool = typer.Option(
+            False,
+            "--xy",
+            "-xy",
+            help=dedent(
+                """
+            If True the compute x- and y components of the displacement and
+            velocity and plot them as well, by default False.""",
+            ),
+        ),
+        make_displacement_video: bool = typer.Option(
+            False,
+            "--video-disp",
+            help=dedent(
+                """
+            If True, create video of displacement vectors, by default False.""",
+            ),
+        ),
+        make_velocity_video: bool = typer.Option(
+            False,
+            "--video-vel",
+            help=dedent(
+                """
+            If True, create video of velocity vectors, by default False.""",
+            ),
+        ),
+        verbose: bool = typer.Option(False, "--verbose", "-v", help="More verbose"),
     ):
         cli_motion.main(
             filename=filename,
             algorithm=algorithm,
             outdir=outdir,
             scale=scale,
+            apply_filter=apply_filter,
+            spacing=spacing,
+            compute_xy_components=compute_xy_components,
+            make_displacement_video=make_displacement_video,
+            make_velocity_video=make_velocity_video,
             verbose=verbose,
-            overwrite=overwrite,
         )
 
 except ImportError:
 
     def motion():
-        raise ImportError("Motion tracking software is not installed")
+        typer.echo("Motion tracking software is not installed")
 
 
 # Helper function for standalone console scripts

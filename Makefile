@@ -21,10 +21,10 @@ for line in sys.stdin:
 endef
 export PRINT_HELP_PYSCRIPT
 
-BROWSER := python -c "$$BROWSER_PYSCRIPT"
+BROWSER := python3 -c "$$BROWSER_PYSCRIPT"
 
 help:
-	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
+	@python3 -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
 
@@ -48,16 +48,16 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .pytest_cache
 
 lint: ## check style with flake8
-	python -m flake8 mps tests
+	python3 -m flake8 mps tests
 
 type: ## Run mypy
-	python -m mypy mps tests
+	python3 -m mypy mps tests
 
 black: ## Run mypy
-	python -m black mps tests
+	python3 -m black mps tests
 
 test: ## run tests quickly with the default Python
-	python -m pytest
+	python3 -m pytest
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/source/mps.rst
@@ -73,38 +73,40 @@ show: ## show docs
 
 
 dist: clean ## builds source and wheel package
-	python setup.py sdist
-	python setup.py bdist_wheel
+	python3 setup.py sdist
+	python3 setup.py bdist_wheel
 	ls -l dist
 
-install: clean ## install on unix
-	python -m pip install "."
+install: clean upgrade-pip ## install on unix
+	python3 -m pip install "."
 
 install-windows: clean ## install on windows usig pipwin
-	python -m pip install --upgrade pip
-	python -m pip install pipwin
+	python3 -m pip install --upgrade pip
+	python3 -m pip install pipwin
 	pipwin install -r requirements.txt
-	python -m pip install "."
+	python3 -m pip install "."
 
-dev: clean ## Developement install
-	python -m pip install --upgrade pip
-	python -m pip install git+https://github.com/ComputationalPhysiology/ap_features.git@master
-	python -m pip install -e ".[dev]"
+dev: clean upgrade-pip ## Developement install
+	python3 -m pip install git+https://github.com/ComputationalPhysiology/ap_features.git@master
+	python3 -m pip install -e ".[dev]"
 	pre-commit install
 
-dev-windows: clean ## Developement install - windows
-	python -m pip install --upgrade pip
-	python -m pip install pipwin
-	python -m pip install ".[dev]"
+
+upgrade-pip:
+	python3 -m pip install pip --upgrade
+
+dev-windows: clean upgrade-pip ## Developement install - windows
+	python3 -m pip install pipwin
+	python3 -m pip install ".[dev]"
 	pre-commit install
 
-installer: clean  ## make installer for unix
-	python -m pip install -r requirements.txt
-	python -m pip install pyinstaller
-	pyinstaller -F mps/__main__.py -n mps --hidden-import=imageio_ffmpeg --hidden-import=matplotlib --hidden-import=scipy.special.cython_special --additional-hooks-dir=pyinstaller_hooks
+installer: clean upgrade-pip ## make installer for unix
+	python3 -m pip install ".[dev]"
+	python3 -m pip install pyinstaller
+	pyinstaller -F mps/__main__.py -n mps --hidden-import=imageio_ffmpeg --hidden-import=matplotlib --hidden-import=scipy.special.cython_special --collect-submodules imageio --additional-hooks-dir=pyinstaller_hooks
 
-installer-windows: clean  ## make installer for windows
-	python -m pip install pipwin
-	pipwin install -r requirements.txt
+installer-windows: clean upgrade-pip ## make installer for windows
+	python3 -m pip install pipwin
+	pipwin -m pip install ".[dev]"
 	pipwin install pyinstaller
-	pyinstaller -F mps/__main__.py -n mps --hidden-import=imageio_ffmpeg --hidden-import=matplotlib --hidden-import=scipy.special.cython_special --additional-hooks-dir=pyinstaller_hooks
+	pyinstaller -F mps/__main__.py -n mps --hidden-import=imageio_ffmpeg --hidden-import=matplotlib --hidden-import=scipy.special.cython_special --collect-submodules imageio --additional-hooks-dir=pyinstaller_hooks

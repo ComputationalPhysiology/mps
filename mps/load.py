@@ -148,7 +148,7 @@ def load_nd2(fname: os.PathLike) -> MPSData:
         Dictionary with metadata
 
     """
-    logger.info("Load nd2 file {}".format(fname))
+    logger.info(f"Load nd2 file {fname}")
     max_workers = multiprocessing.cpu_count() // 2
     t0 = time.time()
     with ND2File(fname) as frames:
@@ -167,7 +167,7 @@ def load_nd2(fname: os.PathLike) -> MPSData:
             executor.map(func, np.arange(num_frames))
 
     t1 = time.time()
-    logger.info("Loaded {} frames in {} seconds".format(num_frames, t1 - t0))
+    logger.info(f"Loaded {num_frames} frames in {t1 - t0:.2f} seconds")
     # Let time start at zero
     if np.all(time_stamps == 0):
         # Then there is something wrong with the file

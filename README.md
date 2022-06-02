@@ -22,38 +22,12 @@ For more options see <https://computationalphysiology.github.io/mps/install.html
 
 ## Usage
 
-
-### CLI
-Once installed you can use the command line script from the terminal.
-
-In the following demo I have the `mps` packaged installed in a [virtual environment](https://realpython.com/python-virtual-environments-a-primer/) which is first activated. Then it shows how to run the analysis script on a single file.
-
-![_](https://github.com/ComputationalPhysiology/mps/blob/master/docs/source/_static/usage.gif)
-
-### Python API
-The most useful features of this package it to read imaging data which can be done as follow
-
-```python
-import mps
-# Object containing the frames, time stamps and metadata
-data = mps.MPS("file.nd2")
-```
-To convert the data into a trace you can do
-```python
-import ap_features as apf
-
-# Compute the average over all pixels
-y = mps.average.get_average_all(data.frames)
-# Convert it to an apf.Beats and compute features
-# using the ap_features package
-trace = apf.Beats(y=y, t=data.time_stamps, pacing=data.pacing)
-```
-
+See <https://computationalphysiology.github.io/mps/demo.html>
 
 
 ## Documentation
 
-https://computationalphysiology.github.io/mps
+<https://computationalphysiology.github.io/mps>
 
 ## Contributing
 

@@ -135,8 +135,8 @@ def run_file(**kwargs):
     end = time.time()
     logger.info(
         (
-            f"Finished analyzing MPS data. Data stored in {outdir}. "
-            f"\nTotal elapsed time: {end - start} seconds"
+            f"Finished analyzing MPS data. Data stored folder '{outdir}'. "
+            f"\nTotal elapsed time: {end - start:.2f} seconds"
         ),
     )
 
