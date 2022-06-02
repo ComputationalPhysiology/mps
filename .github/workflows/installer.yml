@@ -18,15 +18,8 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install motion tracking
-      env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       run: |
-        mkdir -p ~/.ssh
-        ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-        ssh-add - <<< "${{ secrets.MOTION_TRACKING }}"
-        python -m pip install --upgrade pip
-        git clone git@github.com:ComputationalPhysiology/mps_motion_tracking.git
-        cd mps_motion_tracking && python -m pip install .[all] && cd ..
+        python -m pip install git+https://github.com/ComputationalPhysiology/mps_motion_tracking.git
     - name: pyinstaller
       run: |
         make installer
@@ -51,15 +44,8 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install motion tracking
-      env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       run: |
-        mkdir -p ~/.ssh
-        ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-        ssh-add - <<< "${{ secrets.MOTION_TRACKING }}"
-        python -m pip install --upgrade pip
-        git clone git@github.com:ComputationalPhysiology/mps_motion_tracking.git
-        cd mps_motion_tracking && python -m pip install .[all] && cd ..
+        python -m pip install git+https://github.com/ComputationalPhysiology/mps_motion_tracking.git
     - name: pyinstaller
       run: |
         make installer-windows
