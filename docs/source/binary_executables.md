@@ -2,9 +2,9 @@
 
 You can also get pre-built binaries for Windows, MaxOSX and Linux in case you don't want to install anything.
 
-- [Windows binaries](https://github.com/ComputationalPhysiology/mps/suites/6762503775/artifacts/258613709)
-- [MacOSX binaries](https://github.com/ComputationalPhysiology/mps/suites/6762503775/artifacts/258613705)
-- [Linux (ubuntu) binaries](https://github.com/ComputationalPhysiology/mps/suites/6762503775/artifacts/258613707)
+- [Windows binaries](https://github.com/ComputationalPhysiology/mps/suites/6770136518/artifacts/259100403)
+- [MacOSX binaries](https://github.com/ComputationalPhysiology/mps/suites/6770136518/artifacts/259100401)
+- [Linux (ubuntu) binaries](https://github.com/ComputationalPhysiology/mps/suites/6770136518/artifacts/259100402)
 
 
 The binary is called `mps` (with a `.exe` extension if you are running on Windows)
