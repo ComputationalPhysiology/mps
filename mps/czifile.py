@@ -129,7 +129,7 @@ except ImportError:
     from xml.etree import cElementTree as etree
 
 import numpy
-from scipy.ndimage.interpolation import zoom
+from scipy.ndimage import zoom
 
 from .tifffile import (
     FileHandle,
