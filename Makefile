@@ -91,7 +91,6 @@ dev: clean upgrade-pip ## Developement install
 	python3 -m pip install -e ".[dev]"
 	pre-commit install
 
-
 upgrade-pip:
 	python3 -m pip install pip --upgrade
 
@@ -110,3 +109,7 @@ installer-windows: clean upgrade-pip ## make installer for windows
 	pipwin -m pip install ".[dev]"
 	pipwin install pyinstaller
 	pyinstaller -F mps/__main__.py -n mps --hidden-import=imageio_ffmpeg --hidden-import=matplotlib --hidden-import=scipy.special.cython_special --collect-submodules imageio --additional-hooks-dir=pyinstaller_hooks
+
+
+release: dist ## package and upload a release
+	python3 -m twine upload -u ${PYPI_USERNAME} -p ${PYPI_PASSWORD} dist/*
