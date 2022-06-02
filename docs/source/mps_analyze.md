@@ -6,6 +6,14 @@ Say that we have a file `file.nd2`. Then we can analyze it using the command
 ```
 mps-analyze file.nd2
 ```
+or
+```
+python -m mps analyze file.nd2
+```
+You can also list all the possible option using the command
+```
+mps-analyze --help
+```
 
 The script will display some info in the terminal
 
