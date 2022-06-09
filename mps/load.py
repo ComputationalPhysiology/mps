@@ -448,7 +448,7 @@ def load_tiff(fname):
             (
                 "tifffile is not installed. Please install "
                 "that if you want to load stk files. python -m"
-                " pip install tiffile"
+                " pip install tifffile"
             ),
         )
 
