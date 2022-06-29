@@ -949,7 +949,7 @@ def analyze_unchopped_data(
         background_correction_method,
     )
     collector.register_unchopped(corrected_trace, "")
-    collector.unchopped_data["background"] = np.copy(trace.background)
+    collector.unchopped_data["background"] = np.copy(corrected_trace.background)
     if collector.plot and collector.outdir is not None:
         corrected_trace.plot(
             collector.outdir.joinpath("background.png"),
