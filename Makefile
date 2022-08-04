@@ -112,4 +112,4 @@ installer-windows: clean upgrade-pip ## make installer for windows
 
 
 release: dist ## package and upload a release
-	python3 -m twine upload -u ${PYPI_USERNAME} -p ${PYPI_PASSWORD} dist/*
+	python3 -m twine upload dist/*
