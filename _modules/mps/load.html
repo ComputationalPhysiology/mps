@@ -20,7 +20,7 @@
     href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -29,7 +29,7 @@
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -373,9 +373,11 @@ title="Open an issue"
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">tifffile</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="n">_tifffile_msg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
     <span class="n">has_tifffile</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="k">else</span><span class="p">:</span>
+    <span class="n">_tifffile_msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="n">has_tifffile</span> <span class="o">=</span> <span class="kc">True</span>
 
 
@@ -660,11 +662,12 @@ title="Open an issue"
 <div class="viewcode-block" id="load_stk"><a class="viewcode-back" href="../../mps.html#mps.load.load_stk">[docs]</a><span class="k">def</span> <span class="nf">load_stk</span><span class="p">(</span><span class="n">fname</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MPSData</span><span class="p">:</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">has_tifffile</span><span class="p">:</span>
+
         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="s2">&quot;tifffile is not installed. Please install &quot;</span>
                 <span class="s2">&quot;that if you want to load stk files. python -m&quot;</span>
-                <span class="s2">&quot; pip install tiffile&quot;</span>
+                <span class="s2">&quot; pip install tiffile</span><span class="se">\n\n</span><span class="s2">&quot;</span>
             <span class="p">),</span>
         <span class="p">)</span>
 
@@ -744,6 +747,8 @@ title="Open an issue"
 <div class="viewcode-block" id="time2isoformat"><a class="viewcode-back" href="../../mps.html#mps.load.time2isoformat">[docs]</a><span class="k">def</span> <span class="nf">time2isoformat</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
     <span class="kn">import</span> <span class="nn">datetime</span>
 
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">s</span>
     <span class="n">date</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">date</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">date</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">date</span><span class="p">[</span><span class="mi">6</span><span class="p">:]</span><span class="si">}</span><span class="s2">T</span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
@@ -768,6 +773,13 @@ title="Open an issue"
 <div class="viewcode-block" id="load_tiff"><a class="viewcode-back" href="../../mps.html#mps.load.load_tiff">[docs]</a><span class="k">def</span> <span class="nf">load_tiff</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">has_tifffile</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;_imagecodecs&quot;</span> <span class="ow">in</span> <span class="n">_tifffile_msg</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+                <span class="s2">&quot;lzma is not installed correctly. Please see &quot;</span>
+                <span class="s2">&quot;https://stackoverflow.com/questions/59690698/modulenotfounderror-no-module-named-lzma-when-building-python-using-pyenv-on &quot;</span>
+                <span class="s2">&quot;or https://github.com/pandas-dev/pandas/issues/27532&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="s2">&quot;tifffile is not installed. Please install &quot;</span>
