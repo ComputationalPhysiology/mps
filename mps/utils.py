@@ -317,7 +317,11 @@ def json_serial(obj):
         return obj.isoformat()
     elif isinstance(obj, (np.ndarray)):
         return obj.tolist()
-    raise TypeError("Type %s not serializable" % type(obj))
+    else:
+        try:
+            return str(obj)
+        except Exception:
+            raise TypeError("Type %s not serializable" % type(obj))
 
 
 def to_txt(data, path, header_list=None, delimiter=";", fmt="%10.6g"):

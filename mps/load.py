@@ -49,9 +49,11 @@ from .nd2file import ND2File
 
 try:
     import tifffile
-except ImportError:
+except ImportError as e:
+    _tifffile_msg = str(e)
     has_tifffile = False
 else:
+    _tifffile_msg = ""
     has_tifffile = True
 
 
@@ -336,11 +338,12 @@ def load_zip(fname: os.PathLike) -> MPSData:
 def load_stk(fname: os.PathLike) -> MPSData:
 
     if not has_tifffile:
+
         raise ImportError(
             (
                 "tifffile is not installed. Please install "
                 "that if you want to load stk files. python -m"
-                " pip install tiffile"
+                " pip install tiffile\n\n"
             ),
         )
 
@@ -420,6 +423,8 @@ def load_movie(fname: os.PathLike) -> MPSData:
 def time2isoformat(s):
     import datetime
 
+    if isinstance(s, datetime.datetime):
+        return s
     date, time = s.split(" ")
     return datetime.datetime.fromisoformat(f"{date[:4]}-{date[4:6]}-{date[6:]}T{time}")
 
@@ -444,6 +449,13 @@ def load_tiff_timestamps(f):
 def load_tiff(fname):
 
     if not has_tifffile:
+        if "_imagecodecs" in _tifffile_msg:
+            raise ImportError(
+                "lzma is not installed correctly. Please see "
+                "https://stackoverflow.com/questions/59690698/modulenotfounderror-no-module-named-lzma-when-building-python-using-pyenv-on "
+                "or https://github.com/pandas-dev/pandas/issues/27532",
+            )
+
         raise ImportError(
             (
                 "tifffile is not installed. Please install "
