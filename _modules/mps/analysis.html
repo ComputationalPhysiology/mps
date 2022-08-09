@@ -1364,11 +1364,11 @@ title="Open an issue"
 <div class="viewcode-block" id="analyze_chopped_data"><a class="viewcode-back" href="../../mps.html#mps.analysis.analyze_chopped_data">[docs]</a><span class="k">def</span> <span class="nf">analyze_chopped_data</span><span class="p">(</span>
     <span class="n">trace</span><span class="p">:</span> <span class="n">apf</span><span class="o">.</span><span class="n">Beats</span><span class="p">,</span>
     <span class="n">collector</span><span class="p">:</span> <span class="n">Collector</span><span class="p">,</span>
-    <span class="n">chopping_threshold_factor</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
-    <span class="n">chopping_extend_front</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">chopping_extend_end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">chopping_min_window</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
-    <span class="n">chopping_max_window</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+    <span class="n">threshold_factor</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+    <span class="n">extend_front</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">extend_end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">min_window</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+    <span class="n">max_window</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
     <span class="n">use_spline</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">normalize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">max_allowed_apd_change</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1380,15 +1380,16 @@ title="Open an issue"
 <span class="p">):</span>
 
     <span class="n">chopping_parameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-        <span class="n">threshold_factor</span><span class="o">=</span><span class="n">chopping_threshold_factor</span><span class="p">,</span>
-        <span class="n">extend_front</span><span class="o">=</span><span class="n">chopping_extend_front</span><span class="p">,</span>
-        <span class="n">extend_end</span><span class="o">=</span><span class="n">chopping_extend_end</span><span class="p">,</span>
-        <span class="n">min_window</span><span class="o">=</span><span class="n">chopping_min_window</span><span class="p">,</span>
-        <span class="n">max_window</span><span class="o">=</span><span class="n">chopping_max_window</span><span class="p">,</span>
+        <span class="n">threshold_factor</span><span class="o">=</span><span class="n">threshold_factor</span><span class="p">,</span>
+        <span class="n">extend_front</span><span class="o">=</span><span class="n">extend_front</span><span class="p">,</span>
+        <span class="n">extend_end</span><span class="o">=</span><span class="n">extend_end</span><span class="p">,</span>
+        <span class="n">min_window</span><span class="o">=</span><span class="n">min_window</span><span class="p">,</span>
+        <span class="n">max_window</span><span class="o">=</span><span class="n">max_window</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">trace</span><span class="o">.</span><span class="n">chopping_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">chopping_parameters</span><span class="p">)</span>
     <span class="n">chopped_data</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">chopped_data</span>
+
     <span class="n">beats</span> <span class="o">=</span> <span class="n">apf</span><span class="o">.</span><span class="n">beat</span><span class="o">.</span><span class="n">chopped_data_to_beats</span><span class="p">(</span><span class="n">chopped_data</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">trace</span><span class="p">)</span>
     <span class="n">aligned_beats</span> <span class="o">=</span> <span class="n">apf</span><span class="o">.</span><span class="n">beat</span><span class="o">.</span><span class="n">align_beats</span><span class="p">(</span><span class="n">beats</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">trace</span><span class="p">)</span>
     <span class="n">collector</span><span class="o">.</span><span class="n">register_chopped_data</span><span class="p">(</span><span class="n">chopped_data</span><span class="p">,</span> <span class="n">aligned_beats</span><span class="o">=</span><span class="n">aligned_beats</span><span class="p">)</span>
@@ -1471,11 +1472,11 @@ title="Open an issue"
     <span class="n">filter_signal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">ignore_pacing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">remove_points_list</span><span class="o">=</span><span class="p">(),</span>
-    <span class="n">chopping_threshold_factor</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
-    <span class="n">chopping_extend_front</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">chopping_extend_end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">chopping_min_window</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
-    <span class="n">chopping_max_window</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+    <span class="n">threshold_factor</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+    <span class="n">extend_front</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">extend_end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">min_window</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+    <span class="n">max_window</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
     <span class="n">use_spline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">outdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1504,11 +1505,11 @@ title="Open an issue"
         <span class="n">ead_prom</span><span class="o">=</span><span class="n">ead_prom</span><span class="p">,</span>
         <span class="n">std_ex</span><span class="o">=</span><span class="n">std_ex</span><span class="p">,</span>
         <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span>
-        <span class="n">threshold_factor</span><span class="o">=</span><span class="n">chopping_threshold_factor</span><span class="p">,</span>
-        <span class="n">extend_front</span><span class="o">=</span><span class="n">chopping_extend_front</span><span class="p">,</span>
-        <span class="n">extend_end</span><span class="o">=</span><span class="n">chopping_extend_end</span><span class="p">,</span>
-        <span class="n">min_window</span><span class="o">=</span><span class="n">chopping_min_window</span><span class="p">,</span>
-        <span class="n">max_window</span><span class="o">=</span><span class="n">chopping_max_window</span><span class="p">,</span>
+        <span class="n">threshold_factor</span><span class="o">=</span><span class="n">threshold_factor</span><span class="p">,</span>
+        <span class="n">extend_front</span><span class="o">=</span><span class="n">extend_front</span><span class="p">,</span>
+        <span class="n">extend_end</span><span class="o">=</span><span class="n">extend_end</span><span class="p">,</span>
+        <span class="n">min_window</span><span class="o">=</span><span class="n">min_window</span><span class="p">,</span>
+        <span class="n">max_window</span><span class="o">=</span><span class="n">max_window</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">collector</span> <span class="o">=</span> <span class="n">Collector</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">outdir</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="n">plot</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
