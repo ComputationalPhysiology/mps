@@ -152,7 +152,7 @@ def analyze(
             detected, nothing will be deleted.""",
         ),
     ),
-    chopping_threshold_factor: float = typer.Option(
+    threshold_factor: float = typer.Option(
         0.3,
         help=dedent(
             """
@@ -160,7 +160,7 @@ def analyze(
             chopping. Default = 0.3""",
         ),
     ),
-    chopping_extend_front: Optional[int] = typer.Option(
+    extend_front: Optional[int] = typer.Option(
         None,
         help=dedent(
             """
@@ -168,7 +168,7 @@ def analyze(
             the beginning when chopping""",
         ),
     ),
-    chopping_extend_end: Optional[int] = typer.Option(
+    extend_end: Optional[int] = typer.Option(
         None,
         help=dedent(
             """
@@ -176,7 +176,7 @@ def analyze(
             the end when chopping""",
         ),
     ),
-    chopping_min_window: float = typer.Option(
+    min_window: float = typer.Option(
         50,
         help=dedent(
             """
@@ -184,7 +184,7 @@ def analyze(
             milliseconds) to be included in chopping""",
         ),
     ),
-    chopping_max_window: float = typer.Option(
+    max_window: float = typer.Option(
         2000,
         help=dedent(
             """
@@ -236,11 +236,11 @@ def analyze(
         ead_sigma=ead_sigma,
         std_ex_factor=std_ex_factor,
         spike_duration=spike_duration,
-        chopping_threshold_factor=chopping_threshold_factor,
-        chopping_extend_front=chopping_extend_front,
-        chopping_extend_end=chopping_extend_end,
-        chopping_min_window=chopping_min_window,
-        chopping_max_window=chopping_max_window,
+        threshold_factor=threshold_factor,
+        extend_front=extend_front,
+        extend_end=extend_end,
+        min_window=min_window,
+        max_window=max_window,
         ignore_pacing=ignore_pacing,
         reuse_settings=reuse_settings,
         overwrite=overwrite,

@@ -1040,11 +1040,11 @@ def enlist(x):
 def analyze_chopped_data(
     trace: apf.Beats,
     collector: Collector,
-    chopping_threshold_factor=0.3,
-    chopping_extend_front=None,
-    chopping_extend_end=None,
-    chopping_min_window=200,
-    chopping_max_window=2000,
+    threshold_factor=0.3,
+    extend_front=None,
+    extend_end=None,
+    min_window=200,
+    max_window=2000,
     use_spline: bool = True,
     normalize: bool = False,
     max_allowed_apd_change: Optional[float] = None,
@@ -1056,15 +1056,16 @@ def analyze_chopped_data(
 ):
 
     chopping_parameters = dict(
-        threshold_factor=chopping_threshold_factor,
-        extend_front=chopping_extend_front,
-        extend_end=chopping_extend_end,
-        min_window=chopping_min_window,
-        max_window=chopping_max_window,
+        threshold_factor=threshold_factor,
+        extend_front=extend_front,
+        extend_end=extend_end,
+        min_window=min_window,
+        max_window=max_window,
     )
 
     trace.chopping_options.update(chopping_parameters)
     chopped_data = trace.chopped_data
+
     beats = apf.beat.chopped_data_to_beats(chopped_data, parent=trace)
     aligned_beats = apf.beat.align_beats(beats, parent=trace)
     collector.register_chopped_data(chopped_data, aligned_beats=aligned_beats)
@@ -1147,11 +1148,11 @@ def analyze_mps_func(
     filter_signal=False,
     ignore_pacing=False,
     remove_points_list=(),
-    chopping_threshold_factor=0.3,
-    chopping_extend_front=None,
-    chopping_extend_end=None,
-    chopping_min_window=200,
-    chopping_max_window=2000,
+    threshold_factor=0.3,
+    extend_front=None,
+    extend_end=None,
+    min_window=200,
+    max_window=2000,
     use_spline=True,
     normalize=False,
     outdir=None,
@@ -1180,11 +1181,11 @@ def analyze_mps_func(
         ead_prom=ead_prom,
         std_ex=std_ex,
         N=N,
-        threshold_factor=chopping_threshold_factor,
-        extend_front=chopping_extend_front,
-        extend_end=chopping_extend_end,
-        min_window=chopping_min_window,
-        max_window=chopping_max_window,
+        threshold_factor=threshold_factor,
+        extend_front=extend_front,
+        extend_end=extend_end,
+        min_window=min_window,
+        max_window=max_window,
     )
 
     collector = Collector(outdir=outdir, plot=plot, params=params)
