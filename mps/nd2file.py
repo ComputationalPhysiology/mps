@@ -42,6 +42,10 @@ from xml.etree import ElementTree
 import numpy as np
 
 
+def asscalar(x: np.ndarray):
+    return x.item()
+
+
 class ND2File(object):
     CHUNK_MAP_SIGNATURE = b"ND2 CHUNK MAP SIGNATURE 0000001"
     CHUNK_FILE_SIGNATURE = b"ND2 FILE SIGNATURE CHUNK NAME01"
@@ -279,10 +283,10 @@ class ND2File(object):
         return np.ndarray(shape=(count,), dtype=dtype, buffer=self.mem, offset=position)
 
     def _sdfp(self, position, dtype, count=1):
-        return map(np.asscalar, self._dfp(position, dtype, count))
+        return map(asscalar, self._dfp(position, dtype, count))
 
     def _sfp(self, position, dtype):
-        return np.asscalar(self._dfp(position, dtype, count=1)[0])
+        return asscalar(self._dfp(position, dtype, count=1)[0])
 
     def _readstring(self, position, length):
         return self.mem[position : position + 2 * length].decode(
