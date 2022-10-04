@@ -347,8 +347,8 @@ def phase_plot(
 
 
 try:
-    from mps_motion_tracking import cli as cli_motion
-    from mps_motion_tracking import motion_tracking as mt
+    from mps_motion import cli as cli_motion
+    from mps_motion import motion_tracking as mt
 
     @app.command(help="Estimate motion in stack of images")
     def motion(
@@ -461,6 +461,7 @@ except ImportError:
 
     def motion():
         typer.echo("Motion tracking software is not installed")
+        typer.echo("Install with 'pip install mps-motion'")
 
 
 # Helper function for standalone console scripts

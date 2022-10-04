@@ -100,7 +100,7 @@ dev-windows: clean upgrade-pip ## Developement install - windows
 	pre-commit install
 
 installer: clean upgrade-pip ## make installer for unix
-	python3 -m pip install ".[dev]"
+	python3 -m pip install ".[dev,motion]"
 	python3 -m pip install pyinstaller
 	python -m pip install "opencv-contrib-python==4.5.3.56"
 	python -m pip install "opencv-python==4.5.3.56"
@@ -108,7 +108,7 @@ installer: clean upgrade-pip ## make installer for unix
 
 installer-windows: clean upgrade-pip ## make installer for windows
 	python3 -m pip install pipwin
-	pipwin -m pip install ".[dev]"
+	pipwin -m pip install ".[dev,motion]"
 	pipwin install pyinstaller
 	pyinstaller -F mps/__main__.py -n mps --hidden-import=imageio_ffmpeg --hidden-import=matplotlib --hidden-import=scipy.special.cython_special --collect-submodules imageio --additional-hooks-dir=pyinstaller_hooks
 

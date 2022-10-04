@@ -19,9 +19,6 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install motion tracking
-      run: |
-        python -m pip install git+https://github.com/ComputationalPhysiology/mps_motion_tracking.git
     - name: pyinstaller
       run: |
         make installer
