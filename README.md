@@ -6,9 +6,9 @@
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL_v2.1-blue.svg)](https://www.gnu.org/licenses/lgpl-2.1)
 
 
-# MPS data
+# MPS
 
-This repository contains the software for reading and analyzing MPS data.
+A library for reading and analyzing MPS data.
 The analysis scripts are heavily based on [ap_features](https://github.com/ComputationalPhysiology/ap_features) which is a package for computing features of action potential traces.
 
 ## Installation
