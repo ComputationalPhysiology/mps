@@ -395,7 +395,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="merge_pdfs"><a class="viewcode-back" href="../../mps.html#mps.utils.merge_pdfs">[docs]</a><span class="k">def</span> <span class="nf">merge_pdfs</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">cleanup</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a list of paths to pdfs, merge these together and save</span>
 <span class="sd">    the results in a new file</span>
 
@@ -475,7 +475,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="get_data_from_dict"><a class="viewcode-back" href="../../mps.html#mps.utils.get_data_from_dict">[docs]</a><span class="k">def</span> <span class="nf">get_data_from_dict</span><span class="p">(</span><span class="n">set_data</span><span class="p">,</span> <span class="n">set_key</span><span class="p">,</span> <span class="n">get_data</span><span class="p">,</span> <span class="n">get_key</span><span class="p">,</span> <span class="n">get_name</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Copy data from one dictionary to another&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy data from one dictionary to another&quot;&quot;&quot;</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">set_data</span><span class="p">[</span><span class="n">set_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_data</span><span class="p">[</span><span class="n">get_key</span><span class="p">]</span>
@@ -497,7 +497,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="collect_data"><a class="viewcode-back" href="../../mps.html#mps.utils.collect_data">[docs]</a><span class="k">def</span> <span class="nf">collect_data</span><span class="p">(</span><span class="n">voltage_data</span><span class="p">,</span> <span class="n">calcium_data</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Collect voltage and calcium data togther so that it can be used</span>
 <span class="sd">    in the inversion.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -610,7 +610,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="to_csv"><a class="viewcode-back" href="../../mps.html#mps.utils.to_csv">[docs]</a><span class="k">def</span> <span class="nf">to_csv</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    FIXME</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -635,7 +635,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="json_serial"><a class="viewcode-back" href="../../mps.html#mps.utils.json_serial">[docs]</a><span class="k">def</span> <span class="nf">json_serial</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;JSON serializer for objects not serializable by default json code&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;JSON serializer for objects not serializable by default json code&quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)):</span>
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
@@ -662,7 +662,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="dump_data"><a class="viewcode-back" href="../../mps.html#mps.utils.dump_data">[docs]</a><span class="k">def</span> <span class="nf">dump_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">fileformat</span><span class="o">=</span><span class="s2">&quot;npy&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Dump data to a file with given file format</span>
 
 <span class="sd">    Arguments</span>
@@ -730,7 +730,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="get_intersection"><a class="viewcode-back" href="../../mps.html#mps.utils.get_intersection">[docs]</a><span class="k">def</span> <span class="nf">get_intersection</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get intersection of all values in</span>
 <span class="sd">    a dictionary</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -750,7 +750,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="padding"><a class="viewcode-back" href="../../mps.html#mps.utils.padding">[docs]</a><span class="k">def</span> <span class="nf">padding</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Make sure all traces are of the same lenght and</span>
 <span class="sd">    fill in extra values if neccessary</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -787,7 +787,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="loadmat"><a class="viewcode-back" href="../../mps.html#mps.utils.loadmat">[docs]</a><span class="k">def</span> <span class="nf">loadmat</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Short summary.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Short summary.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -800,7 +800,7 @@ title="Open an issue"
 <span class="sd">        Description of returned object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    this function should be called instead of direct sio.loadmat</span>
 <span class="sd">    as it cures the problem of not properly recovering python dictionaries</span>
 <span class="sd">    from mat files. It calls the function check keys to cure all entries</span>
@@ -808,7 +808,7 @@ title="Open an issue"
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_check_keys</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        checks if entries in dictionary are mat-objects. If yes</span>
 <span class="sd">        todict is called to change them to nested dictionaries</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -818,7 +818,7 @@ title="Open an issue"
         <span class="k">return</span> <span class="n">d</span>
 
     <span class="k">def</span> <span class="nf">_todict</span><span class="p">(</span><span class="n">matobj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A recursive function which constructs from matobjects nested dictionaries</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
@@ -833,7 +833,7 @@ title="Open an issue"
         <span class="k">return</span> <span class="n">d</span>
 
     <span class="k">def</span> <span class="nf">_tolist</span><span class="p">(</span><span class="n">ndarray</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A recursive function which constructs lists from cellarrays</span>
 <span class="sd">        (which are loaded as numpy ndarrays), recursing into the elements</span>
 <span class="sd">        if they contain matobjects.</span>

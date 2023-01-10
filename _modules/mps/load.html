@@ -420,7 +420,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="get_single_frame"><a class="viewcode-back" href="../../mps.html#mps.load.get_single_frame">[docs]</a><span class="k">def</span> <span class="nf">get_single_frame</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a single frame from a czi or nd2 file.</span>
 
 <span class="sd">    Arguments</span>
@@ -458,7 +458,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="load_nd2"><a class="viewcode-back" href="../../mps.html#mps.load.load_nd2">[docs]</a><span class="k">def</span> <span class="nf">load_nd2</span><span class="p">(</span><span class="n">fname</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MPSData</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load ND2 file (Nikon image file)</span>
 
 <span class="sd">    Arguments</span>
@@ -493,7 +493,7 @@ title="Open an issue"
             <span class="n">executor</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_frames</span><span class="p">))</span>
 
     <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded </span><span class="si">{</span><span class="n">num_frames</span><span class="si">}</span><span class="s2"> frames in </span><span class="si">{</span><span class="n">t1</span> <span class="o">-</span> <span class="n">t0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded </span><span class="si">{</span><span class="n">num_frames</span><span class="si">}</span><span class="s2"> frames in </span><span class="si">{</span><span class="n">t1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
     <span class="c1"># Let time start at zero</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">time_stamps</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
         <span class="c1"># Then there is something wrong with the file</span>
@@ -844,7 +844,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="MPS"><a class="viewcode-back" href="../../mps.html#mps.load.MPS">[docs]</a><span class="k">class</span> <span class="nc">MPS</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create instant of class for analysing MPS data</span>
 
 <span class="sd">    Arguments</span>
@@ -933,7 +933,7 @@ title="Open an issue"
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">framerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return number of frames per second</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fps</span> <span class="o">=</span> <span class="kc">None</span>
@@ -951,7 +951,7 @@ title="Open an issue"
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pacing_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the pacing frequency in Hertz</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the pacing frequency in Hertz</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
