@@ -401,12 +401,13 @@ def compute_features(beats: List[apf.Beat], use_spline=True, normalize=False):
             or np.nan
         )
     features["beating_frequencies"] = beats[0].parent.beating_frequencies
-    for k, v in features.items():
-        features[k] = v[~np.isnan(v)]
-        num_beats = min(len(features[k]), num_beats)
+    # for k, v in features.items():
+    #     features[k] = v[~np.isnan(v)]
+    #     num_beats = min(len(features[k]), num_beats)
 
     features["beating_frequency"] = beats[0].parent.beating_frequency
     features["num_beats"] = num_beats
+
     return features
 
 
@@ -501,7 +502,10 @@ def exclude_x_std(data, x=None, use=None):
 
     for k, v in data.items():
         if isinstance(v, Iterable) and len(v) > 0:
-            new_data[k] = np.array(v)[all_included_indices].tolist()
+            try:
+                new_data[k] = np.array(v)[all_included_indices].tolist()
+            except IndexError:
+                pass
         else:
             new_data[k] = v
 
@@ -978,6 +982,7 @@ def compute_all_features(
         plot=plot,
         fname="" if outdir is None else outdir.joinpath("apd_analysis.png"),
     )
+
     features["slope_APD80"] = apd_analysis.slope_APD80
     features["slope_cAPD80"] = apd_analysis.slope_cAPD80
     features["triangulation"] = apd_analysis.triangulation
@@ -987,17 +992,13 @@ def compute_all_features(
         prominence_threshold=ead_prominence_threshold,
         fname="" if outdir is None else outdir.joinpath("EAD_analysis.png"),
     )
-    excluded = exclude_x_std(
-        features,
-        std_ex,
-        use=["apd30", "apd80"],
-    )
+
+    excluded = exclude_x_std(features, std_ex, use=["apd30", "apd80"])
     mean_features = {}
     features_1std = []
     features_all = []
     template = "{0:20}\t{1:10.1f}  +/-  {2:10.3f}"
-    for k in features.keys():
-        v = excluded.new_data[k]
+    for k, v in excluded.new_data.items():
         features_1std.append(template.format(k, mean(v), std(v)))
         mean_features[k] = mean(v)
 
@@ -1020,7 +1021,7 @@ def mean(x):
         return x
     if len(x) == 0:
         return np.nan
-    return np.mean(x)
+    return np.nanmean(x)
 
 
 def std(x):
@@ -1028,7 +1029,7 @@ def std(x):
         return x
     if len(x) == 0:
         return np.nan
-    return np.std(x)
+    return np.nanstd(x)
 
 
 def enlist(x):
