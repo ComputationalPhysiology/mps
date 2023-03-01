@@ -69,6 +69,7 @@ valid_extensions = [
     ".mp4",
     ".mpeg",
     ".mov",
+    ".npy",
 ]
 
 
