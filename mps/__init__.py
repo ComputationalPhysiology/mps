@@ -25,7 +25,7 @@
 # WARRANTIES OF ANY KIND, EITHER IMPLIED OR EXPRESSED, INCLUDING, BUT
 # NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 __author__ = "Henrik Finsberg (henriknf@simula.no), 2017--2022"
-__version__ = "2023.0.0"
+__version__ = "2023.1.0"
 __maintainer__ = "Henrik Finsberg"
 __email__ = "henriknf@simula.no"
 __license__ = """
