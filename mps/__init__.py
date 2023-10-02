@@ -67,7 +67,7 @@ if getattr(sys, "frozen", False):
 
 import logging as _logging
 
-from . import analysis, average, load, plotter, scripts, utils, tissue_detection
+from . import analysis, average, load, plotter, scripts, utils
 from .load import MPS
 
 log_level = _logging.INFO
@@ -75,7 +75,6 @@ _logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)
 
 
 def set_log_level(level, logger=None):
-
     loggers = [logger]
     if logger is None:
         loggers = [
@@ -87,7 +86,6 @@ def set_log_level(level, logger=None):
         ] + scripts._loggers
 
     for logger in loggers:
-
         logger.setLevel(level)
         for h in logger.handlers:
             h.setLevel(level)
@@ -102,8 +100,6 @@ __all__ = [
     "analysis",
     "plotter",
     "average",
-    "bin_utils",
     "log_level",
     "scripts",
-    "tissue_detection",
 ]
