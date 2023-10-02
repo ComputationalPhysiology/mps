@@ -155,7 +155,6 @@ def load_nd2(fname: os.PathLike) -> MPSData:
     max_workers = multiprocessing.cpu_count() // 2
     t0 = time.time()
     with ND2File(fname) as frames:
-
         num_frames: int = frames.imagecount
         metadata = frames.metadata
         images = np.zeros((frames.height, frames.width, num_frames), dtype=np.uint16)
@@ -234,7 +233,6 @@ def load_nd2(fname: os.PathLike) -> MPSData:
 
 
 def load_czi(fname):
-
     with czifile.CziFile(fname) as f:
         images = f.asarray().squeeze()
         metadata = czifile.elem2dict(f.metadata)
@@ -242,7 +240,6 @@ def load_czi(fname):
         time_stamps = None
         pacing_triggers = []
         for a in f.attachment_directory:
-
             d = a.data_segment().data()
 
             if isinstance(d, czifile.TimeStamps):
@@ -276,7 +273,6 @@ def load_czi(fname):
 
 
 def load_zip(fname: os.PathLike) -> MPSData:
-
     try:
         import xmltodict
     except ImportError:
@@ -284,7 +280,6 @@ def load_zip(fname: os.PathLike) -> MPSData:
         raise ImportError(msg)
 
     with zipfile.ZipFile(fname, "r") as f:
-
         metaname = [g for g in f.namelist() if os.path.basename(g) == "meta.xml"][0]
         with f.open(metaname) as fid:
             metadata = xmltodict.parse(fid.read())
@@ -337,9 +332,7 @@ def load_zip(fname: os.PathLike) -> MPSData:
 
 
 def load_stk(fname: os.PathLike) -> MPSData:
-
     if not has_tifffile:
-
         raise ImportError(
             (
                 "tifffile is not installed. Please install "
@@ -377,7 +370,6 @@ def load_stk(fname: os.PathLike) -> MPSData:
 
 
 def load_movie(fname: os.PathLike) -> MPSData:
-
     try:
         import imageio
     except ImportError as ex:
@@ -448,7 +440,6 @@ def load_tiff_timestamps(f):
 
 
 def load_tiff(fname):
-
     if not has_tifffile:
         if "_imagecodecs" in _tifffile_msg:
             raise ImportError(
@@ -494,7 +485,6 @@ def load_tiff(fname):
 
 
 def load_file(fname, ext):
-
     if ext == ".czi":
         data = load_czi(fname)
 
@@ -537,7 +527,6 @@ class MPS(object):
     """
 
     def __init__(self, fname="", verbose=False):
-
         loglevel = logging.DEBUG if verbose else logging.INFO
         logger.setLevel(loglevel)
         if fname == "":
