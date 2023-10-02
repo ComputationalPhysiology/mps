@@ -44,14 +44,6 @@ mps.plotter module
    :undoc-members:
    :show-inheritance:
 
-mps.tissue\_detection module
-----------------------------
-
-.. automodule:: mps.tissue_detection
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 mps.utils module
 ----------------
 
