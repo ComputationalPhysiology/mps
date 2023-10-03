@@ -33,6 +33,7 @@ NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
 """
 from textwrap import dedent
 from typing import Optional
+from pathlib import Path
 
 import typer
 
@@ -226,7 +227,6 @@ def analyze(
     ),
     verbose: bool = typer.Option(False, "--verbose", "-v", help="More verbose"),
 ):
-
     scripts.analyze.main(
         path=path,
         outdir=outdir,
@@ -457,9 +457,54 @@ try:
             verbose=verbose,
         )
 
+    @app.command(help="Resize data. Resized data will be saved to .npy")
+    def resize_data(
+        filename: Path = typer.Argument(
+            ...,
+            help=dedent("Path to file to be resized, typically an .nd2, .czi or .tiff"),
+            exists=True,
+            file_okay=True,
+            dir_okay=False,
+            readable=True,
+            resolve_path=True,
+        ),
+        scale: float = typer.Argument(
+            ...,
+            help="Scale for which to resize image. 1.0 will keep the original size",
+        ),
+        outfile: Optional[Path] = typer.Option(
+            None,
+            "--outfile",
+            "-o",
+            help=dedent(
+                """
+            Name of the output file. If not provided a file with the same
+            name as the basename of the input file in the
+            current directory will be used.""",
+            ),
+        ),
+    ):
+        if outfile is None:
+            outfile = filename.with_suffix(".npy")
+        outfile = Path(outfile).with_suffix(".npy")
+        from .load import MPS
+        import numpy as np
+
+        data = MPS(filename)
+        new_data = mt.scaling.resize_data(data=data, scale=scale)
+        np.save(outfile, new_data.__dict__)
+
+        typer.echo(f"Saved to {outfile}")
+
 except ImportError:
 
+    @app.command(help="Estimate motion in stack of images")
     def motion():
+        typer.echo("Motion tracking software is not installed")
+        typer.echo("Install with 'pip install mps-motion'")
+
+    @app.command(help="Resize data. Resized data will be saved to .npy")
+    def resize_data():
         typer.echo("Motion tracking software is not installed")
         typer.echo("Install with 'pip install mps-motion'")
 
