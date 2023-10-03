@@ -461,7 +461,6 @@ document.write(`
     <span class="n">max_workers</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span>
     <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">with</span> <span class="n">ND2File</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">as</span> <span class="n">frames</span><span class="p">:</span>
-
         <span class="n">num_frames</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">frames</span><span class="o">.</span><span class="n">imagecount</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="n">frames</span><span class="o">.</span><span class="n">metadata</span>
         <span class="n">images</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">frames</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">frames</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">num_frames</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span>
@@ -540,7 +539,6 @@ document.write(`
 
 
 <div class="viewcode-block" id="load_czi"><a class="viewcode-back" href="../../mps.html#mps.load.load_czi">[docs]</a><span class="k">def</span> <span class="nf">load_czi</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
-
     <span class="k">with</span> <span class="n">czifile</span><span class="o">.</span><span class="n">CziFile</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">images</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">asarray</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="n">czifile</span><span class="o">.</span><span class="n">elem2dict</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
@@ -548,7 +546,6 @@ document.write(`
         <span class="n">time_stamps</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">pacing_triggers</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">attachment_directory</span><span class="p">:</span>
-
             <span class="n">d</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">data_segment</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">czifile</span><span class="o">.</span><span class="n">TimeStamps</span><span class="p">):</span>
@@ -582,7 +579,6 @@ document.write(`
 
 
 <div class="viewcode-block" id="load_zip"><a class="viewcode-back" href="../../mps.html#mps.load.load_zip">[docs]</a><span class="k">def</span> <span class="nf">load_zip</span><span class="p">(</span><span class="n">fname</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MPSData</span><span class="p">:</span>
-
     <span class="k">try</span><span class="p">:</span>
         <span class="kn">import</span> <span class="nn">xmltodict</span>
     <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
@@ -590,7 +586,6 @@ document.write(`
         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-
         <span class="n">metaname</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">namelist</span><span class="p">()</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;meta.xml&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">with</span> <span class="n">f</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">metaname</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
             <span class="n">metadata</span> <span class="o">=</span> <span class="n">xmltodict</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">fid</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
@@ -643,9 +638,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="load_stk"><a class="viewcode-back" href="../../mps.html#mps.load.load_stk">[docs]</a><span class="k">def</span> <span class="nf">load_stk</span><span class="p">(</span><span class="n">fname</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MPSData</span><span class="p">:</span>
-
     <span class="k">if</span> <span class="ow">not</span> <span class="n">has_tifffile</span><span class="p">:</span>
-
         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="s2">&quot;tifffile is not installed. Please install &quot;</span>
@@ -683,7 +676,6 @@ document.write(`
 
 
 <div class="viewcode-block" id="load_movie"><a class="viewcode-back" href="../../mps.html#mps.load.load_movie">[docs]</a><span class="k">def</span> <span class="nf">load_movie</span><span class="p">(</span><span class="n">fname</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MPSData</span><span class="p">:</span>
-
     <span class="k">try</span><span class="p">:</span>
         <span class="kn">import</span> <span class="nn">imageio</span>
     <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
@@ -754,7 +746,6 @@ document.write(`
 
 
 <div class="viewcode-block" id="load_tiff"><a class="viewcode-back" href="../../mps.html#mps.load.load_tiff">[docs]</a><span class="k">def</span> <span class="nf">load_tiff</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
-
     <span class="k">if</span> <span class="ow">not</span> <span class="n">has_tifffile</span><span class="p">:</span>
         <span class="k">if</span> <span class="s2">&quot;_imagecodecs&quot;</span> <span class="ow">in</span> <span class="n">_tifffile_msg</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
@@ -800,7 +791,6 @@ document.write(`
 
 
 <div class="viewcode-block" id="load_file"><a class="viewcode-back" href="../../mps.html#mps.load.load_file">[docs]</a><span class="k">def</span> <span class="nf">load_file</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ext</span><span class="p">):</span>
-
     <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.czi&quot;</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">load_czi</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
 
@@ -843,7 +833,6 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-
         <span class="n">loglevel</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span> <span class="k">if</span> <span class="n">verbose</span> <span class="k">else</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">loglevel</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">fname</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
