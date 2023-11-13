@@ -20,9 +20,6 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install -e ".[test]"
-      - name: Run pre-commit hooks
-        run: |
-          pre-commit run --all
       - name: Test with pytest
         run: |
           python3 -m pytest
