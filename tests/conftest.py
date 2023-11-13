@@ -13,16 +13,13 @@ def ca_transient(t, tstart=0.05):
     ca_diast = 0.0
     ca_ampl = 1.0
 
-    beta = (tau1 / tau2) ** (-1 / (tau1 / tau2 - 1)) - (tau1 / tau2) ** (
-        -1 / (1 - tau2 / tau1)
-    )
+    beta = (tau1 / tau2) ** (-1 / (tau1 / tau2 - 1)) - (tau1 / tau2) ** (-1 / (1 - tau2 / tau1))
     ca = np.zeros_like(t)
 
     ca[t <= tstart] = ca_diast
 
     ca[t > tstart] = (ca_ampl - ca_diast) / beta * (
-        np.exp(-(t[t > tstart] - tstart) / tau1)
-        - np.exp(-(t[t > tstart] - tstart) / tau2)
+        np.exp(-(t[t > tstart] - tstart) / tau1) - np.exp(-(t[t > tstart] - tstart) / tau2)
     ) + ca_diast
     return ca
 
@@ -42,7 +39,6 @@ def mps_data_path():
     pacing[size_beat]
 
     for beat in range(num_beats):
-
         t = np.linspace(0, 1, size_beat + 1)
         y = ca_transient(t[:-1], tstart=tstart)
 
@@ -50,9 +46,7 @@ def mps_data_path():
             y,
             (size_x, size_y, 1),
         )
-        time_stamps[size_beat * beat : size_beat * (beat + 1)] = (
-            t[:-1] * 1000 + beat * 1000
-        )
+        time_stamps[size_beat * beat : size_beat * (beat + 1)] = t[:-1] * 1000 + beat * 1000
         pacing[beat * size_beat : beat * size_beat + num_pacing_steps] = 1
 
     info = dict(
@@ -78,7 +72,6 @@ def mps_data_path():
 
 @pytest.fixture
 def mps_data(mps_data_path):
-
     return mps.MPS(mps_data_path)
 
 

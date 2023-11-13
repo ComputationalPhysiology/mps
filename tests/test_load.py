@@ -27,7 +27,6 @@ here = Path(__file__).absolute().parent
 
 
 def create_dummy_data():
-
     dt = 10.0
     T = 7000.0  # End time (ms)
     period = 1000
@@ -68,13 +67,11 @@ def create_dummy_data():
 
 
 def test_from_dict():
-
     dummy_data = create_dummy_data()
     mps.MPS.from_dict(**dummy_data)
 
 
 def test_nd2_file():
-
     dummy_data = create_dummy_data()
 
     class Frames:

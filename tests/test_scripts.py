@@ -27,7 +27,6 @@ python = find_executable("python")
 
 
 def test_mps_analyze(mps_data_path):
-
     ret = sp.call([python, "-m", "mps", "analyze", mps_data_path])
     assert ret == 0
     shutil.rmtree(Path(mps_data_path).with_suffix(""))
@@ -35,7 +34,6 @@ def test_mps_analyze(mps_data_path):
 
 @pytest.mark.skipif(missing_mpl, reason="Requires matplotlib")
 def test_mps_phase_plot(mps_data_path):
-
     out = Path(mps_data_path).parent.joinpath("phase_plot.png")
     ret = sp.call(
         [
@@ -55,7 +53,6 @@ def test_mps_phase_plot(mps_data_path):
 
 @pytest.mark.skipif(missing_ffmpeg, reason="Requires imageio-ffmpeg")
 def test_mps2mp4(mps_data_path):
-
     out = Path(mps_data_path).parent.joinpath("movie.mp4")
     ret = sp.call([python, "-m", "mps", "mps2mp4", mps_data_path, "-o", out.as_posix()])
     assert ret == 0
@@ -64,7 +61,6 @@ def test_mps2mp4(mps_data_path):
 
 @pytest.mark.skipif(missing_mpl, reason="Requires matplotlib")
 def test_mps_summary_script(mps_data_path):
-
     path = Path(mps_data_path)
     new_path = path.parent.joinpath("data").joinpath(path.name)
     another_path = path.parent.joinpath("data").joinpath(f"another_{path.name}")
@@ -90,7 +86,6 @@ def test_mps_summary_script(mps_data_path):
 
 @pytest.mark.skipif(missing_mpl, reason="Requires matplotlib")
 def test_mps_summary_function(mps_data_path):
-
     path = Path(mps_data_path)
     new_path = path.parent.joinpath("data").joinpath(path.name)
     another_path = path.parent.joinpath("data").joinpath(f"another_{path.name}")
@@ -102,6 +97,5 @@ def test_mps_summary_function(mps_data_path):
 
 @pytest.mark.xfail(reason="Not yet implemented properly")
 def test_mps_prevalence(mps_data_path):
-
     ret = sp.call([python, "-m", "mps", "prevalence", mps_data_path])
     assert ret == 0

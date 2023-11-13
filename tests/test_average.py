@@ -6,7 +6,6 @@ import mps
 
 @pytest.mark.parametrize("avg_type", ["all", "spatial", "temporal"])
 def test_average(mps_data, avg_type):
-
     expected = mps_data.frames[0, 0, :]
 
     if avg_type == "all":
@@ -20,7 +19,6 @@ def test_average(mps_data, avg_type):
 
 
 def test_average_ones():
-
     tol = 1e-12
     data = np.ones((20, 20, 20))
 

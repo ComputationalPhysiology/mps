@@ -34,7 +34,6 @@ def beats(request):
 
 
 def test_local_averages():
-
     dt = 10.0
     T = 7000.0  # End time (ms)
     period = 1000
@@ -98,7 +97,6 @@ def test_AnalyzeMPS(mps_data):
 
 
 def test_compare_get_average_all_and_local(mps_data):
-
     analysis_data = mps.analysis.analyze_mps_func(mps_data)
     avg1 = analysis_data["unchopped_data"]["trace"]
     avg2 = mps.analysis.frame2average(

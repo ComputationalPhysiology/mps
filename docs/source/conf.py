@@ -52,7 +52,10 @@ html_theme_options = {
     "repository_url": "https://github.com/ComputationalPhysiology/mps",
     "use_issues_button": True,
     "use_repository_button": True,
-    "extra_navbar": '<a href="https://www.simula.no/research/projects/department-computational-physiology">Computational Physiology at Simula</a>',
+    "extra_navbar": (
+        '<a href="https://www.simula.no/research/projects/department-computational-physiology">'
+        "Computational Physiology at Simula</a>"
+    ),
 }
 
 html_logo = "_static/logo.png"
