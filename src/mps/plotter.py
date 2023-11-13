@@ -111,7 +111,6 @@ def plot_window(self, frames, num_frames, local=None, t=0, fname=None):
 
 
 def plot_twin_trace(x1, x2, y1, y2, fname):
-
     if not has_mpl:
         return
 
@@ -125,7 +124,6 @@ def plot_twin_trace(x1, x2, y1, y2, fname):
 
 
 def plot_single_trace(x, y, fname, ylabel="Pixel intensity"):
-
     if not has_mpl:
         return
 
@@ -138,7 +136,6 @@ def plot_single_trace(x, y, fname, ylabel="Pixel intensity"):
 
 
 def plot_multiple_traces(xs, ys, fname, titles=None, deep=False, ylabels=None):
-
     if not has_mpl:
         return
 
@@ -174,7 +171,6 @@ def plot_multiple_traces(xs, ys, fname, titles=None, deep=False, ylabels=None):
 
 
 def phase_plots(voltage, calcium, fname):
-
     fig, ax = plt.subplots()
     ax.plot(voltage, calcium, "o")
     ax.set_xlabel("Voltage")

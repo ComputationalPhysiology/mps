@@ -16,7 +16,6 @@ def main(
     outfile: Optional[str] = None,
     synch: bool = False,
 ):
-
     logger.setLevel(logging.INFO)
     file_path = Path(path)
     if not file_path.is_file():

@@ -63,7 +63,6 @@ def plot(
     filename: str = "mps_summary",
     ignore_pacing: bool = False,
 ):
-
     fig, ax = plt.subplots(len(files), 2, constrained_layout=True)
     if len(files) == 1:
         ax = np.expand_dims(ax, axis=0)
@@ -129,7 +128,6 @@ def plot(
         ]
         pos = np.linspace(0, 1, len(keys) + 1)[1:]
         for j, (key, label) in enumerate(zip(keys, labels)):
-
             if key == "slope_APD80":
                 s1 = f"{data[key]:.2f}"
             else:
@@ -242,13 +240,13 @@ def main(
     silent: bool = False,
     include_npy: bool = False,
 ):
-
     level = logging.WARNING if silent else logging.INFO
     logger.setLevel(level)
 
     if not has_mpl:
         logger.error(
-            "Cannot run script without matplotlib. Please install that first - 'pip install matplotlib'",
+            "Cannot run script without matplotlib. "
+            "Please install that first - 'pip install matplotlib'",
         )
         return
 

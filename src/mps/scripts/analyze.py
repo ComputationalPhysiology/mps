@@ -35,14 +35,12 @@ def dump_settings(outdir, kwargs):
 
 
 def run_folder(**kwargs):
-
     path = Path(kwargs.get("path"))
     if not path.is_dir():
         raise IOError(f"Folder {path} does not exist")
 
     for root, dirs, files in os.walk(path):
         for f in files:
-
             if Path(f).suffix not in valid_extensions:
                 continue
 
@@ -60,10 +58,7 @@ def update_kwargs(kwargs: Dict[str, Any], outdir: Path):
     if not outdir.is_dir():
         return
 
-    if (
-        kwargs.get("reuse_settings", False)
-        and outdir.joinpath("settings.json").is_file()
-    ):
+    if kwargs.get("reuse_settings", False) and outdir.joinpath("settings.json").is_file():
         logger.debug("Reuse settings")
         with open(outdir.joinpath("settings.json"), "r") as f:
             old_kwargs = json.load(f)
@@ -72,7 +67,6 @@ def update_kwargs(kwargs: Dict[str, Any], outdir: Path):
 
 
 def check_overwrite(kwargs: Dict[str, Any], outdir: Path):
-
     if not outdir.is_dir():
         return
 
@@ -96,7 +90,6 @@ def check_overwrite(kwargs: Dict[str, Any], outdir: Path):
 
         old_dir.mkdir(exist_ok=True, parents=True)
         for p in outdir.iterdir():
-
             if Path(p).name == old_dir.name:
                 # We cannot move the old_dir into itself
                 continue
@@ -111,7 +104,6 @@ def check_overwrite(kwargs: Dict[str, Any], outdir: Path):
 
 
 def run_file(**kwargs):
-
     path = Path(kwargs.get("path"))
     if not path.is_file():
         raise IOError(f"File {path} does not exist")
@@ -160,7 +152,6 @@ def main(
     overwrite: bool = True,
     verbose: bool = False,
 ):
-
     level = logging.DEBUG if verbose else logging.INFO
     logger.setLevel(level)
 

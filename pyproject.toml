@@ -1,0 +1,157 @@
+[build-system]
+requires = ["setuptools>=61.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cardiac_mps"
+description = "Tools for working with caridac mps files"
+authors = [{name = "Henrik Finsberg", email = "henriknf@simula.no"}]
+license = {text = "LGPL-2.1"}
+classifiers = [
+    "License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+keywords = ["action potential", "cell models", "features"]
+requires-python = ">=3.7"
+dependencies = [
+    "ap-features",
+    "imageio",
+    "imageio-ffmpeg",
+    "matplotlib",
+    "numpy",
+    "scipy",
+    "tifffile",
+    "typer",
+    "xmltodict",
+]
+dynamic = ["version"]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.urls]
+Homepage = "https://github.com/ComputationalPhysiology/mps"
+
+[project.optional-dependencies]
+dev = [
+    "Sphinx",
+    "black",
+    "bump2version",
+    "flake8",
+    "ipython",
+    "isort",
+    "mypy",
+    "pdbpp",
+    "pip",
+    "pre-commit",
+    "pytest",
+    "pytest-cov",
+    "twine",
+    "types-PyYAML",
+    "wheel",
+]
+docs = [
+    "Sphinx",
+    "myst-parser",
+    "sphinx-book-theme",
+    "sphinxcontrib-bibtex",
+]
+motion = ["mps-motion"]
+test = [
+    "pre-commit",
+    "pytest",
+    "pytest-cov",
+]
+
+[project.scripts]
+mps = "mps.__main__:app"
+mps2mp4 = "mps.__main__:run_mps2mp4"
+mps-summary = "mps.__main__:run_summary"
+mps-analyze = "mps.__main__:run_analyze"
+mps-motion = "mps.__main__:run_motion"
+
+[tool.setuptools]
+zip-safe = false
+license-files = [
+    "LICENSE",
+    "licenses/LICENSE_nd2file",
+    "licenses/LICENSE_czifile",
+    "licenses/LICENSE_tifffile",
+]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+
+[tool.pytest.ini_options]
+addopts = [
+   "--cov=mps",
+   "--cov-report=html",
+   "--cov-report=term-missing",
+   "-v"
+]
+
+testpaths = [
+    "tests"
+]
+
+[tool.ruff]
+# Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
+select = ["E", "F"]
+ignore = ["E402", "E741", "E731"]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["A", "B", "C", "D", "E", "F"]
+unfixable = []
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+# Same as Black.
+line-length = 100
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Assume Python 3.10.
+target-version = "py310"
+
+[tool.ruff.mccabe]
+# Unlike Flake8, default to a complexity level of 10.
+max-complexity = 10
+
+
+[tool.coverage.run]
+omit = [
+    "mps/nd2file.py",
+    "mps/czifile.py",
+    "mps/tifffile.py",
+]

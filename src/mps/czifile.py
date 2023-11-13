@@ -176,7 +176,6 @@ def elem2dict(node):
     for e in node:
         key = e.tag
         if len(e) == 0:
-
             try:
                 value = e.text
             except Exception as ex:
@@ -321,9 +320,7 @@ class CziFile(object):
             if segment.sid == SubBlockDirectorySegment.SID:
                 return segment.data().entries
         warnings.warn("SubBlockDirectory segment not found")
-        return list(
-            segment.directory_entry for segment in self.segments(SubBlockSegment.SID)
-        )
+        return list(segment.directory_entry for segment in self.segments(SubBlockSegment.SID))
 
     @lazyattr
     def attachment_directory(self):
@@ -337,9 +334,7 @@ class CziFile(object):
             if segment.sid == AttachmentDirectorySegment.SID:
                 return segment.data().entries
         warnings.warn("AttachmentDirectory segment not found")
-        return list(
-            segment.attachment_entry for segment in self.segments(AttachmentSegment.SID)
-        )
+        return list(segment.attachment_entry for segment in self.segments(AttachmentSegment.SID))
 
     def subblocks(self):
         """Return iterator over all SubBlock segments in file."""
@@ -396,11 +391,7 @@ class CziFile(object):
     def start(self):
         """Return minimum start indices per dimension of sub images in file."""
         start = [
-            [
-                dim.start
-                for dim in directory_entry.dimension_entries
-                if dim.dimension != b"M"
-            ]
+            [dim.start for dim in directory_entry.dimension_entries if dim.dimension != b"M"]
             for directory_entry in self.filtered_subblock_directory
         ]
         start = tuple(numpy.min(start, axis=0)) + (0,)
@@ -456,8 +447,7 @@ class CziFile(object):
             subblock = directory_entry.data_segment()
             tile = subblock.data(resize=resize, order=order)
             index = [
-                slice(i - j, i - j + k)
-                for i, j, k in zip(directory_entry.start, start, tile.shape)
+                slice(i - j, i - j + k) for i, j, k in zip(directory_entry.start, start, tile.shape)
             ]
             try:
                 out[tuple(index)] = tile
@@ -581,8 +571,7 @@ class FileHeaderSegment(object):
 
     def __str__(self):
         return "FileHeaderSegment\n " + "\n ".join(
-            "%s %s" % (name, str(getattr(self, name)))
-            for name in FileHeaderSegment.__slots__
+            "%s %s" % (name, str(getattr(self, name))) for name in FileHeaderSegment.__slots__
         )
 
 
@@ -690,9 +679,7 @@ class SubBlockSegment(object):
 
         # sub / supersampling
         factors = [j / i for i, j in zip(de.stored_shape, de.shape)]
-        factors = [
-            (int(round(f)) if abs(f - round(f)) < 0.0001 else f) for f in factors
-        ]
+        factors = [(int(round(f)) if abs(f - round(f)) < 0.0001 else f) for f in factors]
 
         # use repeat if possible
         if order == 0 and all(isinstance(f, int) for f in factors):
@@ -798,31 +785,23 @@ class DirectoryEntryDV(object):
 
     @lazyattr
     def axes(self):
-        axes = b"".join(
-            dim.dimension for dim in self.dimension_entries if dim.dimension != b"M"
-        )
+        axes = b"".join(dim.dimension for dim in self.dimension_entries if dim.dimension != b"M")
         return bytes2str(axes + b"0")
 
     @lazyattr
     def shape(self):
-        shape = tuple(
-            dim.size for dim in self.dimension_entries if dim.dimension != b"M"
-        )
+        shape = tuple(dim.size for dim in self.dimension_entries if dim.dimension != b"M")
         sampleshape = numpy.dtype(self.dtype).shape
         return shape + (sampleshape if sampleshape else (1,))
 
     @lazyattr
     def start(self):
-        start = tuple(
-            dim.start for dim in self.dimension_entries if dim.dimension != b"M"
-        )
+        start = tuple(dim.start for dim in self.dimension_entries if dim.dimension != b"M")
         return start + (0,)
 
     @lazyattr
     def stored_shape(self):
-        shape = tuple(
-            dim.stored_size for dim in self.dimension_entries if dim.dimension != b"M"
-        )
+        shape = tuple(dim.stored_size for dim in self.dimension_entries if dim.dimension != b"M")
         sampleshape = numpy.dtype(self.dtype).shape
         return shape + (sampleshape if sampleshape else (1,))
 
@@ -900,9 +879,7 @@ class SubBlockDirectorySegment(object):
         """Return list of file positions of associated SubBlock segments."""
         entry_count = struct.unpack("<i", fh.read(4))[0]
         fh.seek(124, 1)  # reserved
-        return tuple(
-            DirectoryEntryDV.read_file_position(fh) for _ in range(entry_count)
-        )
+        return tuple(DirectoryEntryDV.read_file_position(fh) for _ in range(entry_count))
 
     def __init__(self, fh):
         entry_count = struct.unpack("<i", fh.read(4))[0]
@@ -919,9 +896,7 @@ class SubBlockDirectorySegment(object):
         return iter(self.entries)
 
     def __str__(self):
-        return "SubBlockDirectorySegment\n %s" % (
-            "\n ".join(str(e) for e in self.entries)
-        )
+        return "SubBlockDirectorySegment\n %s" % ("\n ".join(str(e) for e in self.entries))
 
 
 class AttachmentSegment(object):
@@ -1038,9 +1013,7 @@ class AttachmentDirectorySegment(object):
         """Return list of file positions of associated Attachment segments."""
         entry_count = struct.unpack("<i", fh.read(4))[0]
         fh.seek(252, 1)
-        return tuple(
-            AttachmentEntryA1.read_file_position(fh) for _ in range(entry_count)
-        )
+        return tuple(AttachmentEntryA1.read_file_position(fh) for _ in range(entry_count))
 
     def __init__(self, fh):
         entry_count = struct.unpack("<i", fh.read(4))[0]
@@ -1057,9 +1030,7 @@ class AttachmentDirectorySegment(object):
         return iter(self.entries)
 
     def __str__(self):
-        return "AttachmentDirectorySegment\n %s" % (
-            "\n ".join(str(i) for i in self.entries)
-        )
+        return "AttachmentDirectorySegment\n %s" % ("\n ".join(str(i) for i in self.entries))
 
 
 class DeletedSegment(object):
@@ -1431,9 +1402,7 @@ def czi2tif(czifile, tiffile=None, squeeze=True, verbose=True, **kwargs):
                 kwargs["software"] = "czi2tif"
             metadata = kwargs.pop("metadata", {})
             metadata.update(axes=axes, dtype=dtype)
-            data = memmap(
-                tiffile, shape=shape, dtype=dtype, metadata=metadata, **kwargs
-            )
+            data = memmap(tiffile, shape=shape, dtype=dtype, metadata=metadata, **kwargs)
             data = data.reshape(czi.shape)
             verbose("%.3f s" % (time.time() - start_time))
             verbose("Copying image from CZI to TIF file... ", end="", flush=True)

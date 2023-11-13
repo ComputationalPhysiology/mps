@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 
 def main(voltage: str, calcium: str, outfile: Optional[str] = None):
-
     logger.setLevel(logging.INFO)
     calcium_path = Path(calcium)
     voltage_path = Path(voltage)

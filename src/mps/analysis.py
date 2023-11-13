@@ -93,7 +93,6 @@ def snr(y):
 
 
 def active_pixel_mask(frames, cutoff_factor=0.5, *args, **kwargs):
-
     logger.debug("Get active pixel mask")
 
     avg, inds = average.get_temporal_average(
@@ -138,7 +137,6 @@ def average_intensity(data, mask=None, alpha=1.0, averaging_type="spatial"):
             avg = average.masked_average(data, mask)
 
     else:
-
         if averaging_type == "spatial":
             avg = average.get_spatial_average(data, alpha=alpha)
 
@@ -161,7 +159,6 @@ def analyze_apds(
     fname: str = "",
     plot=True,
 ) -> APDAnalysis:
-
     apd_levels = (100 * np.sort(np.append(np.arange(0.1, 0.91, 0.2), 0.8))).astype(int)
     apds = {k: [b.apd(k) for b in beats] for k in apd_levels}
     apd_points = {k: [b.apd_point(k) for b in beats] for k in apd_levels}
@@ -452,7 +449,6 @@ def find_included_indices(data, x=None, use=None):
         if len(v) == 0:
             continue
         for j, s in enumerate(v):
-
             # Include only signals within factor *
             # standard deviation from the mean
             if -np.std(v) * x < (s - np.mean(v)) < np.std(v) * x:
@@ -522,7 +518,6 @@ def analyze_frequencies(
     fname: str = "",
     plot=True,
 ) -> np.ndarray:
-
     freqs = apf.features.beating_frequency_from_peaks(
         [beat.y for beat in beats],
         [beat.t for beat in beats],
@@ -538,7 +533,6 @@ def analyze_frequencies(
     )
 
     if plot:
-
         try:
             import matplotlib.pyplot as plt
         except ImportError:
@@ -629,7 +623,6 @@ def analyze_eads(
 
 
 def plot_ead(fname, beats, peak_inds):
-
     try:
         import matplotlib.pyplot as plt
     except ImportError:
@@ -649,7 +642,6 @@ def plot_ead(fname, beats, peak_inds):
 
 class Collector:
     def __init__(self, outdir=None, plot: bool = False, params=None):
-
         self.unchopped_data: Dict[str, Any] = {}
         self.chopped_data: Dict[str, Any] = {}
         self.intervals: List[apf.chopping.Intervals] = []
@@ -710,7 +702,6 @@ class Collector:
         chopped_data: apf.chopping.ChoppedData,
         aligned_beats=None,
     ) -> None:
-
         if len(chopped_data.data) == 0 and hasattr(self, "y"):
             chopped_data.data.append(np.copy(self.y))
             chopped_data.times.append(np.copy(self.t))
@@ -911,7 +902,6 @@ def analyze_unchopped_data(
     background_correction=True,
     **kwargs,
 ) -> apf.Beats:
-
     avg = average_intensity(mps_data.frames, mask=mask)
     time_stamps = mps_data.time_stamps
     pacing = mps_data.pacing
@@ -1055,7 +1045,6 @@ def analyze_chopped_data(
     N: int = 200,
     **kwargs,
 ):
-
     chopping_parameters = dict(
         threshold_factor=threshold_factor,
         extend_front=extend_front,
@@ -1236,9 +1225,7 @@ def frame2average(frame, times=None, normalize=False, background_correction=True
 
     avg_ = average.get_average_all(frame)
     if background_correction:
-        assert (
-            times is not None
-        ), "Please provide time stamps for background correection"
+        assert times is not None, "Please provide time stamps for background correection"
         avg = apf.background.correct_background(times, avg_, "full").corrected
     else:
         avg = avg_
@@ -1313,7 +1300,6 @@ def local_averages(
     with concurrent.futures.ProcessPoolExecutor() as executor:
         for i in range(grid.nx):
             for j in range(grid.ny):
-
                 x0 = x_start + i * grid.dx
                 x1 = min(x0 + grid.dx, grid.x_end)
 
@@ -1348,7 +1334,6 @@ def _frames2average(kwargs):
 
 
 def analyze_local_average(frames, times=None, mask=None, N=10):
-
     loc = local_averages(frames, times, N=N)
     avg = frame2average(
         frame=frames,
@@ -1524,9 +1509,7 @@ def prevalence(
     """
 
     # Get the local traces
-    loc = local_averages(
-        frames=mps_data.frames, times=mps_data.time_stamps, N=N, **kwargs
-    )
+    loc = local_averages(frames=mps_data.frames, times=mps_data.time_stamps, N=N, **kwargs)
 
     avg = average.get_average_all(mps_data.frames)
     chopped_data = apf.chopping.chop_data_without_pacing(avg, mps_data.time_stamps)
@@ -1584,7 +1567,6 @@ def prevalence(
 
     # Check the baseline values in the non-beating tissue
     for i, j in zip(*np.where(~is_beating)):
-
         # If the baselines values are outside the range
         # we will classify it at non-tissue
         if (
