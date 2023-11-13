@@ -455,9 +455,7 @@ def imread(files, **kwargs):
             return imseq.asarray(**kwargs)
 
 
-def imsave(
-    file, data=None, shape=None, dtype=None, bigsize=2**32 - 2**25, **kwargs
-):
+def imsave(file, data=None, shape=None, dtype=None, bigsize=2**32 - 2**25, **kwargs):
     """Write numpy array to TIFF file.
 
     Refer to the TiffWriter class and member functions for documentation.
@@ -1041,8 +1039,7 @@ class TiffWriter(object):
                 photometric = RGB
                 if datadtypechar not in "B":
                     raise ValueError(
-                        "ImageJ does not support data type %s "
-                        "for RGB" % datadtypechar,
+                        "ImageJ does not support data type %s " "for RGB" % datadtypechar,
                     )
             elif photometric is None:
                 photometric = MINISBLACK
@@ -1087,12 +1084,7 @@ class TiffWriter(object):
         if tile:
             tile = tuple(int(i) for i in tile[:3])
             volume = len(tile) == 3
-            if (
-                len(tile) < 2
-                or tile[-1] % 16
-                or tile[-2] % 16
-                or any(i < 1 for i in tile)
-            ):
+            if len(tile) < 2 or tile[-1] % 16 or tile[-2] % 16 or any(i < 1 for i in tile):
                 raise ValueError("invalid tile shape")
         else:
             tile = ()
@@ -1290,10 +1282,7 @@ class TiffWriter(object):
         self._metadata = {} if not metadata else metadata.copy()
         if self._imagej:
             description = imagej_description(
-                input_shape,
-                shape[-1] in (3, 4),
-                self._colormap is not None,
-                **self._metadata
+                input_shape, shape[-1] in (3, 4), self._colormap is not None, **self._metadata
             )
         elif metadata or metadata == {}:
             if self._truncate:
@@ -1654,19 +1643,13 @@ class TiffWriter(object):
 
     def _write_image_description(self):
         """Write meta data to ImageDescription tag."""
-        if (
-            not self._datashape
-            or self._datashape[0] == 1
-            or self._descriptionoffset <= 0
-        ):
+        if not self._datashape or self._datashape[0] == 1 or self._descriptionoffset <= 0:
             return
 
         colormapped = self._colormap is not None
         if self._imagej:
             isrgb = self._shape[-1] in (3, 4)
-            description = imagej_description(
-                self._datashape, isrgb, colormapped, **self._metadata
-            )
+            description = imagej_description(self._datashape, isrgb, colormapped, **self._metadata)
         else:
             description = json_description(self._datashape, **self._metadata)
 
@@ -1742,14 +1725,7 @@ class TiffFile(object):
     """
 
     def __init__(
-        self,
-        arg,
-        name=None,
-        offset=None,
-        size=None,
-        multifile=True,
-        movie=None,
-        **kwargs
+        self, arg, name=None, offset=None, size=None, multifile=True, movie=None, **kwargs
     ):
         """Initialize instance from file.
 
@@ -2127,10 +2103,7 @@ class TiffFile(object):
                 size *= keyframe._dtype.itemsize
                 if truncated:
                     npages = 1
-                elif (
-                    keyframe.is_final
-                    and keyframe.offset + size < pages[index + 1].offset
-                ):
+                elif keyframe.is_final and keyframe.offset + size < pages[index + 1].offset:
                     truncated = False
                 else:
                     # need to read all pages for series
@@ -2193,9 +2166,7 @@ class TiffFile(object):
         if "slices" in ij:
             shape.append(ij["slices"])
             axes.append("Z")
-        if "channels" in ij and not (
-            page.photometric == 2 and not ij.get("hyperstack", False)
-        ):
+        if "channels" in ij and not (page.photometric == 2 and not ij.get("hyperstack", False)):
             shape.append(ij["channels"])
             axes.append("C")
         remain = ij.get("images", len(pages)) // (product(shape) if shape else 1)
@@ -2238,9 +2209,7 @@ class TiffFile(object):
         self.pages.load()
         mm = self.fluoview_metadata
         mmhd = list(reversed(mm["Dimensions"]))
-        axes = "".join(
-            TIFF.MM_DIMENSIONS.get(i[0].upper(), "Q") for i in mmhd if i[1] > 1
-        )
+        axes = "".join(TIFF.MM_DIMENSIONS.get(i[0].upper(), "Q") for i in mmhd if i[1] > 1)
         shape = tuple(int(i[1]) for i in mmhd if i[1] > 1)
         return [
             TiffPageSeries(
@@ -2352,9 +2321,7 @@ class TiffFile(object):
                                     labels = numpy.arange(start, stop, step)
                                 else:
                                     labels = [
-                                        label.text
-                                        for label in along
-                                        if label.tag.endswith("Label")
+                                        label.text for label in along if label.tag.endswith("Label")
                                     ]
                                 modulo[axis] = (newaxis, labels)
 
@@ -2621,9 +2588,7 @@ class TiffFile(object):
                 # LZW compressed strips might be longer than uncompressed
                 lastoffset = min(offsets[-1] + 2 * bytecounts[-1], self._fh.size)
             offsets = offsets + (lastoffset,)
-            page.databytecounts = tuple(
-                offsets[j + 1] - offsets[j] for j in range(len(bytecounts))
-            )
+            page.databytecounts = tuple(offsets[j + 1] - offsets[j] for j in range(len(bytecounts)))
 
     def __getattr__(self, name):
         """Return 'is_flag' attributes from first page."""
@@ -2708,11 +2673,7 @@ class TiffFile(object):
     @lazyattr
     def flags(self):
         """Return set of file flags."""
-        return set(
-            name.lower()
-            for name in sorted(TIFF.FILE_FLAGS)
-            if getattr(self, "is_" + name)
-        )
+        return set(name.lower() for name in sorted(TIFF.FILE_FLAGS) if getattr(self, "is_" + name))
 
     @lazyattr
     def is_mdgel(self):
@@ -3529,8 +3490,7 @@ class TiffPage(object):
                 raise ValueError("data are too large %s" % str(self._shape))
             if self.dtype is None:
                 raise ValueError(
-                    "data type not supported: %s%i"
-                    % (self.sampleformat, self.bitspersample),
+                    "data type not supported: %s%i" % (self.sampleformat, self.bitspersample),
                 )
             if self.compression not in TIFF.DECOMPESSORS:
                 raise ValueError("cannot decompress %s" % self.compression.name)
@@ -3713,8 +3673,7 @@ class TiffPage(object):
                 result.shape = self.shape
             except ValueError:
                 warnings.warn(
-                    "failed to reshape from %s to %s"
-                    % (str(result.shape), str(self.shape)),
+                    "failed to reshape from %s to %s" % (str(result.shape), str(self.shape)),
                 )
 
         if closed:
@@ -3722,16 +3681,7 @@ class TiffPage(object):
             fh.close()
         return result
 
-    def asrgb(
-        self,
-        uint8=False,
-        alpha=None,
-        colormap=None,
-        dmin=None,
-        dmax=None,
-        *args,
-        **kwargs
-    ):
+    def asrgb(self, uint8=False, alpha=None, colormap=None, dmin=None, dmax=None, *args, **kwargs):
         """Return image data as RGB(A).
 
         Work in progress.
@@ -3744,10 +3694,7 @@ class TiffPage(object):
 
         if photometric == PHOTOMETRIC.PALETTE:
             colormap = self.colormap
-            if (
-                colormap.shape[1] < 2**self.bitspersample
-                or self.dtype.char not in "BH"
-            ):
+            if colormap.shape[1] < 2**self.bitspersample or self.dtype.char not in "BH":
                 raise ValueError("cannot apply colormap")
             if uint8:
                 if colormap.max() > 255:
@@ -3827,10 +3774,7 @@ class TiffPage(object):
             if (
                 "ImageDepth" in self.tags
                 and "TileDepth" in self.tags
-                and (
-                    self.imagelength != self.tilelength
-                    or self.imagedepth % self.tiledepth
-                )
+                and (self.imagelength != self.tilelength or self.imagedepth % self.tiledepth)
             ):
                 return
 
@@ -3885,8 +3829,7 @@ class TiffPage(object):
             s
             for s in (
                 "x".join(str(i) for i in self.shape),
-                "%s%s"
-                % (TIFF.SAMPLEFORMAT(self.sampleformat).name, self.bitspersample),
+                "%s%s" % (TIFF.SAMPLEFORMAT(self.sampleformat).name, self.bitspersample),
                 "|".join(
                     i
                     for i in (
@@ -3927,8 +3870,7 @@ class TiffPage(object):
         if detail > 3:
             try:
                 info.append(
-                    "DATA\n%s"
-                    % pformat(self.asarray(), width=width, height=detail * 8),
+                    "DATA\n%s" % pformat(self.asarray(), width=width, height=detail * 8),
                 )
             except Exception:
                 pass
@@ -3938,11 +3880,7 @@ class TiffPage(object):
     def flags(self):
         """Return set of flags."""
         return set(
-            (
-                name.lower()
-                for name in sorted(TIFF.FILE_FLAGS)
-                if getattr(self, "is_" + name)
-            )
+            (name.lower() for name in sorted(TIFF.FILE_FLAGS) if getattr(self, "is_" + name))
         )
 
     @property
@@ -4118,9 +4056,7 @@ class TiffPage(object):
     @property
     def is_chroma_subsampled(self):
         """Page contains chroma subsampled image."""
-        return "YCbCrSubSampling" in self.tags and self.tags[
-            "YCbCrSubSampling"
-        ].value != (1, 1)
+        return "YCbCrSubSampling" in self.tags and self.tags["YCbCrSubSampling"].value != (1, 1)
 
     @lazyattr
     def is_imagej(self):
@@ -4224,10 +4160,7 @@ class TiffPage(object):
     @property
     def is_epics(self):
         """Page contains EPICS areaDetector tags."""
-        return (
-            self.description == "EPICS areaDetector"
-            or self.software == "EPICS areaDetector"
-        )
+        return self.description == "EPICS areaDetector" or self.software == "EPICS areaDetector"
 
     @property
     def is_tvips(self):
@@ -4393,9 +4326,7 @@ class TiffFrame(object):
 
     def __str__(self, detail=0):
         """Return string containing information about frame."""
-        info = "  ".join(
-            s for s in ("x".join(str(i) for i in self.shape), str(self.dtype))
-        )
+        info = "  ".join(s for s in ("x".join(str(i) for i in self.shape), str(self.dtype)))
         return "TiffFrame %i @%i  %s" % (self.index, self.offset, info)
 
 
@@ -4465,9 +4396,7 @@ class TiffTag(object):
         else:
             value = unpack(fmt, value[:size])
 
-        process = (
-            code not in TIFF.TAG_READERS and code not in TIFF.TAG_TUPLE and type_ != 7
-        )
+        process = code not in TIFF.TAG_READERS and code not in TIFF.TAG_TUPLE and type_ != 7
         if process and dtype[-1] == "s" and isinstance(value[0], bytes):
             # TIFF ASCII fields can contain multiple strings,
             #   each terminated with a NUL
@@ -4516,10 +4445,7 @@ class TiffTag(object):
         """Return string containing information about tag."""
         height = 1 if detail <= 0 else 8 * detail
         tcode = "%i%s" % (self.count * int(self.dtype[0]), self.dtype[1])
-        line = (
-            "TiffTag %i %s  %s @%i  "
-            % (self.code, self.name, tcode, self.valueoffset)[:width]
-        )
+        line = "TiffTag %i %s  %s @%i  " % (self.code, self.name, tcode, self.valueoffset)[:width]
 
         if self.code in TIFF.TAG_ENUM:
             if self.count == 1:
@@ -4973,8 +4899,7 @@ class FileHandle(object):
                 pass
         else:
             raise ValueError(
-                "The first parameter must be a file name, "
-                "seekable binary stream, or FileHandle",
+                "The first parameter must be a file name, " "seekable binary stream, or FileHandle",
             )
 
         if self._offset:
@@ -6377,22 +6302,19 @@ class TIFF(object):
         exclude = set(
             "reduced final memmappable contiguous tiled " "chroma_subsampled".split(),
         )
-        return set(
-            a[3:] for a in dir(TiffPage) if a[:3] == "is_" and a[3:] not in exclude
-        )
+        return set(a[3:] for a in dir(TiffPage) if a[:3] == "is_" and a[3:] not in exclude)
 
     def FILE_EXTENSIONS():
         # TIFF file extensions
         return tuple(
-            "tif tiff ome.tif lsm stk qptiff pcoraw "
-            "gel seq svs bif tf8 tf2 btf".split(),
+            "tif tiff ome.tif lsm stk qptiff pcoraw " "gel seq svs bif tf8 tf2 btf".split(),
         )
 
     def FILEOPEN_FILTER():
         # String for use in Windows File Open box
-        return [
-            ("%s files" % ext.upper(), "*.%s" % ext) for ext in TIFF.FILE_EXTENSIONS
-        ] + [("allfiles", "*")]
+        return [("%s files" % ext.upper(), "*.%s" % ext) for ext in TIFF.FILE_EXTENSIONS] + [
+            ("allfiles", "*")
+        ]
 
     def AXES_LABELS():
         # TODO: is there a standard for character axes labels?
@@ -8221,7 +8143,7 @@ def imagej_description(
     hyperstack=None,
     mode=None,
     loop=None,
-    **kwargs
+    **kwargs,
 ):
     """Return ImageJ image description from data shape.
 
@@ -9661,9 +9583,7 @@ def xml2dict(xml, sanitize=True, prefix=None):
                 for k, v in dc.items():
                     dd[k].append(astype(v))
             d = {
-                key: {
-                    k: astype(v[0]) if len(v) == 1 else astype(v) for k, v in dd.items()
-                },
+                key: {k: astype(v[0]) if len(v) == 1 else astype(v) for k, v in dd.items()},
             }
         if t.attrib:
             d[key].update((at + k, astype(v)) for k, v in t.attrib.items())
@@ -10069,7 +9989,7 @@ def imshow(
     figure=None,
     subplot=111,
     maxdim=32768,
-    **kwargs
+    **kwargs,
 ):
     """Plot n-dimensional images using matplotlib.pyplot.
 
@@ -10095,9 +10015,7 @@ def imshow(
 
     """
     isrgb = photometric in ("RGB",)  # 'PALETTE'
-    if isrgb and not (
-        data.shape[-1] in (3, 4) or (data.ndim > 2 and data.shape[-3] in (3, 4))
-    ):
+    if isrgb and not (data.shape[-1] in (3, 4) or (data.ndim > 2 and data.shape[-3] in (3, 4))):
         isrgb = False
         photometric = "MINISWHITE"
 
@@ -10231,7 +10149,7 @@ def imshow(
         vmax=vmax,
         cmap=cmap,
         interpolation=interpolation,
-        **kwargs
+        **kwargs,
     )
 
     if not isrgb:

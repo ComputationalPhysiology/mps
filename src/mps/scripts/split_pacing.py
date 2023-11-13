@@ -21,13 +21,11 @@ def copy(src, dst):
 
 
 def recursive_version(folder: Path, keep_original: bool):
-
     # func = copy if keep_original else move
     raise NotImplementedError("Recurive function not implemented yet")
 
 
 def normal_version(folder: Path, keep_original: bool):
-
     func = copy if keep_original else move
 
     for f in folder.iterdir():
@@ -53,7 +51,6 @@ def main(
     verbose: bool = False,
     keep_original: bool = True,
 ):
-
     level = logging.DEBUG if verbose else logging.INFO
     logger.setLevel(level)
 

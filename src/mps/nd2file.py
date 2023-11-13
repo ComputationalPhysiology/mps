@@ -182,7 +182,7 @@ class ND2File(object):
                 for i in range(images[:, 0].min(), images[:, 0].max()):
                     self.images[i] = opportunistic_image_position(i)
 
-                for (name, chunk_begin, chunk_end, chunk_position) in mini_chunk_map:
+                for name, chunk_begin, chunk_end, chunk_position in mini_chunk_map:
                     if name.startswith(prefix):
                         continue
                     name = name.decode("ascii")
@@ -192,7 +192,6 @@ class ND2File(object):
                         self.metadata[name] = process_map[name](chunk_begin, chunk_end)
 
         if not self.opportunistic:
-
             map_position = self._sfp(-8, np.uint64)
             pos, epos = self.chunk_position(map_position)
 
@@ -209,12 +208,9 @@ class ND2File(object):
                 if nsplit[0] == "ImageDataSeq":
                     self.images[int(nsplit[1])] = position
                 else:
-
                     self.chunkmap[name] = position
                     if name in process_map:
-                        self.metadata[name] = process_map[name](
-                            *self.chunk_position(position)
-                        )
+                        self.metadata[name] = process_map[name](*self.chunk_position(position))
 
                 pos = nameendpos + 1 + 16
 
@@ -528,14 +524,14 @@ class ND2MultiFile(ND2File):
 
         # Channel 'colors'
         try:
-            tmp = self.metadata["ImageMetadataSeqLV|0"]["SLxPictureMetadata"][
-                "sPicturePlanes"
-            ]["sPlane"]
+            tmp = self.metadata["ImageMetadataSeqLV|0"]["SLxPictureMetadata"]["sPicturePlanes"][
+                "sPlane"
+            ]
         except KeyError:
             # new file
-            tmp = self.metadata["ImageMetadataSeqLV|0"]["SLxPictureMetadata"][
-                "sPicturePlanes"
-            ]["sPlaneNew"]
+            tmp = self.metadata["ImageMetadataSeqLV|0"]["SLxPictureMetadata"]["sPicturePlanes"][
+                "sPlaneNew"
+            ]
 
         tmp = [tmp[n] for n in sorted(tmp.keys())]
         tmp = [c["uiColor"] for c in tmp]
@@ -547,12 +543,10 @@ class ND2MultiFile(ND2File):
         # probably easier to associate with certain channel parameters
 
         self.heuristic_pcm = (
-            [n for n, c in enumerate(self.channelcolors) if c == [255, 255, 255]]
-            or [None]
+            [n for n, c in enumerate(self.channelcolors) if c == [255, 255, 255]] or [None]
         )[0]
         self.heuristic_fluorescence = (
-            [n for n, c in enumerate(self.channelcolors) if c != [255, 255, 255]]
-            or [None]
+            [n for n, c in enumerate(self.channelcolors) if c != [255, 255, 255]] or [None]
         )[0]
         self.heuristic_fluorescences = [
             n for n, c in enumerate(self.channelcolors) if c != [255, 255, 255]

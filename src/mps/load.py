@@ -188,9 +188,7 @@ def load_nd2(fname: os.PathLike) -> MPSData:
         time_stamps *= 1000
 
     info = info_dictionary(time_stamps)
-    info["um_per_pixel"] = metadata["ImageMetadataSeqLV|0"]["SLxPictureMetadata"][
-        "dCalibration"
-    ]
+    info["um_per_pixel"] = metadata["ImageMetadataSeqLV|0"]["SLxPictureMetadata"]["dCalibration"]
     if info["um_per_pixel"] == 0.0:
         # We need to get this info in another way
 
@@ -310,9 +308,7 @@ def load_zip(fname: os.PathLike) -> MPSData:
             if filename == metaname:
                 continue
 
-            idx = (
-                int(os.path.splitext(os.path.basename(filename))[0].split("_")[-1]) - 1
-            )
+            idx = int(os.path.splitext(os.path.basename(filename))[0].split("_")[-1]) - 1
             try:
                 data = utils.loadmat(f.open(name=filename))
             except io.UnsupportedOperation:
@@ -427,9 +423,9 @@ def load_tiff_timestamps(f):
 
     num_pages = len(f.pages.pages)
     get_page_timstamp = lambda i: time2isoformat(
-        tifffile.tifffile.metaseries_description_metadata(f.pages.get(i).description)[
-            "PlaneInfo"
-        ]["acquisition-time-local"],
+        tifffile.tifffile.metaseries_description_metadata(f.pages.get(i).description)["PlaneInfo"][
+            "acquisition-time-local"
+        ],
     )
     return list(
         map(
@@ -444,7 +440,8 @@ def load_tiff(fname):
         if "_imagecodecs" in _tifffile_msg:
             raise ImportError(
                 "lzma is not installed correctly. Please see "
-                "https://stackoverflow.com/questions/59690698/modulenotfounderror-no-module-named-lzma-when-building-python-using-pyenv-on "
+                "https://stackoverflow.com/questions/59690698/modulenot"
+                "founderror-no-module-named-lzma-when-building-python-using-pyenv-on "
                 "or https://github.com/pandas-dev/pandas/issues/27532",
             )
 
@@ -468,9 +465,7 @@ def load_tiff(fname):
             size_x=metadata["PlaneInfo"]["pixel-size-x"],
             size_y=metadata["PlaneInfo"]["pixel-size-y"],
             um_per_pixel=float(
-                metadata["PlaneInfo"][
-                    "spatial-calibration-y"
-                ],  # Different in x- and y direction
+                metadata["PlaneInfo"]["spatial-calibration-y"],  # Different in x- and y direction
             ),
         )
     )
