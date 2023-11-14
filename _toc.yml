@@ -1,0 +1,21 @@
+format: jb-book
+root: README
+
+parts:
+  - caption: Getting started
+    chapters:
+    - file: "docs/install"
+  - caption: Demos
+    chapters:
+    - file: "docs/mps2mp4.md"
+    - file: "docs/mps_analyze.md"
+    - file: "docs/mps_motion.md"
+    - file: "docs/mps_summary.md"
+    - file: "docs/python_api.md"
+    - file: "docs/binary_executables.md"
+  - caption: Community
+    chapters:
+      - file: "CONTRIBUTING"
+  - caption: Python API
+    chapters:
+    - file: "docs/api"
