@@ -1,0 +1,50 @@
+# Book settings
+# Learn more at https://jupyterbook.org/customize/config.html
+
+title: cardiac-mps
+author: Henrik Finsberg
+logo: "docs/logo.png"
+copyright: "2023"
+only_build_toc_files: true
+
+# Force re-execution of notebooks on each build.
+# See https://jupyterbook.org/content/execute.html
+execute:
+  execute_notebooks: cache
+  timeout: 30000
+
+# Information about where the book exists on the web
+repository:
+  url: https://github.com/ComputationalPhysiology/mps  # Online location of your book
+  branch: main
+
+
+html:
+  use_issues_button: true
+  use_repository_button: true
+
+parse:
+  myst_enable_extensions:
+    - amsmath
+    - dollarmath
+    - linkify
+
+sphinx:
+  config:
+    nb_execution_show_tb: True
+    html_theme_options:
+      navigation_with_keys: false
+    html_last_updated_fmt: "%b %d, %Y"
+    bibtex_bibfiles: ["docs/refs.bib"]
+    nb_custom_formats:  # https://jupyterbook.org/en/stable/file-types/jupytext.html#file-types-custom
+        .py:
+            - jupytext.reads
+            - fmt: py
+
+  extra_extensions:
+  - 'sphinx.ext.autodoc'
+  - 'sphinx.ext.napoleon'
+  - 'sphinx.ext.viewcode'
+  - 'sphinxcontrib.bibtex'
+
+exclude_patterns: [".pytest_cache/*", ".github/*"]

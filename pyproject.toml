@@ -57,9 +57,8 @@ dev = [
     "wheel",
 ]
 docs = [
-    "Sphinx",
-    "myst-parser",
-    "sphinx-book-theme",
+    "jupyter-book",
+    "jupytext",
     "sphinxcontrib-bibtex",
 ]
 motion = ["mps-motion"]

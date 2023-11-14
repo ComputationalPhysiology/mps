@@ -1,3 +1,5 @@
+_build
+sandbox
 demo/
 docs/instructions.pdf
 docs/source/modules.rst
