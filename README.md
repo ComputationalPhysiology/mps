@@ -18,12 +18,7 @@ To install the package you can simply di
 python -m pip install cardiac-mps
 ```
 
-For more options see <https://computationalphysiology.github.io/mps/install.html>
-
-## Usage
-
-See <https://computationalphysiology.github.io/mps/demo.html>
-
+For more options see <https://computationalphysiology.github.io/mps/docs/install.html>
 
 ## Documentation
 
