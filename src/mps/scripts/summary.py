@@ -1,6 +1,7 @@
 """
 Create a summary pdf of all files in the a directory.
 """
+
 import logging
 import shutil
 from pathlib import Path

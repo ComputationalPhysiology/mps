@@ -110,6 +110,7 @@ Examples
 array([10, 10, 10], dtype=uint8)
 
 """
+
 from __future__ import division
 from __future__ import print_function
 
