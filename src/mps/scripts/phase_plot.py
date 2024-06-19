@@ -1,6 +1,7 @@
 """
 Make a phase plot with voltage on the x-axis
 and calcium on the y-axis."""
+
 import logging
 from pathlib import Path
 from typing import Optional

@@ -30,6 +30,7 @@ for 64-bit Python (otherwise the file size is limited to 2 GiB).
 There are some heuristics for parsing files, so that even broken files (i.e. due to a crashed NIS instance)
 have a possibility to open.
 """
+
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
