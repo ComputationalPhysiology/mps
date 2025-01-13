@@ -570,7 +570,7 @@ class MPS(object):
         self.__dict__.update(state)
 
     def __repr__(self):
-        return ("{self.__class__.__name__}" "({self._fname})").format(self=self)
+        return ("{self.__class__.__name__}({self._fname})").format(self=self)
 
     @property
     def name(self):

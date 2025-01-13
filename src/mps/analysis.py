@@ -84,7 +84,7 @@ Features = namedtuple(
 
 ExcludedData = namedtuple(
     "ExcludedData",
-    ("new_data, included_indices, " "all_included_indices"),
+    ("new_data, included_indices, all_included_indices"),
 )
 
 

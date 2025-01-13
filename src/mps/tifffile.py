@@ -1040,7 +1040,7 @@ class TiffWriter(object):
                 photometric = RGB
                 if datadtypechar not in "B":
                     raise ValueError(
-                        "ImageJ does not support data type %s " "for RGB" % datadtypechar,
+                        "ImageJ does not support data type %s for RGB" % datadtypechar,
                     )
             elif photometric is None:
                 photometric = MINISBLACK
@@ -4900,7 +4900,7 @@ class FileHandle(object):
                 pass
         else:
             raise ValueError(
-                "The first parameter must be a file name, " "seekable binary stream, or FileHandle",
+                "The first parameter must be a file name, seekable binary stream, or FileHandle",
             )
 
         if self._offset:
@@ -6301,14 +6301,14 @@ class TIFF(object):
     def FILE_FLAGS():
         # TiffFile and TiffPage 'is_\*' attributes
         exclude = set(
-            "reduced final memmappable contiguous tiled " "chroma_subsampled".split(),
+            "reduced final memmappable contiguous tiled chroma_subsampled".split(),
         )
         return set(a[3:] for a in dir(TiffPage) if a[:3] == "is_" and a[3:] not in exclude)
 
     def FILE_EXTENSIONS():
         # TIFF file extensions
         return tuple(
-            "tif tiff ome.tif lsm stk qptiff pcoraw " "gel seq svs bif tf8 tf2 btf".split(),
+            "tif tiff ome.tif lsm stk qptiff pcoraw gel seq svs bif tf8 tf2 btf".split(),
         )
 
     def FILEOPEN_FILTER():
