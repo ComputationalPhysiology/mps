@@ -45,7 +45,7 @@ try:
 
     has_mpl = True
 except ImportError:
-    logger.debug(("Unable to import matplotlib. " "Plotting will not be possible"))
+    logger.debug(("Unable to import matplotlib. Plotting will not be possible"))
     has_mpl = False
     plt = None
 

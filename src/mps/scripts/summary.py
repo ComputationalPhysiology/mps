@@ -194,7 +194,7 @@ def plot(
         "cAPD80 [ms]",
         "cAPD80 stdev",
         "cAPD80 #removed",
-        "ratio APD30/APD80" "APD90 [ms]",
+        "ratio APD30/APD80APD90 [ms]",
         "triangulation [ms]",
         "triangulation stdev",
         "APD90 [ms]",

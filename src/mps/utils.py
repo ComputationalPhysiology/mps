@@ -48,7 +48,7 @@ warnings.filterwarnings(action="ignore", module="scipy", message="^internal gels
 
 grid_settings = namedtuple(
     "grid_settings",
-    ("nx, ny, dx, dy, x_start," " y_start, x_end, y_end"),
+    ("nx, ny, dx, dy, x_start, y_start, x_end, y_end"),
 )
 
 logger = logging.getLogger(__name__)
