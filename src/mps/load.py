@@ -389,8 +389,13 @@ def load_movie(fname: os.PathLike) -> MPSData:
         data = data[..., 1]
     frames = data
 
-    if frames.shape.index(num_frames) != len(frames.shape) - 1:
-        frames = np.swapaxes(frames, frames.shape.index(num_frames), -1)
+    try:
+        index = frames.shape.index(num_frames)
+    except ValueError:
+        index = 0
+
+    if index != len(frames.shape) - 1:
+        frames = np.swapaxes(frames, index, -1)
 
     info = dict(
         num_frames=num_frames,
