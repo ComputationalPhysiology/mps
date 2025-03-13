@@ -62,7 +62,7 @@ def set_mpl_options(**kwargs):
         return
 
     mpl.rcParams["savefig.format"] = kwargs.pop("save_format", "pdf")
-    from distutils.spawn import find_executable
+    from shutil import which as find_executable
 
     if find_executable("latex"):
         mpl.rcParams["text.usetex"] = kwargs.pop("usetex", True)

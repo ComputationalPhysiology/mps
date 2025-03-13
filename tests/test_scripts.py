@@ -1,8 +1,7 @@
 import shutil
 import subprocess as sp
 from pathlib import Path
-
-from distutils.spawn import find_executable
+from shutil import which as find_executable
 
 import mps
 
