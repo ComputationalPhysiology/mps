@@ -1,6 +1,5 @@
 [![CI](https://github.com/ComputationalPhysiology/mps/actions/workflows/main.yml/badge.svg)](https://github.com/ComputationalPhysiology/mps/actions/workflows/main.yml)
 [![PyPI version](https://badge.fury.io/py/cardiac-mps.svg)](https://badge.fury.io/py/cardiac-mps)
-[![codecov](https://codecov.io/gh/ComputationalPhysiology/mps/branch/master/graph/badge.svg?token=V5DOQ1PUVF)](https://codecov.io/gh/ComputationalPhysiology/mps)
 [![github pages](https://github.com/ComputationalPhysiology/mps/actions/workflows/github-pages.yml/badge.svg)](https://github.com/ComputationalPhysiology/mps/actions/workflows/github-pages.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL_v2.1-blue.svg)](https://www.gnu.org/licenses/lgpl-2.1)
