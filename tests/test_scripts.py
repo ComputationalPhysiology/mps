@@ -10,6 +10,7 @@ try:
 except ImportError:
     missing_mpl = True
 else:
+    matplotlib.use("TkAgg")
     missing_mpl = False
 
 try:
