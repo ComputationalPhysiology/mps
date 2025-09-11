@@ -10,6 +10,7 @@ try:
 except ImportError:
     missing_mpl = True
 else:
+    matplotlib.use("Agg")
     missing_mpl = False
 
 try:
