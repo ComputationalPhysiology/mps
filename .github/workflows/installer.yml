@@ -23,7 +23,7 @@ jobs:
       run: |
         make installer
     - name: Upload installer files
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: mps-binary-${{ matrix.python-version }}-${{ matrix.os }}
         path: dist/*
