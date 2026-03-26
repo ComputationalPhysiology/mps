@@ -1239,8 +1239,8 @@ def frame2average(frame, times=None, normalize=False, background_correction=True
 
 
 def local_averages(
-    frames,
-    times=None,
+    frames: np.ndarray,
+    times: np.ndarray,
     N=10,
     x_start=0,
     y_start=0,
@@ -1249,6 +1249,7 @@ def local_averages(
     background_correction=True,
     normalize=False,
     loglevel=logging.INFO,
+    parallel=True,
     **kwargs,
 ):
     """
@@ -1284,9 +1285,13 @@ def local_averages(
         False keep the original values. Default: False
     loglevel : int
         Verbosity. Default: INFO (=20). For more info see the logging library.
+    parallel : bool
+        If True, use parallel processing to compute local averages. Default: True
     """
 
+    logger.setLevel(loglevel)
     logger.debug("Compute local averages")
+
     grid = utils.get_grid_settings(
         N,
         x_start=x_start,
@@ -1296,37 +1301,56 @@ def local_averages(
         frames=frames,
     )
 
-    futures = np.empty((grid.nx, grid.ny), dtype=object)
-    with concurrent.futures.ProcessPoolExecutor() as executor:
+    out_averages = np.zeros((grid.nx, grid.ny, len(times)))
+
+    # 1. Generator to DRY up the coordinate math and boundary checks
+    def _get_grid_blocks():
         for i in range(grid.nx):
             for j in range(grid.ny):
                 x0 = x_start + i * grid.dx
                 x1 = min(x0 + grid.dx, grid.x_end)
-
                 y0 = y_start + j * grid.dy
                 y1 = min(y0 + grid.dy, grid.y_end)
 
-                if y0 >= y1:
-                    continue
-                if x0 >= x1:
-                    continue
+                if x0 < x1 and y0 < y1:
+                    yield i, j, x0, x1, y0, y1
 
+    # 2. Process the blocks
+    if parallel:
+        futures = {}
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            for i, j, x0, x1, y0, y1 in _get_grid_blocks():
                 logger.debug(f"x0 = {x0}, x1 = {x1}, y0 = {y0}, y1 = {y1}")
                 im = frames[x0:x1, y0:y1, :]
-                kwargs = dict(
+
+                # Fix: Use a new variable so we don't overwrite **kwargs
+                task_kwargs = dict(
                     frame=im,
                     times=times,
                     normalize=normalize,
                     background_correction=background_correction,
                 )
-                futures[i, j] = executor.submit(_frames2average, kwargs)
+                task_kwargs.update(kwargs)  # Preserve any extra kwargs
 
-    local_averages = np.zeros((grid.nx, grid.ny, len(times)))
-    for i in range(grid.nx):
-        for j in range(grid.ny):
-            local_averages[i, j, :] = futures[i, j].result()
+                futures[(i, j)] = executor.submit(_frames2average, task_kwargs)
 
-    return np.fliplr(local_averages)
+            # Collect results
+            for (i, j), future in futures.items():
+                out_averages[i, j, :] = future.result()
+    else:
+        for i, j, x0, x1, y0, y1 in _get_grid_blocks():
+            logger.debug(f"x0 = {x0}, x1 = {x1}, y0 = {y0}, y1 = {y1}")
+            im = frames[x0:x1, y0:y1, :]
+
+            out_averages[i, j, :] = frame2average(
+                frame=im,
+                times=times,
+                normalize=normalize,
+                background_correction=background_correction,
+                **kwargs,  # Pass along extra kwargs
+            )
+
+    return np.fliplr(out_averages)
 
 
 def _frames2average(kwargs):
