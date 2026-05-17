@@ -11,13 +11,14 @@ from ..load import MPS
 
 logger = logging.getLogger(__name__)
 
-
 def main(
     path: str,
     outfile: Optional[str] = None,
     synch: bool = False,
+    channel: Optional[int] = None,
 ):
     logger.setLevel(logging.INFO)
+
     file_path = Path(path)
     if not file_path.is_file():
         raise ValueError(f"Path {file_path} is not a file")
@@ -27,7 +28,7 @@ def main(
     if outfile is None:
         outfile = file_path.with_suffix(".mp4").as_posix()
 
-    mps_data = MPS(file_path)
+    mps_data = MPS(file_path, channel=channel)
 
     if synch:
         idx = next(i for i, p in enumerate(mps_data.pacing) if p > 0)
