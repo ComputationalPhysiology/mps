@@ -323,7 +323,7 @@ def mps2mp4(
         "--channel",
         "-c",
         help="Channel index to use for multichannel CZI files.",
-),
+    ),
 ):
     scripts.mps2mp4.main(path=path, outfile=outfile, synch=synch, channel=channel)
 

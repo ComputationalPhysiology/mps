@@ -11,6 +11,7 @@ from ..load import MPS
 
 logger = logging.getLogger(__name__)
 
+
 def main(
     path: str,
     outfile: Optional[str] = None,

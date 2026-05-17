@@ -229,6 +229,7 @@ def load_nd2(fname: os.PathLike) -> MPSData:
         pacing=pacing,
     )
 
+
 def _format_czi_frames(images, num_frames, channel=None):
     """Format CZI image array to MPS convention: (x, y, time).
 
@@ -249,8 +250,7 @@ def _format_czi_frames(images, num_frames, channel=None):
 
     if images.ndim < 3:
         raise ValueError(
-            f"Unexpected CZI image shape {images.shape}. "
-            "Expected at least a 3D movie."
+            f"Unexpected CZI image shape {images.shape}. Expected at least a 3D movie."
         )
 
     # Detect time axis using number of timestamps
@@ -269,8 +269,7 @@ def _format_czi_frames(images, num_frames, channel=None):
     # Handle multichannel CZI files
     if images.ndim == 4:
         channel_axes = [
-            i for i, size in enumerate(images.shape)
-            if i != time_axis and 1 < size <= 10
+            i for i, size in enumerate(images.shape) if i != time_axis and 1 < size <= 10
         ]
 
         if len(channel_axes) == 0:
@@ -299,8 +298,7 @@ def _format_czi_frames(images, num_frames, channel=None):
 
         if channel < 0 or channel >= num_channels:
             raise ValueError(
-                f"Requested channel {channel}, but available channels are "
-                f"0 to {num_channels - 1}."
+                f"Requested channel {channel}, but available channels are 0 to {num_channels - 1}."
             )
 
         logger.info(
@@ -323,8 +321,7 @@ def _format_czi_frames(images, num_frames, channel=None):
 
     elif images.ndim != 3:
         raise ValueError(
-            f"Unexpected CZI image shape {images.shape}. "
-            "Expected 3D data or 4D multichannel data."
+            f"Unexpected CZI image shape {images.shape}. Expected 3D data or 4D multichannel data."
         )
 
     # Move time axis to last position
@@ -380,8 +377,7 @@ def load_czi(fname, channel=None):
 
     if images.ndim < 3:
         raise ValueError(
-            f"Unexpected CZI image shape {images.shape}. "
-            "Expected at least a 3D movie."
+            f"Unexpected CZI image shape {images.shape}. Expected at least a 3D movie."
         )
 
     # Detect time axis using timestamps
@@ -393,12 +389,10 @@ def load_czi(fname, channel=None):
             f"Image shape is {images.shape}, but number of timestamps is {num_frames}."
         )
 
-   
     time_axis = time_axes[-1]
 
     channel_axes = [
-        i for i, size in enumerate(images.shape)
-        if i != time_axis and size in (2, 3, 4)
+        i for i, size in enumerate(images.shape) if i != time_axis and size in (2, 3, 4)
     ]
 
     if images.ndim == 4:
@@ -421,8 +415,7 @@ def load_czi(fname, channel=None):
 
         if channel < 0 or channel >= num_channels:
             raise ValueError(
-                f"Requested channel {channel}, but available channels are "
-                f"0 to {num_channels - 1}."
+                f"Requested channel {channel}, but available channels are 0 to {num_channels - 1}."
             )
 
         logger.info(
@@ -482,7 +475,6 @@ def load_czi(fname, channel=None):
         info=info,
         metadata=metadata,
     )
-
 
 
 def load_zip(fname: os.PathLike) -> MPSData:
