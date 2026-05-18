@@ -609,7 +609,7 @@ def load_tiff(fname):
 def load_file(fname: Union[str, Path], ext: str, channel: Optional[int] = None) -> MPSData:
     fname = Path(fname)
     if ext == ".czi":
-        data = load_czi(fname, channel=channel)
+        data = load_czi(str(fname), channel=channel)
 
     elif ext == ".nd2":
         data = load_nd2(fname)
