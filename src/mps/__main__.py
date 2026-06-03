@@ -318,8 +318,14 @@ def mps2mp4(
         False,
         help="Start video at same time as start of pacing",
     ),
+    channel: Optional[int] = typer.Option(
+        None,
+        "--channel",
+        "-c",
+        help="Channel index to use for multichannel CZI files.",
+    ),
 ):
-    scripts.mps2mp4.main(path=path, outfile=outfile, synch=synch)
+    scripts.mps2mp4.main(path=path, outfile=outfile, synch=synch, channel=channel)
 
 
 # Helper function for standalone console scripts
