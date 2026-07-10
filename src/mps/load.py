@@ -47,6 +47,9 @@ import numpy as np
 from . import czifile, utils
 from .nd2file import ND2File
 
+from pathlib import Path
+from typing import Union
+
 try:
     import tifffile
 except ImportError as e:
@@ -230,7 +233,119 @@ def load_nd2(fname: os.PathLike) -> MPSData:
     )
 
 
-def load_czi(fname):
+def _format_czi_frames(images, num_frames, channel=None):
+    """Format CZI image array to MPS convention: (x, y, time).
+
+    CZI files can be loaded with different dimension orders, for example:
+        (time, y, x)
+        (y, x, time)
+        (time, channel, y, x)
+        (y, channel, x, time)
+
+    This function:
+        1. detects the time axis from num_frames,
+        2. removes a channel axis if present,
+        3. moves time to the last axis,
+        4. returns frames as (x, y, time).
+    """
+
+    images = np.asarray(images).squeeze()
+
+    if images.ndim < 3:
+        raise ValueError(
+            f"Unexpected CZI image shape {images.shape}. Expected at least a 3D movie."
+        )
+
+    # Find all axes that could be time axes based on the number of timestamps.
+    time_axes = [i for i, size in enumerate(images.shape) if size == num_frames]
+
+    if len(time_axes) == 0:
+        raise ValueError(
+            f"Could not identify time axis. "
+            f"Image shape is {images.shape}, num_frames is {num_frames}."
+        )
+
+    if images.ndim == 4:
+        # In common CZI layouts, the channel axis is often axis 1:
+        #   (time, channel, y, x)
+        #   (y, channel, x, time)
+        #
+        # Prefer detecting/removing the channel before choosing the final
+        # time axis. This avoids ambiguity when num_frames == num_channels.
+        if 1 < images.shape[1] <= 10:
+            channel_axis = 1
+        else:
+            channel_axes = [
+                i for i, size in enumerate(images.shape) if i not in time_axes and 1 < size <= 10
+            ]
+
+            if len(channel_axes) == 0:
+                raise ValueError(
+                    f"Detected 4D CZI data with shape {images.shape}, "
+                    "but could not identify a channel axis."
+                )
+
+            if len(channel_axes) > 1:
+                raise ValueError(
+                    f"Detected multiple possible channel axes in CZI data "
+                    f"with shape {images.shape}. "
+                    f"Possible channel axes are {channel_axes}. "
+                    "Please inspect the CZI metadata before selecting a channel."
+                )
+
+            channel_axis = channel_axes[0]
+
+        num_channels = images.shape[channel_axis]
+
+        if channel is None:
+            raise ValueError(
+                f"This CZI file contains {num_channels} channels. "
+                f"Available channels are 0 to {num_channels - 1}. "
+                "Please select one channel using the --channel option, for example: "
+                "mps2mp4 Control_1.czi --channel 1"
+            )
+
+        if channel < 0 or channel >= num_channels:
+            raise ValueError(
+                f"Requested channel {channel}, but available channels are 0 to {num_channels - 1}."
+            )
+
+        logger.info(
+            f"Detected multichannel CZI data with shape {images.shape}. "
+            f"Selecting channel {channel} from axis {channel_axis}."
+        )
+
+        images = np.take(images, indices=channel, axis=channel_axis)
+
+        # Recompute time axis after removing the channel axis.
+        time_axes = [i for i, size in enumerate(images.shape) if size == num_frames]
+
+        if len(time_axes) == 0:
+            raise ValueError(
+                f"Could not identify time axis after channel selection. "
+                f"Image shape is {images.shape}, num_frames is {num_frames}."
+            )
+
+        time_axis = time_axes[-1]
+
+    elif images.ndim == 3:
+        time_axis = time_axes[-1]
+
+    else:
+        raise ValueError(
+            f"Unexpected CZI image shape {images.shape}. Expected 3D data or 4D multichannel data."
+        )
+
+    # Move time axis to last position.
+    if time_axis != images.ndim - 1:
+        images = np.moveaxis(images, time_axis, -1)
+
+    frames = np.swapaxes(images, 0, 1)
+
+    return frames
+
+
+def load_czi(fname, channel=None):
     with czifile.CziFile(fname) as f:
         images = f.asarray().squeeze()
         metadata = czifile.elem2dict(f.metadata)
@@ -258,11 +373,18 @@ def load_czi(fname):
     info["um_per_pixel"] = (
         float(metadata["Metadata"]["Scaling"]["Items"]["Distance"]["Value"]) * 1e6
     )
-    info["size_x"] = images.shape[0]
-    info["size_y"] = images.shape[1]
+
+    frames = _format_czi_frames(
+        images=images,
+        num_frames=len(time_stamps),
+        channel=channel,
+    )
+
+    info["size_x"] = frames.shape[0]
+    info["size_y"] = frames.shape[1]
 
     return MPSData(
-        frames=np.swapaxes(images, 0, -1),
+        frames=frames,
         time_stamps=time_stamps,
         pacing=np.zeros(len(time_stamps)),
         info=info,
@@ -484,9 +606,10 @@ def load_tiff(fname):
     )
 
 
-def load_file(fname, ext):
+def load_file(fname: Union[str, Path], ext: str, channel: Optional[int] = None) -> MPSData:
+    fname = Path(fname)
     if ext == ".czi":
-        data = load_czi(fname)
+        data = load_czi(str(fname), channel=channel)
 
     elif ext == ".nd2":
         data = load_nd2(fname)
@@ -526,7 +649,7 @@ class MPS(object):
 
     """
 
-    def __init__(self, fname="", verbose=False):
+    def __init__(self, fname="", verbose=False, channel=None):
         loglevel = logging.DEBUG if verbose else logging.INFO
         logger.setLevel(loglevel)
         if fname == "":
@@ -548,7 +671,7 @@ class MPS(object):
         self._fname = os.path.abspath(fname)
         self._ext = ext
 
-        data = load_file(self._fname, self._ext)
+        data = load_file(self._fname, self._ext, channel=channel)
         self._unpack(data)
 
     @classmethod
