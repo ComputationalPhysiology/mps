@@ -6,6 +6,7 @@ The most useful features of this package it to read imaging data which can be do
 
 ```python
 import mps
+
 # Object containing the frames, time stamps and metadata
 data = mps.MPS("file.nd2")
 ```
