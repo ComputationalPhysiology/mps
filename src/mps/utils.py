@@ -79,7 +79,7 @@ def find_input_files(folder: Path, extensions, recursive: bool = True):
     ``mps analyze`` (which have the same name as an input file, e.g.
     "a.tif" -> "a/") are not searched.
     """
-    inputs = []
+    inputs: list[Path] = []
     for root, dirs, files in os.walk(folder):
         candidates = [
             f for f in sorted(files) if Path(f).suffix in extensions and not is_brightfield(f)
