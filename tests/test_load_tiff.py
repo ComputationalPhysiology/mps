@@ -4,6 +4,9 @@ The files are small synthetic versions mimicking the metadata layout
 of the real files.
 """
 
+import csv
+import sys
+
 import numpy as np
 import pytest
 import tifffile
@@ -18,6 +21,14 @@ def ca_transient(t, period=1000.0, tau1=50.0, tau2=110.0, tstart=50.0):
     return y / y.max()
 
 
+def read_summary_csv(path):
+    """Read the csv written by mps summary as a list of dicts. The
+    delimiter is "," on Windows and ";" elsewhere (see utils.to_csv)."""
+    delimiter = "," if sys.platform == "win32" else ";"
+    with open(path, newline="") as f:
+        return list(csv.DictReader(f, delimiter=delimiter))
+
+
 def write_ome_tiff(folder, name, frames, delta_t_ms, contrast="Fluorescence"):
     """Write an OME-TIFF that keeps its metadata in a companion file,
     like the Aurox software does."""
@@ -29,7 +40,7 @@ def write_ome_tiff(folder, name, frames, delta_t_ms, contrast="Fluorescence"):
         f'<BinaryOnly MetadataFile="{companion}" UUID="urn:uuid:1"/></OME>'
     )
     tiff = folder / f"{name}.ome.tiff"
-    tifffile.imwrite(tiff, frames, description=binary_only, metadata=None)
+    tifffile.imwrite(tiff, frames, description=binary_only, metadata=None, photometric="minisblack")
 
     num_frames, size_y, size_x = frames.shape
     planes = "".join(
@@ -173,12 +184,10 @@ def test_summary_recursive_ome_tiff(tmp_path):
 
     mps.scripts.summary.main(tmp_path, recursive=True)
 
-    rows = (tmp_path / "mps_summary.csv").read_text().splitlines()[1:]
+    rows = read_summary_csv(tmp_path / "mps_summary.csv")
     assert len(rows) == 1
-    name, *values = rows[0].split(";")
-    assert name == "rec1/E10_berst_rec1.ome.tiff"
-    header = (tmp_path / "mps_summary.csv").read_text().splitlines()[0].split(";")
-    assert float(values[header.index("Number of beats") - 1]) == 6
+    assert rows[0]["Filename"] == "rec1/E10_berst_rec1.ome.tiff"
+    assert float(rows[0]["Number of beats"]) == 6
 
 
 def test_analyze_folder_twice_with_unchoppable_file(tmp_path):
@@ -214,8 +223,8 @@ def test_summary_skips_files_without_beats_and_analyze_output(tmp_path):
 
     mps.scripts.summary.main(tmp_path, recursive=True, max_window=1500)
 
-    rows = (tmp_path / "mps_summary.csv").read_text().splitlines()[1:]
-    assert [r.split(";")[0] for r in rows] == ["rec1/rec1.ome.tiff"]
+    rows = read_summary_csv(tmp_path / "mps_summary.csv")
+    assert [r["Filename"] for r in rows] == ["rec1/rec1.ome.tiff"]
     assert (tmp_path / "mps_summary.pdf").is_file()
 
 
