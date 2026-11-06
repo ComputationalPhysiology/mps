@@ -562,7 +562,11 @@ def load_tiff_timestamps(f):
     )
 
 
-def load_tiff(fname):
+#: Default number of consecutive lines averaged when loading line scans
+DEFAULT_LINESCAN_BIN = 8
+
+
+def load_tiff(fname, linescan_bin: int = DEFAULT_LINESCAN_BIN):
     if not has_tifffile:
         if "_imagecodecs" in _tifffile_msg:
             raise ImportError(
@@ -581,6 +585,10 @@ def load_tiff(fname):
         )
 
     with tifffile.TiffFile(fname) as f:
+        if f.is_ome:
+            return _load_ome_tiff(f, Path(fname))
+        if _is_leica_linescan(f):
+            return _load_leica_linescan(f, linescan_bin=linescan_bin)
         metadata = f.metaseries_metadata
         frames = f.asarray()
         time_stamps = np.multiply(load_tiff_timestamps(f), 1000)
@@ -606,7 +614,211 @@ def load_tiff(fname):
     )
 
 
-def load_file(fname: Union[str, Path], ext: str, channel: Optional[int] = None) -> MPSData:
+_time_unit_to_ms = {"s": 1000.0, "ms": 1.0, "µs": 1e-3, "us": 1e-3, "min": 60_000.0}
+
+
+def _ome_xml(f, fname: Path) -> Dict[str, Any]:
+    """Return the OME-XML of an OME-TIFF as a dict.
+
+    Some writers (e.g. the Aurox software) only store a reference to a
+    separate ``*.companion.ome`` file in the TIFF itself (``BinaryOnly``),
+    in which case the metadata is read from that file instead.
+    """
+    import xmltodict
+
+    ome = xmltodict.parse(f.ome_metadata)["OME"]
+    if "BinaryOnly" in ome:
+        companion = fname.parent / ome["BinaryOnly"]["@MetadataFile"]
+        if not companion.is_file():
+            raise FileNotFoundError(
+                f"{fname.name} stores its metadata in {companion.name}, "
+                f"which was not found in {fname.parent}"
+            )
+        ome = xmltodict.parse(companion.read_text(encoding="utf-8"))["OME"]
+    return ome
+
+
+def _load_ome_tiff(f, fname: Path) -> MPSData:
+    """Load a single-channel 2D time series stored as OME-TIFF."""
+    ome = _ome_xml(f, fname)
+    image = ome["Image"]
+    if isinstance(image, list):
+        logger.warning(f"{fname.name} contains {len(image)} images, only the first is used")
+        image = image[0]
+    pixels = image["Pixels"]
+    size_c, size_z = int(pixels["@SizeC"]), int(pixels["@SizeZ"])
+    if size_c != 1 or size_z != 1:
+        raise NotImplementedError(
+            f"Only single-channel, single-z OME-TIFFs are supported "
+            f"(got SizeC={size_c}, SizeZ={size_z})"
+        )
+
+    frames = f.series[0].asarray()  # (T, Y, X)
+    num_frames = frames.shape[0]
+
+    planes = pixels.get("Plane", [])
+    if isinstance(planes, dict):
+        planes = [planes]
+    if len(planes) == num_frames and all("@DeltaT" in p for p in planes):
+        time_stamps = np.array(
+            [float(p["@DeltaT"]) * _time_unit_to_ms[p.get("@DeltaTUnit", "s")] for p in planes]
+        )
+    elif "@TimeIncrement" in pixels:
+        dt = (
+            float(pixels["@TimeIncrement"])
+            * _time_unit_to_ms[pixels.get("@TimeIncrementUnit", "s")]
+        )
+        logger.warning(f"No per-frame time stamps in {fname.name}, using TimeIncrement ({dt} ms)")
+        time_stamps = np.arange(num_frames) * dt
+    else:
+        raise ValueError(f"Could not find time information in {fname.name}")
+    time_stamps -= time_stamps[0]
+
+    info = info_dictionary(time_stamps)
+    info["um_per_pixel"] = float(pixels.get("@PhysicalSizeY", np.nan))
+    frames = np.swapaxes(frames, 0, -1)  # (X, Y, T)
+    info["size_x"] = frames.shape[0]
+    info["size_y"] = frames.shape[1]
+
+    channel = pixels.get("Channel", {})
+    metadata = {
+        "format": "ome-tiff",
+        "image_name": image.get("@Name"),
+        "acquisition_date": image.get("AcquisitionDate"),
+        "channel_name": channel.get("@Name"),
+        "contrast_method": channel.get("@ContrastMethod"),
+    }
+    return MPSData(
+        frames=frames,
+        time_stamps=time_stamps,
+        pacing=np.zeros(len(time_stamps)),
+        info=info,
+        metadata=metadata,
+    )
+
+
+def _leica_series_metadata(imagej_metadata: Dict[str, Any]) -> Dict[str, str]:
+    """Return the original Leica (.lif) metadata of the series in an ImageJ TIFF.
+
+    Bio-Formats stores the metadata of *all* series in the .lif file in
+    ``Info`` as lines ``<series name> <key> = <value>``. The series that was
+    exported is given by the ImageJ ``Labels`` (``"c:1/2 t:1/3 - <name>"``).
+    """
+    labels = imagej_metadata.get("Labels")
+    label = labels[0] if isinstance(labels, list) else labels
+    if not isinstance(label, str) or " - " not in label:
+        return {}
+    prefix = label.split(" - ", 1)[1].strip() + " "
+    metadata = {}
+    for line in imagej_metadata.get("Info", "").splitlines():
+        line = line.strip()
+        if line.startswith(prefix) and " = " in line:
+            key, value = line[len(prefix) :].split(" = ", 1)
+            metadata[key] = value
+    return metadata
+
+
+_LEICA_SETTINGS = "Image #0|ATLConfocalSettingDefinition #0|"
+
+
+def _is_leica_linescan(f) -> bool:
+    if not f.is_imagej or "Info" not in (f.imagej_metadata or {}):
+        return False
+    metadata = _leica_series_metadata(f.imagej_metadata)
+    return metadata.get(_LEICA_SETTINGS + "ScanMode") == "xt"
+
+
+def _leica_dimension(metadata: Dict[str, str], dim_id: str) -> Optional[Dict[str, str]]:
+    """Return the Leica DimensionDescription with the given DimID (1 = x, 4 = t)."""
+    for key, value in metadata.items():
+        if key.startswith("Image #0|DimensionDescription") and key.endswith("|DimID"):
+            if value == dim_id:
+                base = key[: -len("DimID")]
+                return {k[len(base) :]: v for k, v in metadata.items() if k.startswith(base)}
+    return None
+
+
+def _load_leica_linescan(f, linescan_bin: int = 1) -> MPSData:
+    """Load a Leica xt line scan exported from a .lif file to an ImageJ TIFF.
+
+    The image has shape (R, L, X) or (L, X), where L is the number of line
+    scans (time axis), X the position along the line and R repeated
+    acquisitions, which are recorded back to back ``finterval`` seconds
+    apart. The repeats are concatenated into one recording, and each line
+    is treated as an image of size (X, 1), so that frames has shape
+    (X, 1, R * L / linescan_bin).
+
+    Line scans are sampled much faster (e.g. 2.5 ms) than needed to resolve
+    a calcium transient, and the noise at that rate breaks the beat
+    detection. Consecutive blocks of ``linescan_bin`` lines are therefore
+    averaged (any remainder at the end of a repeat is dropped).
+    """
+    imagej_metadata = f.imagej_metadata
+    metadata = _leica_series_metadata(imagej_metadata)
+
+    if _LEICA_SETTINGS + "LineTime" in metadata:
+        line_time = float(metadata[_LEICA_SETTINGS + "LineTime"]) * 1000.0
+    else:
+        dim = _leica_dimension(metadata, "4")
+        if dim is None:
+            raise ValueError("Could not find line time in Leica metadata")
+        line_time = float(dim["Length"]) / int(dim["NumberOfElements"]) * 1000.0
+
+    images = f.asarray()
+    if images.ndim == 2:
+        images = images[np.newaxis]
+    num_repeats, num_lines, num_pixels = images.shape
+    repeat_interval = float(imagej_metadata.get("finterval", 0.0)) * 1000.0
+    if num_repeats > 1 and repeat_interval < num_lines * line_time:
+        raise ValueError(
+            f"Repeat interval ({repeat_interval} ms) is shorter than the "
+            f"duration of one line scan ({num_lines * line_time} ms)"
+        )
+
+    time_stamps = (
+        np.arange(num_repeats)[:, np.newaxis] * repeat_interval
+        + np.arange(num_lines)[np.newaxis, :] * line_time
+    )
+    linescan_bin = max(int(linescan_bin), 1)
+    if linescan_bin > 1:
+        n = num_lines // linescan_bin
+        images = (
+            images[:, : n * linescan_bin]
+            .reshape(num_repeats, n, linescan_bin, num_pixels)
+            .mean(axis=2)
+        )
+        time_stamps = time_stamps[:, : n * linescan_bin].reshape(num_repeats, n, -1).mean(axis=2)
+    time_stamps = time_stamps.ravel()
+    # (R, L, X) -> (X, 1, R * L)
+    frames = images.reshape(-1, num_pixels).T[:, np.newaxis, :]
+
+    info = info_dictionary(time_stamps)
+    dim_x = _leica_dimension(metadata, "1")
+    info["um_per_pixel"] = (
+        float(dim_x["Length"]) / int(dim_x["NumberOfElements"]) * 1e6 if dim_x else np.nan
+    )
+    info["size_x"] = num_pixels
+    info["size_y"] = 1
+    info["line_time_ms"] = line_time
+    info["linescan_bin"] = linescan_bin
+    info["num_repeats"] = num_repeats
+    info["repeat_interval_ms"] = repeat_interval
+
+    return MPSData(
+        frames=frames,
+        time_stamps=time_stamps,
+        pacing=np.zeros(len(time_stamps)),
+        info=info,
+        metadata={"format": "leica-linescan", **metadata},
+    )
+
+
+def load_file(
+    fname: Union[str, Path],
+    ext: str,
+    channel: Optional[int] = None,
+    linescan_bin: int = DEFAULT_LINESCAN_BIN,
+) -> MPSData:
     fname = Path(fname)
     if ext == ".czi":
         data = load_czi(str(fname), channel=channel)
@@ -621,7 +833,7 @@ def load_file(fname: Union[str, Path], ext: str, channel: Optional[int] = None) 
         data = load_stk(fname)
 
     elif ext in [".tiff", ".tif"]:
-        data = load_tiff(fname)
+        data = load_tiff(fname, linescan_bin=linescan_bin)
 
     elif ext == ".npy":
         data = MPSData(**np.load(fname, allow_pickle=True).item())
@@ -641,15 +853,19 @@ class MPS(object):
     --------
     fname : str
         Path to the file
-    parameters : dict
-        Additional parameters, see
-        `MPS.default_parameters`
+    verbose : bool
+        More verbose logging
+    channel : int, optional
+        Channel to use for multichannel CZI files
+    linescan_bin : int
+        Number of consecutive lines to average when loading
+        line scans (Leica xt). Use 1 to keep every line.
 
 
 
     """
 
-    def __init__(self, fname="", verbose=False, channel=None):
+    def __init__(self, fname="", verbose=False, channel=None, linescan_bin=DEFAULT_LINESCAN_BIN):
         loglevel = logging.DEBUG if verbose else logging.INFO
         logger.setLevel(loglevel)
         if fname == "":
@@ -671,7 +887,7 @@ class MPS(object):
         self._fname = os.path.abspath(fname)
         self._ext = ext
 
-        data = load_file(self._fname, self._ext, channel=channel)
+        data = load_file(self._fname, self._ext, channel=channel, linescan_bin=linescan_bin)
         self._unpack(data)
 
     @classmethod

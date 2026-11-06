@@ -54,6 +54,42 @@ grid_settings = namedtuple(
 logger = logging.getLogger(__name__)
 
 
+def is_brightfield(filename: str) -> bool:
+    """Guess from the file name whether a recording is brightfield.
+
+    Matches "BF" anywhere in the name, or "bf" as a separate word,
+    e.g. "E10_bf_10x_15s.ome.tiff".
+    """
+    import re
+
+    return "BF" in filename or "bf" in re.split(r"[_\-\s.]+", filename.lower())
+
+
+def file_stem(path: Path) -> str:
+    """Name of a file without its extension, also stripping
+    the double extension of ".ome.tif(f)" files."""
+    stem = Path(path).stem
+    return stem[: -len(".ome")] if stem.endswith(".ome") else stem
+
+
+def find_input_files(folder: Path, extensions, recursive: bool = True):
+    """Find the files in ``folder`` that can be analyzed.
+
+    Brightfield files are excluded, and output folders written by
+    ``mps analyze`` (which have the same name as an input file, e.g.
+    "a.tif" -> "a/") are not searched.
+    """
+    inputs: list[Path] = []
+    for root, dirs, files in os.walk(folder):
+        candidates = [
+            f for f in sorted(files) if Path(f).suffix in extensions and not is_brightfield(f)
+        ]
+        output_dirs = {file_stem(Path(f)) for f in candidates}
+        dirs[:] = sorted(d for d in dirs if d not in output_dirs) if recursive else []
+        inputs.extend(Path(root).joinpath(f) for f in candidates)
+    return inputs
+
+
 def get_space_step(N, x_start, x_end, y_start, y_end, **kwargs):
     frames = kwargs.get("frames", None)
     if x_end is None:
@@ -415,8 +451,10 @@ def padding(data, fill_value=0):
     Make sure all traces are of the same lenght and
     fill in extra values if neccessary
     """
-    N = np.max([len(a) for a in data.values()])
     padded_data = OrderedDict()
+    if len(data) == 0:
+        return padded_data
+    N = np.max([len(a) for a in data.values()])
     for k, v in data.items():
         padded_data[k] = np.concatenate((v, fill_value * np.ones(N - len(v))))
 

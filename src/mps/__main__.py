@@ -225,6 +225,17 @@ def analyze(
             the exact traces from the raw data.""",
         ),
     ),
+    linescan_bin: int = typer.Option(
+        8,
+        help=dedent(
+            """
+            Number of consecutive lines to average when
+            loading line scans (Leica xt). Line scans are
+            sampled much faster than needed, and the noise
+            breaks the beat detection. Use 1 to keep every
+            line.""",
+        ),
+    ),
     verbose: bool = typer.Option(False, "--verbose", "-v", help="More verbose"),
 ):
     scripts.analyze.main(
@@ -245,6 +256,7 @@ def analyze(
         reuse_settings=reuse_settings,
         overwrite=overwrite,
         verbose=verbose,
+        linescan_bin=linescan_bin,
     )
 
 
@@ -285,6 +297,45 @@ def summary(
             those.""",
         ),
     ),
+    recursive: bool = typer.Option(
+        False,
+        help="Also include files in subfolders",
+    ),
+    min_window: float = typer.Option(
+        200,
+        help=dedent(
+            """
+            Smallest allowed length of beat (in
+            milliseconds) to be included in chopping""",
+        ),
+    ),
+    max_window: float = typer.Option(
+        2000,
+        help=dedent(
+            """
+            Largest allowed length of beat (in
+            milliseconds) to be included in chopping""",
+        ),
+    ),
+    threshold_factor: float = typer.Option(
+        0.3,
+        help=dedent(
+            """
+            Factor of where to synchronize data when
+            chopping. Default = 0.3""",
+        ),
+    ),
+    linescan_bin: int = typer.Option(
+        8,
+        help=dedent(
+            """
+            Number of consecutive lines to average when
+            loading line scans (Leica xt). Line scans are
+            sampled much faster than needed, and the noise
+            breaks the beat detection. Use 1 to keep every
+            line.""",
+        ),
+    ),
 ):
     scripts.summary.main(
         folder=folder,
@@ -292,6 +343,11 @@ def summary(
         ignore_pacing=ignore_pacing,
         silent=silent,
         include_npy=include_npy,
+        recursive=recursive,
+        min_window=min_window,
+        max_window=max_window,
+        threshold_factor=threshold_factor,
+        linescan_bin=linescan_bin,
     )
 
 
