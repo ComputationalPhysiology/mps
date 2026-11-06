@@ -5,7 +5,6 @@ Analyze flourecense data
 import datetime
 import json
 import logging
-import os
 import shutil
 import time
 from copy import deepcopy
@@ -15,8 +14,11 @@ from typing import Dict
 from typing import Optional
 
 from ..analysis import analyze_mps_func
+from ..load import DEFAULT_LINESCAN_BIN
 from ..load import MPS
 from ..load import valid_extensions
+from ..utils import file_stem
+from ..utils import find_input_files
 from ..utils import json_serial
 
 logger = logging.getLogger(__name__)
@@ -40,19 +42,25 @@ def run_folder(**kwargs):
     if not path.is_dir():
         raise IOError(f"Folder {path} does not exist")
 
-    for root, dirs, files in os.walk(path):
-        for f in files:
-            if Path(f).suffix not in valid_extensions:
-                continue
+    # Collect all files before analyzing anything, so that the output
+    # written during the analysis is not picked up as input
+    inputs = find_input_files(path, valid_extensions)
 
-            # Exclude Brightfield
-            if "BF" in f:
-                continue
-
-            fkwargs = deepcopy(kwargs)
-            fkwargs["path"] = Path(root).joinpath(f)
-            fkwargs["outdir"] = Path(root).joinpath(Path(f).stem)
+    failed = []
+    for fpath in inputs:
+        fkwargs = deepcopy(kwargs)
+        fkwargs["path"] = fpath
+        fkwargs["outdir"] = fpath.parent.joinpath(file_stem(fpath))
+        try:
             run_file(**fkwargs)
+        except Exception as ex:
+            logger.error(f"Failed to analyze {fpath}: {type(ex).__name__}: {ex}")
+            failed.append(fpath)
+
+    if failed:
+        logger.error(
+            f"{len(failed)} of {len(inputs)} files failed:\n" + "\n".join(f"  {f}" for f in failed)
+        )
 
 
 def update_kwargs(kwargs: Dict[str, Any], outdir: Path):
@@ -111,7 +119,7 @@ def run_file(**kwargs):
 
     outdir = kwargs.get("outdir")
     if outdir is None:
-        outdir = path.parent.joinpath(path.stem)
+        outdir = path.parent.joinpath(file_stem(path))
     outdir = Path(outdir)
     kwargs["outdir"] = outdir.absolute().as_posix()
 
@@ -121,7 +129,7 @@ def run_file(**kwargs):
 
     start = time.time()
 
-    mps_data = MPS(path)
+    mps_data = MPS(path, linescan_bin=kwargs.get("linescan_bin", DEFAULT_LINESCAN_BIN))
     analyze_mps_func(mps_data, **kwargs)
     dump_settings(outdir, kwargs)
 
@@ -152,6 +160,7 @@ def main(
     reuse_settings: bool = False,
     overwrite: bool = True,
     verbose: bool = False,
+    linescan_bin: int = DEFAULT_LINESCAN_BIN,
 ):
     level = logging.DEBUG if verbose else logging.INFO
     logger.setLevel(level)
@@ -180,6 +189,7 @@ def main(
         ignore_pacing=ignore_pacing,
         reuse_settings=reuse_settings,
         overwrite=overwrite,
+        linescan_bin=linescan_bin,
     )
 
     if filepath.is_dir():

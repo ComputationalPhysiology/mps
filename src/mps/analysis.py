@@ -1185,8 +1185,12 @@ def analyze_mps_func(
     )
     try:
         analyze_chopped_data(trace=corrected_trace, collector=collector, **params)
-    except Exception:
-        logger.warning("Failed analyzing chopped data")
+    except Exception as ex:
+        logger.warning(
+            f"Failed analyzing chopped data ({type(ex).__name__}: {ex}). "
+            f"If the beats are longer than max_window ({max_window} ms), "
+            "try increasing it (--max-window)."
+        )
 
     collector.dump_all()
 

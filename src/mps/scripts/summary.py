@@ -19,43 +19,57 @@ import ap_features as apf
 import numpy as np
 
 from .. import analysis, utils
-from ..load import MPS, valid_extensions
+from ..load import DEFAULT_LINESCAN_BIN, MPS, valid_extensions
 
 logger = logging.getLogger(__name__)
 
 
-def get_data(path: Path, ignore_pacing: bool = False):
-    mps_data = MPS(path)
+def get_data(
+    path: Path,
+    ignore_pacing: bool = False,
+    linescan_bin: int = DEFAULT_LINESCAN_BIN,
+    **analysis_kwargs,
+):
     try:
+        mps_data = MPS(path, linescan_bin=linescan_bin)
         data = analysis.analyze_mps_func(
             mps_data=mps_data,
             ignore_pacing=ignore_pacing,
             plot=False,
             outdir=None,
+            **analysis_kwargs,
         )
     except Exception as ex:
-        logger.warning(ex, exc_info=True)
+        logger.warning(f"Skipping {path}: {type(ex).__name__}: {ex}", exc_info=True)
         return None
-    else:
-        return dict(
-            average=data["unchopped_data"]["original_trace"],
-            time_stamps=data["unchopped_data"]["original_times"],
-            pacing=data["unchopped_data"]["original_pacing"],
-            apd30s=data["all_features"]["features_beats"]["apd30"],
-            apd80s=data["all_features"]["features_beats"]["apd80"],
-            apd90s=data["all_features"]["features_beats"]["apd90"],
-            capd30s=data["all_features"]["features_beats"]["capd30"],
-            capd80s=data["all_features"]["features_beats"]["capd80"],
-            capd90s=data["all_features"]["features_beats"]["capd90"],
-            slope_APD80=data["all_features"]["features_beats"]["slope_APD80"],
-            slope_cAPD80=data["all_features"]["features_beats"]["slope_cAPD80"],
-            triangulation=data["all_features"]["features_beats"]["triangulation"],
-            tau75s=data["all_features"]["features_beats"]["tau75"],
-            upstroke80s=data["all_features"]["features_beats"]["upstroke80"],
-            nbeats=data["all_features"]["features_beats"]["num_beats"],
-            ttp=data["all_features"]["features_beats"]["ttp"],
-            freqs=data["all_features"]["features_beats"]["beating_frequencies"],
+
+    if "apd30" not in data["all_features"].get("features_beats", {}):
+        logger.warning(
+            f"Skipping {path}: no beats were found. If the beats are longer than "
+            f"max_window ({analysis_kwargs.get('max_window')} ms), try increasing it "
+            "(--max-window)."
         )
+        return None
+
+    return dict(
+        average=data["unchopped_data"]["original_trace"],
+        time_stamps=data["unchopped_data"]["original_times"],
+        pacing=data["unchopped_data"]["original_pacing"],
+        apd30s=data["all_features"]["features_beats"]["apd30"],
+        apd80s=data["all_features"]["features_beats"]["apd80"],
+        apd90s=data["all_features"]["features_beats"]["apd90"],
+        capd30s=data["all_features"]["features_beats"]["capd30"],
+        capd80s=data["all_features"]["features_beats"]["capd80"],
+        capd90s=data["all_features"]["features_beats"]["capd90"],
+        slope_APD80=data["all_features"]["features_beats"]["slope_APD80"],
+        slope_cAPD80=data["all_features"]["features_beats"]["slope_cAPD80"],
+        triangulation=data["all_features"]["features_beats"]["triangulation"],
+        tau75s=data["all_features"]["features_beats"]["tau75"],
+        upstroke80s=data["all_features"]["features_beats"]["upstroke80"],
+        nbeats=data["all_features"]["features_beats"]["num_beats"],
+        ttp=data["all_features"]["features_beats"]["ttp"],
+        freqs=data["all_features"]["features_beats"]["beating_frequencies"],
+    )
 
 
 def plot(
@@ -63,6 +77,7 @@ def plot(
     folder: Path,
     filename: str = "mps_summary",
     ignore_pacing: bool = False,
+    **analysis_kwargs,
 ):
     fig, ax = plt.subplots(len(files), 2, constrained_layout=True)
     if len(files) == 1:
@@ -76,8 +91,9 @@ def plot(
 
     for i, path in enumerate(files):
         fig, ax = plt.subplots(1, 2)
-        ax[0].set_title(path.name.replace("_", r"\_"))
-        data = get_data(path, ignore_pacing)
+        name = path.relative_to(folder).as_posix()
+        ax[0].set_title(name.replace("_", r"\_"))
+        data = get_data(path, ignore_pacing, **analysis_kwargs)
         if data is None:
             continue
 
@@ -147,7 +163,7 @@ def plot(
 
         xl_datas.append(
             [
-                path.name,
+                name,
                 np.mean(data["apd30s"]),
                 np.std(data["apd30s"]),
                 nremoved["apd30s"],
@@ -215,6 +231,11 @@ def plot(
 
     utils.to_csv(xl_datas, folder.joinpath(filename), header)
 
+    if len(image_paths) == 0:
+        logger.warning("Could not analyze any of the files, so no summary pdf is created")
+        shutil.rmtree(figdir)
+        return
+
     from PIL import Image
 
     images = [Image.open(x) for x in image_paths]
@@ -240,6 +261,11 @@ def main(
     ignore_pacing: bool = False,
     silent: bool = False,
     include_npy: bool = False,
+    recursive: bool = False,
+    min_window: float = 200,
+    max_window: float = 2000,
+    threshold_factor: float = 0.3,
+    linescan_bin: int = DEFAULT_LINESCAN_BIN,
 ):
     level = logging.WARNING if silent else logging.INFO
     logger.setLevel(level)
@@ -255,22 +281,24 @@ def main(
     if not path.is_dir():
         raise IOError(f"Folder {path} does not exist")
 
-    valid_ext = valid_extensions.copy()
-    if include_npy:
-        valid_ext.append(".npy")
-
-    exclude_patterns = ["BF"]
-
-    files = [
-        f
-        for f in path.iterdir()
-        if (f.suffix in valid_ext and not any(p in f.name for p in exclude_patterns))
-    ]
+    # .npy files are excluded by default, since mps analyze also writes
+    # its output as data.npy
+    valid_ext = [ext for ext in valid_extensions if include_npy or ext != ".npy"]
+    files = utils.find_input_files(path, valid_ext, recursive=recursive)
 
     if len(files) == 0:
         logger.warning(f"Could not find any files with in folder {path}")
         logger.info(f"Valid extensions {valid_ext}")
-        logger.info(f"Exclude patterns {exclude_patterns}")
+        logger.info("Brightfield files (with 'BF' or 'bf' in the name) are excluded")
         return
 
-    plot(files=files, folder=path, filename=filename, ignore_pacing=ignore_pacing)
+    plot(
+        files=files,
+        folder=path,
+        filename=filename,
+        ignore_pacing=ignore_pacing,
+        min_window=min_window,
+        max_window=max_window,
+        threshold_factor=threshold_factor,
+        linescan_bin=linescan_bin,
+    )
